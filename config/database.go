@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"go-start/utils"
 	"gorm.io/gorm/schema"
 	"log"
 	"os"
@@ -27,11 +28,11 @@ type DatabaseConfig struct {
 // InitDB 初始化数据库连接
 func InitDB() {
 	config := DatabaseConfig{
-		Host:     getEnv("DB_HOST", "localhost"),
-		Port:     getEnv("DB_PORT", "3306"),
-		User:     getEnv("DB_USER", "root"),
-		Password: getEnv("DB_PASSWORD", ""),
-		DBName:   getEnv("DB_NAME", "testdb"),
+		Host:     utils.GetEnv("DB_HOST", "localhost"),
+		Port:     utils.GetEnv("DB_PORT", "3306"),
+		User:     utils.GetEnv("DB_USER", "root"),
+		Password: utils.GetEnv("DB_PASSWORD", ""),
+		DBName:   utils.GetEnv("DB_NAME", "testdb"),
 		Charset:  "utf8mb4",
 	}
 
@@ -82,12 +83,4 @@ func InitDB() {
 // GetDB 获取数据库实例（供其他包使用）
 func GetDB() *gorm.DB {
 	return DB
-}
-
-// 辅助函数：获取环境变量
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
 }
