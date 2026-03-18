@@ -3,10 +3,13 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/qiniu/go-sdk/v7/auth"
 	"github.com/qiniu/go-sdk/v7/storage"
 	"io"
 	"log"
+	"net/http"
+	"runtime/debug"
 	"time"
 )
 
@@ -18,10 +21,11 @@ var (
 )
 
 type FileService struct {
+	vectorService *VectorService
 }
 
 func NewFileService() *FileService {
-	return &FileService{}
+	return &FileService{vectorService: NewVectorService()}
 }
 
 // checkConfig 检查七牛云配置是否完整
@@ -68,16 +72,39 @@ func (h *FileService) UploadToQiniu(file io.Reader, key string) (string, error) 
 	return domain + "/" + ret.Key, nil
 }
 
+func (h *FileService) Upload(file io.Reader, key string) (string, error) {
+	// 1. 上传文件到七牛云
+	url, err := h.UploadToQiniu(file, key)
+	if err != nil {
+		log.Println("上传文件失败", err)
+		return "", err
+	}
+
+	// 2. 将文件转换为 base64
+	baseData, err := convertFileForBase64(url)
+	if err != nil {
+		log.Println("文件转换base64失败", err)
+		return "", err
+	}
+
+	// 3. 获取向量数据
+	vector, err := h.vectorService.GetVectorFromEcho(baseData)
+	if err != nil {
+		log.Println("获取向量数据失败", err)
+		return "", err
+	}
+	log.Println("获取向量数据成功", vector)
+	// todo 将向量数据存储到数据库中，关联文件URL等信息
+	return url, nil
+}
+
 // getPrivateURL 生成七牛云私有空间临时访问链接
-// 如果是公开空间，直接返回拼接的 URL（无需签名）
 func (h *FileService) GetPrivateURL(key string, expiresInSeconds int64) (string, error) {
 	// 检查配置
 	if err := checkConfig(); err != nil {
 		log.Println(err)
 		return "", err
 	}
-	// 如果空间是公开的，直接返回拼接 URL（根据你的实际情况判断）
-	// 此处假设为私有空间，需要签名。若是公开空间，可注释下面签名代码，直接返回 qiniuDomain + "/" + key
 
 	mac := auth.New(accessKey, secretKey)
 	// 构建私有空间访问 URL
@@ -102,4 +129,27 @@ func (h *FileService) GetPublicURL(key string) (string, error) {
 	publicURL := storage.MakePublicURL(domain, key)
 	log.Println("七牛云文件url获取成功：", publicURL)
 	return publicURL + ".png", nil
+}
+
+func convertFileForBase64(url string) ([]byte, error) {
+	// 发起 HTTP GET 请求
+	resp, err := http.Get("http://" + url)
+	if err != nil {
+		stack := debug.Stack()
+		log.Printf("Error: %v\nStack Trace:\n%s", err, stack)
+		return nil, err
+	}
+	defer resp.Body.Close() // 确保响应体被关闭
+
+	// 检查 HTTP 状态码
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("下载失败：HTTP %s", resp.Status)
+	}
+
+	// 读取响应体到字节切片
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }

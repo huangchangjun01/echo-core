@@ -47,7 +47,7 @@ func (h *FileHandler) UploadHandler(c *gin.Context) {
 	newFilename := uuid.New().String() + ext
 
 	// 5. 上传到七牛云
-	url, err := h.service.UploadToQiniu(file, newFilename)
+	url, err := h.service.Upload(file, newFilename)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "上传到七牛云失败: " + err.Error()})
 		return
