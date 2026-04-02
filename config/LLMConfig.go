@@ -1,4 +1,4 @@
-package service
+package config
 
 import (
 	"fmt"
@@ -13,6 +13,7 @@ const (
 	providerSiliconFlow = "siliconflow"
 	providerDeepSeek    = "deepseek"
 	providerGemini      = "gemini"
+	providerQwen        = "qwen"
 )
 
 // LLMConfig 描述一个 OpenAI 兼容大模型客户端所需配置。
@@ -102,7 +103,7 @@ func validateLLMConfig(cfg LLMConfig) (LLMConfig, error) {
 		cfg.Provider = inferProviderFromEnv()
 	}
 	if cfg.APIKey == "" {
-		return cfg, fmt.Errorf("llm api key not set: configure LLM_API_KEY or provider-specific key such as SILICONFLOW_API_KEY/OPENAI_API_KEY/DEEPSEEK_API_KEY/GEMINI_API_KEY")
+		return cfg, fmt.Errorf("llm api key not set: configure LLM_API_KEY or provider-specific key such as DASHSCOPE_API_KEY/SILICONFLOW_API_KEY/OPENAI_API_KEY/DEEPSEEK_API_KEY/GEMINI_API_KEY")
 	}
 	if cfg.BaseURL == "" {
 		return cfg, fmt.Errorf("llm base url not set: configure LLM_BASE_URL or use a supported provider")
@@ -113,9 +114,11 @@ func validateLLMConfig(cfg LLMConfig) (LLMConfig, error) {
 	return cfg, nil
 }
 
-// inferProviderFromEnv 根据环境变量自动推断使用的 LLM 提供商，优先级为：SILICONFLOW > DEEPSEEK > GEMINI > OPENAI。
+// inferProviderFromEnv 根据环境变量自动推断使用的 LLM 提供商，优先级为：QWEN > SILICONFLOW > DEEPSEEK > GEMINI > OPENAI。
 func inferProviderFromEnv() string {
 	switch {
+	case utils.GetEnvFirst("DASHSCOPE_API_KEY", "QWEN_API_KEY") != "":
+		return providerQwen
 	case utils.GetEnvFirst("SILICONFLOW_API_KEY") != "":
 		return providerSiliconFlow
 	case utils.GetEnvFirst("DEEPSEEK_API_KEY") != "":
@@ -133,6 +136,8 @@ func normalizeProvider(provider string) string {
 	switch strings.ToLower(strings.TrimSpace(provider)) {
 	case "", providerOpenAI:
 		return providerOpenAI
+	case "qwen", "tongyi", "dashscope", "alibaba":
+		return providerQwen
 	case "siliconflow", "silicon-flow", "sf":
 		return providerSiliconFlow
 	case providerDeepSeek:
@@ -150,6 +155,8 @@ func resolveAPIKey(provider string) string {
 	}
 
 	switch provider {
+	case providerQwen:
+		return utils.GetEnvFirst("DASHSCOPE_API_KEY", "QWEN_API_KEY", "OPENAI_API_KEY")
 	case providerSiliconFlow:
 		return utils.GetEnvFirst("SILICONFLOW_API_KEY", "OPENAI_API_KEY")
 	case providerDeepSeek:
@@ -159,12 +166,14 @@ func resolveAPIKey(provider string) string {
 	case providerOpenAI:
 		return utils.GetEnvFirst("OPENAI_API_KEY")
 	default:
-		return utils.GetEnvFirst("OPENAI_API_KEY", "SILICONFLOW_API_KEY", "DEEPSEEK_API_KEY", "GEMINI_API_KEY")
+		return utils.GetEnvFirst("OPENAI_API_KEY", "DASHSCOPE_API_KEY", "QWEN_API_KEY", "SILICONFLOW_API_KEY", "DEEPSEEK_API_KEY", "GEMINI_API_KEY")
 	}
 }
 
 func defaultBaseURL(provider string) string {
 	switch provider {
+	case providerQwen:
+		return "https://dashscope.aliyuncs.com/compatible-mode/v1"
 	case providerSiliconFlow:
 		return "https://api.siliconflow.cn/v1"
 	case providerDeepSeek:
@@ -180,6 +189,8 @@ func defaultBaseURL(provider string) string {
 
 func defaultModel(provider string) string {
 	switch provider {
+	case providerQwen:
+		return "qwen3.5-plus"
 	case providerSiliconFlow:
 		return "deepseek-ai/DeepSeek-V3"
 	case providerDeepSeek:

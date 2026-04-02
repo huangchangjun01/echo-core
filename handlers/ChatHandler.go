@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"go-start/config"
 	"net/http"
 	"strings"
 
@@ -37,7 +38,7 @@ func (h *ChatHandler) HandleChat(c *gin.Context) {
 	}
 
 	// 调用 AgentService 处理聊天请求
-	reply, err := h.agentService.Query(c.Request.Context(), req.Message, service.LLMRequestOptions{
+	reply, err := h.agentService.Query(c.Request.Context(), req.Message, config.LLMRequestOptions{
 		Provider: req.Provider,
 		Model:    req.Model,
 		BaseURL:  req.BaseURL,

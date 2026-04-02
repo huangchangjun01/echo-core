@@ -1,131 +1,137 @@
-package service
+﻿package service
 
 import (
 	"context"
 	"fmt"
-	"log"
-	"strings"
-
-	vectorModel "go-start/models/vector"
-
 	"github.com/sashabaranov/go-openai"
+	"go-start/config"
+	"log"
 )
 
-// AgentService handles interactions with the LLM agent.
+// AgentService 负责结合大模型完成自然语言的理解、意图识别与工具调用
 type AgentService struct {
-	weaviateService *WeaviateService
-	vectorService   *VectorService // 添加 VectorService
+	sessionManager *SessionManager
+	registry       *Registry
 }
 
-// NewAgentService creates a new AgentService.
-func NewAgentService(weaviateService *WeaviateService, vectorService *VectorService) (*AgentService, error) { // 添加 vectorService 参数
-	if _, err := LoadLLMConfig(); err != nil {
+// NewAgentService 创建一个新的 AgentService，并利用依赖注入传递组件
+func NewAgentService(weaviateService *WeaviateService, vectorService *VectorService) (*AgentService, error) {
+	log.Printf("开始调用NewAgentService方法，params={weaviateService: %v, vectorService: %v}", weaviateService, vectorService)
+	defer func() { log.Printf("调用NewAgentService方法结束，result={}") }()
+	if _, err := config.LoadLLMConfig(); err != nil {
 		return nil, err
 	}
-
+	sm := NewSessionManager()
+	reg := NewRegistry()
+	// 注册向量搜索工具
+	reg.Register(NewWeaviateSearchTool(weaviateService, vectorService))
 	return &AgentService{
-		weaviateService: weaviateService,
-		vectorService:   vectorService, // 初始化
+		sessionManager: sm,
+		registry:       reg,
 	}, nil
 }
 
-// Query sends a query to the agent and returns the response.
-func (s *AgentService) Query(ctx context.Context, query string, options LLMRequestOptions) (string, error) {
-	// 1. 将查询文本转换为向量
-	queryVector, err := s.vectorService.GetVectorFromText(query)
-	if err != nil {
-		return "", fmt.Errorf("error converting query to vector: %w", err)
-	}
-
-	// 2. 使用向量进行搜索，而不是 NearText
-	results, err := s.weaviateService.SearchByVector(ctx, queryVector, 5)
-	if err != nil {
-		return "", fmt.Errorf("error searching Weaviate by vector: %w", err)
-	}
-
-	if len(results) == 0 {
-		return "我没有在向量库中找到与该问题相关的图片信息。", nil
-	}
-
-	cfg, err := ResolveLLMConfig(options)
+// Chat 处理用户的请求流，利用循环实现自动任务规划和多轮追问
+func (s *AgentService) Chat(ctx context.Context, sessionID string, query string, options config.LLMRequestOptions) (string, error) {
+	log.Printf("开始调用Chat方法，params={ctx: %v, sessionID: %s, query: %s, options: %v}", ctx, sessionID, query, options)
+	defer func() { log.Printf("调用Chat方法结束，result={}") }()
+	config, err := config.ResolveLLMConfig(options)
 	if err != nil {
 		return "", err
 	}
-
-	response, err := s.generateLLMReply(ctx, cfg, query, results)
-	if err != nil {
-		return s.buildFallbackReply(cfg, results), nil
-	}
-
-	return response, nil
-}
-
-func (s *AgentService) generateLLMReply(ctx context.Context, cfg LLMConfig, query string, results []vectorModel.DocumentVector) (string, error) {
-	clientConfig := openai.DefaultConfig(cfg.APIKey)
-	clientConfig.BaseURL = cfg.BaseURL
+	clientConfig := openai.DefaultConfig(config.APIKey)
+	clientConfig.BaseURL = config.BaseURL
 	client := openai.NewClientWithConfig(clientConfig)
-
-	messages := []openai.ChatCompletionMessage{
-		{
-			Role:    openai.ChatMessageRoleSystem,
-			Content: "你是一个图片知识问答助手。你必须优先依据向量检索结果回答问题；如果检索结果不足以支撑结论，就明确说明信息不足，不要编造图片内容。",
-		},
-		{
-			Role:    openai.ChatMessageRoleUser,
-			Content: fmt.Sprintf("用户问题是：%s。\n向量检索结果：\n %s。\n请基于以上检索结果，用简洁、自然的中文回答用户，并尽量指出对应图片文件名。", query, buildSearchContext(results)),
-		},
+	session := s.sessionManager.GetSession(sessionID)
+	// 如果是新会话，注入 System Prompt (系统级角色设定，规范澄清行为)
+	if len(session.Messages) == 0 {
+		systemMsg := openai.ChatCompletionMessage{
+			Role: openai.ChatMessageRoleSystem,
+			Content: "你是一个高级智能企业助手。你有能力调用多种外部工具来帮助用户找图或查询数据。" +
+				"\n你的核心运行逻辑如下：" +
+				"\n1. 分析用户的请求是否清晰、检索条件是否充足。" +
+				"\n2. 如果用户意图含糊，或者缺少调用工具必要的参数，请直接反问用户以澄清需求。(例如请求找部门照片，你要先询问特定部门名等)。" +
+				"\n3. 当信息充分时，立刻使用可用工具(Tools)获取真实数据。" +
+				"\n4. 基于工具返回的结果生成最终回答，必须告知用户对应信息的详细字段(例如文件名及文件ID等)。" +
+				"绝不可凭空捏造数据或者图片信息。",
+		}
+		s.sessionManager.AddMessage(sessionID, systemMsg)
 	}
-
-	resp, err := client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
-		Model:       cfg.Model,
-		Messages:    messages,
-		Temperature: 0.2,
-	})
-	if err != nil {
-		log.Println("call llm provider %s failed: %w", cfg.Provider, err)
-		return "", fmt.Errorf("call llm provider %s failed: %w", cfg.Provider, err)
+	// 追加用户当前的信息
+	userMsg := openai.ChatCompletionMessage{
+		Role:    openai.ChatMessageRoleUser,
+		Content: query,
 	}
-	if len(resp.Choices) == 0 {
-		return "", fmt.Errorf("empty llm response from provider %s", cfg.Provider)
+	s.sessionManager.AddMessage(sessionID, userMsg)
+	// maxLoops 限制最大工具链调用深度，防止死循环
+	maxLoops := 5
+	for i := 0; i < maxLoops; i++ {
+		session = s.sessionManager.GetSession(sessionID) // 重新获取最新上下文
+		req := openai.ChatCompletionRequest{
+			Model:       config.Model,
+			Messages:    session.Messages,
+			Temperature: 0.2,
+			Tools:       s.registry.GetOpenAITools(),
+		}
+		resp, err := client.CreateChatCompletion(ctx, req)
+		if err != nil {
+			log.Printf("LLM API 调用失败: %v", err)
+			return "抱歉，我现在遇到点网络或服务问题，请稍后再试。", nil
+		}
+		if len(resp.Choices) == 0 {
+			return "LLM 返回为空", nil
+		}
+		msg := resp.Choices[0].Message
+		// 每次获取模型的输出后，均要录入会话中
+		s.sessionManager.AddMessage(sessionID, msg)
+		// 核心逻辑: 判断大模型是否决定调用工具
+		if len(msg.ToolCalls) > 0 {
+			for _, toolCall := range msg.ToolCalls {
+				toolName := toolCall.Function.Name
+				toolArgs := toolCall.Function.Arguments
+				log.Printf("LLM 请求调用工具: [%s] 参数: [%s]\n", toolName, toolArgs)
+				// 查找并执行对应的 Tool
+				tool, ok := s.registry.GetTool(toolName)
+				var toolResult string
+				if !ok {
+					toolResult = fmt.Sprintf("未找到名为 %s 的工具", toolName)
+				} else {
+					res, exeErr := tool.Execute(ctx, toolArgs)
+					if exeErr != nil {
+						toolResult = fmt.Sprintf("工具执行失败: %v", exeErr)
+					} else {
+						toolResult = res
+					}
+				}
+				// 将工具执行结果作为 Tool Role 下发并反馈给 LLM
+				toolMsg := openai.ChatCompletionMessage{
+					Role:       openai.ChatMessageRoleTool,
+					Content:    toolResult,
+					Name:       toolName,
+					ToolCallID: toolCall.ID,
+				}
+				s.sessionManager.AddMessage(sessionID, toolMsg)
+			}
+			// 循环继续，LLM 会携带 Tool 执行结果的上下文，思考下一步或者生成最终回答
+			continue
+		}
+		// 如果没有 toolCalls，说明模型认为任务完成或提出了澄清性问题，将这一轮最终内容返回给用户
+		return msg.Content, nil
 	}
-
-	content := strings.TrimSpace(resp.Choices[0].Message.Content)
-	if content == "" {
-		return "", fmt.Errorf("empty llm content from provider %s", cfg.Provider)
-	}
-	return content, nil
+	return "由于执行步骤过多，已自动中断对话以保护系统资源。您可以尝试提出一个更确切的问题。", nil
 }
 
-func buildSearchContext(results []vectorModel.DocumentVector) string {
-	var builder strings.Builder
-	for idx, res := range results {
-		builder.WriteString(fmt.Sprintf("%d. 文件名: %s", idx+1, res.Filename))
-		if res.FileID != "" {
-			builder.WriteString(fmt.Sprintf("；文件ID: %s", res.FileID))
-		}
-		builder.WriteString("\n")
-	}
-	return strings.TrimSpace(builder.String())
+// ClearSession 会话清理接口
+func (s *AgentService) ClearSession(sessionID string) {
+	log.Printf("开始调用ClearSession方法，params={sessionID: %s}", sessionID)
+	defer func() { log.Printf("调用ClearSession方法结束，result={}") }()
+	s.sessionManager.ClearSession(sessionID)
 }
 
-func (s *AgentService) buildFallbackReply(cfg LLMConfig, results []vectorModel.DocumentVector) string {
-	var builder strings.Builder
-	builder.WriteString("已检索到相关图片，但大模型暂时不可用。")
-	if cfg.Provider != "" {
-		builder.WriteString("当前模型供应商: ")
-		builder.WriteString(cfg.Provider)
-		builder.WriteString("。")
-	}
-	builder.WriteString("你可以先查看这些候选图片：\n")
-	for _, res := range results {
-		builder.WriteString("- ")
-		builder.WriteString(res.Filename)
-		if res.FileID != "" {
-			builder.WriteString(" (ID: ")
-			builder.WriteString(res.FileID)
-			builder.WriteString(")")
-		}
-		builder.WriteString("\n")
-	}
-	return strings.TrimSpace(builder.String())
+// 兼容原先 Query 方法以避免外部调用直接报错，实质转发给 Chat，SessionID 写死或基于配置均可
+func (s *AgentService) Query(ctx context.Context, query string, options config.LLMRequestOptions) (string, error) {
+	log.Printf("开始调用Query方法，params={ctx: %v, query: %s, options: %v}", ctx, query, options)
+	defer func() { log.Printf("调用Query方法结束，result={}") }()
+	// 调用新形态的 Chat 逻辑，这里给出一个默认的 default_session 用于兼容
+	return s.Chat(ctx, "default_session", query, options)
 }
