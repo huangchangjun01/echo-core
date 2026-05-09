@@ -1,10 +1,10 @@
 package service
 
 import (
+	"echo-core/dto"
+	"echo-core/models"
+	"echo-core/repository"
 	"errors"
-	"go-start/dto"
-	"go-start/models"
-	"go-start/repository"
 	"gorm.io/gorm"
 )
 

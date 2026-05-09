@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"go-start/dto"
-	"go-start/service"
+	"echo-core/dto"
+	"echo-core/service"
 	"net/http"
 	"strconv"
 

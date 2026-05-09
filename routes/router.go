@@ -1,9 +1,9 @@
 package routes
 
 import (
+	"echo-core/handlers"
+	"echo-core/service"
 	"fmt"
-	"go-start/handlers"
-	"go-start/service"
 
 	"github.com/gin-gonic/gin"
 )

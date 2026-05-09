@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"go-start/config"
+	"echo-core/config"
 	"net/http"
 	"strings"
 
-	"go-start/dto"
-	"go-start/service"
+	"echo-core/dto"
+	"echo-core/service"
 
 	"github.com/gin-gonic/gin"
 )

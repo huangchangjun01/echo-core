@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"go-start/config"
-	"go-start/dto"
-	"go-start/service"
+	"echo-core/config"
+	"echo-core/dto"
+	"echo-core/service"
 	"log"
 	"os"
 	"time"

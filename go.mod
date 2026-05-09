@@ -1,4 +1,4 @@
-module go-start
+module echo-core
 
 go 1.25.0
 

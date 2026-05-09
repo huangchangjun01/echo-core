@@ -2,9 +2,9 @@
 
 import (
 	"context"
+	"echo-core/config"
+	"echo-core/dto"
 	"fmt"
-	"go-start/config"
-	"go-start/dto"
 	"log"
 
 	"github.com/sashabaranov/go-openai"

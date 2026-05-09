@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
-	"go-start/config"
-	"go-start/routes"
+	"echo-core/config"
+	"echo-core/routes"
 )
 
 func main() {

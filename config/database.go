@@ -1,8 +1,8 @@
 package config
 
 import (
+	"echo-core/utils"
 	"fmt"
-	"go-start/utils"
 	"gorm.io/gorm/schema"
 	"log"
 	"os"

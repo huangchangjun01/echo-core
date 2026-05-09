@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"go-start/config"
-	"go-start/dto"
-	"go-start/models"
+	"echo-core/config"
+	"echo-core/dto"
+	"echo-core/models"
 	"gorm.io/gorm"
 )
 

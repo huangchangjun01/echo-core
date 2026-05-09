@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
+	vectorModel "echo-core/models/vector"
+	repositoryVector "echo-core/repository/vector"
 	"errors"
 	"fmt"
-	vectorModel "go-start/models/vector"
-	repositoryVector "go-start/repository/vector"
 )
 
 // WeaviateService 处理文档相关的业务逻辑

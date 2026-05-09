@@ -2,12 +2,12 @@ package vector
 
 import (
 	"context"
+	"echo-core/models/vector"
 	"errors"
 	"fmt"
 	"github.com/weaviate/weaviate-go-client/v5/weaviate"
 	"github.com/weaviate/weaviate-go-client/v5/weaviate/graphql"
 	"github.com/weaviate/weaviate/entities/models"
-	"go-start/models/vector"
 	"log"
 	"os"
 )

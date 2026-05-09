@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"echo-core/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"go-start/service"
 	"net/http"
 	"path"
 )

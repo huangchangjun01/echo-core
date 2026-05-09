@@ -2,12 +2,12 @@ package service
 
 import (
 	"context"
+	"echo-core/config"
+	"echo-core/dto"
+	vectorModel "echo-core/models/vector"
+	"echo-core/remote"
+	repositoryVector "echo-core/repository/vector"
 	"fmt"
-	"go-start/config"
-	"go-start/dto"
-	vectorModel "go-start/models/vector"
-	"go-start/remote"
-	repositoryVector "go-start/repository/vector"
 	"log"
 
 	"github.com/sashabaranov/go-openai"

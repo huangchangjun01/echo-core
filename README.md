@@ -1,4 +1,4 @@
-# go-start
+# echo-core
 
 ## LLM 接入说明
 
