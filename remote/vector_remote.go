@@ -2,6 +2,9 @@ package remote
 
 import (
 	"bytes"
+	"echo-core/remote/request"
+	"echo-core/remote/response"
+	"echo-core/utils"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,27 +13,22 @@ import (
 	"net/http"
 )
 
-// EmbeddingResponse 定义 Python 服务返回的结构
-type EmbeddingResponse struct {
-	Embedding []float32 `json:"embedding"`
-}
-
-// EchoRemote 定义 Python 服务返回的结构
-type EchoRemote struct {
+// VectorRemote 定义 Python 服务返回的结构
+type VectorRemote struct {
 	client  *http.Client
 	baseURL string
 }
 
-// NewEchoRemote 创建一个新的 EchoRemote 实例
-func NewEchoRemote() *EchoRemote {
-	return &EchoRemote{
+// NewVectorRemote 创建一个新的 VectorRemote 实例
+func NewVectorRemote() *VectorRemote {
+	return &VectorRemote{
 		client:  &http.Client{},
-		baseURL: "http://localhost:8000",
+		baseURL: utils.GetEnv("ECHO_AI_REMOTE_BASE_URL", ""),
 	}
 }
 
 // GetImageEmbedding 调用 Python 服务获取图片向量
-func (s *EchoRemote) GetImageEmbedding(imageData []byte) ([]float32, error) {
+func (s *VectorRemote) GetImageEmbedding(imageData []byte) ([]float32, error) {
 	// 创建一个 multipart 表单
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -73,7 +71,7 @@ func (s *EchoRemote) GetImageEmbedding(imageData []byte) ([]float32, error) {
 	}
 
 	// 解析 JSON
-	var embeddingResp EmbeddingResponse
+	var embeddingResp response.EmbeddingResponse
 	err = json.Unmarshal(respBody, &embeddingResp)
 	if err != nil {
 		return nil, err
@@ -83,9 +81,9 @@ func (s *EchoRemote) GetImageEmbedding(imageData []byte) ([]float32, error) {
 }
 
 // GetTextEmbedding sends text to the remote service and returns its vector embedding.
-func (r *EchoRemote) GetTextEmbedding(text string) ([]float32, error) {
+func (r *VectorRemote) GetTextEmbedding(text string) ([]float32, error) {
 	if r.client == nil {
-		return nil, errors.New("echo remote client not initialized")
+		return nil, errors.New("vector remote client not initialized")
 	}
 
 	payload := map[string]string{"text": text}
@@ -118,4 +116,29 @@ func (r *EchoRemote) GetTextEmbedding(text string) ([]float32, error) {
 	}
 
 	return embeddingResp.Embedding, nil
+}
+
+// IngestFile 调用 Python /ingest_file 接口，存储文件向量
+func (r *VectorRemote) IngestFile(req *request.IngestFileRequest) error {
+	if r.client == nil {
+		return errors.New("vector remote client not initialized")
+	}
+
+	jsonPayload, err := json.Marshal(req)
+	if err != nil {
+		return fmt.Errorf("failed to marshal ingest file payload: %w", err)
+	}
+
+	resp, err := r.client.Post(r.baseURL+"/ingest_file", "application/json", bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		return fmt.Errorf("ingest file request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("ingest file service returned status: %s, body: %s", resp.Status, string(body))
+	}
+
+	return nil
 }

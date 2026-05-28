@@ -17,10 +17,6 @@ func main() {
 	initConfig()
 	// 初始化数据库
 	config.InitDB()
-	// 初始化 Weaviate
-	if err := config.InitWeaviate(); err != nil {
-		log.Fatalf("init weaviate failed: %v", err)
-	}
 
 	// 现在可以用 os.Getenv() 读取了
 	port := os.Getenv("APP_PORT")

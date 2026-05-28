@@ -2,7 +2,6 @@ package routes
 
 import (
 	"echo-core/handlers"
-	"echo-core/service"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +20,7 @@ func SetupRoutes(r *gin.Engine) error {
 	return nil
 }
 
-// 注册部门相关的路由
+// demo 注册部门相关的路由
 func departmentRegisterRoutes(api *gin.RouterGroup) {
 	departmentHandler := handlers.NewDepartmentHandler()
 	{
@@ -45,8 +44,8 @@ func fileRegisterRoutes(api *gin.RouterGroup) error {
 	{
 		file := api.Group("/file")
 		{
-			file.POST("/upload", fileHandler.UploadHandler)            // 文件上传
-			file.GET("/download", fileHandler.DownloadRedirectHandler) // 文件下载
+			file.POST("/token", fileHandler.GetUploadTokenHandler)  // 获取上传token
+			file.POST("/register", fileHandler.RegisterFileHandler) // 注册文件信息
 		}
 	}
 	return nil
@@ -54,25 +53,6 @@ func fileRegisterRoutes(api *gin.RouterGroup) error {
 
 // 注册聊天相关的路由
 func chatRegisterRoutes(api *gin.RouterGroup) error {
-	weaviateService, err := service.NewWeaviateService("DocumentVector")
-	if err != nil {
-		return fmt.Errorf("create weaviate service: %w", err)
-	}
 
-	// 创建 VectorService
-	vectorService := service.NewVectorService()
-
-	// 将 vectorService 注入到 AgentService
-	agentService, err := service.NewAgentService(weaviateService, vectorService)
-	if err != nil {
-		return fmt.Errorf("create agent service: %w", err)
-	}
-	chatHandler := handlers.NewChatHandler(agentService)
-	{
-		chat := api.Group("/chat")
-		{
-			chat.POST("", chatHandler.HandleChat)
-		}
-	}
 	return nil
 }

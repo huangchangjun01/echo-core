@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(netstat -ano)",
+      "Bash(awk '{print $5}')",
+      "Bash(xargs -I {} taskkill //PID {} //F)",
+      "Bash(go build *)",
+      "Bash(mysql -h121.43.145.179 -uroot -p10010hcj huangchangjun -e \"DELETE FROM \\\\`file\\\\`;\")",
+      "Bash(./echo-core.exe)",
+      "Bash(curl -s -X POST http://localhost:8080/api/file/register -H \"Content-Type: application/json\" -d '{\"userId\":\"user123\",\"fileName\":\"test.jpg\",\"key\":\"avatar/20260527/test.jpg\",\"fileType\":2,\"bizType\":1}')",
+      "Bash(mysql -h121.43.145.179 -uroot -p10010hcj huangchangjun -e \"SELECT * FROM \\\\`file\\\\`;\")",
+      "Bash(go run *)",
+      "Bash(curl -s -X POST http://localhost:8080/api/file/register -H \"Content-Type: application/json\" -d '{\"userId\":\"test-user\",\"fileName\":\"test.pdf\",\"key\":\"test-key-123\",\"fileType\":1,\"bizType\":1}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/file/register -H \"Content-Type: application/json\" -d '{\"userId\":\"test-user\",\"fileName\":\"test.pdf\",\"key\":\"test-key-456\",\"fileType\":1,\"bizType\":1}')",
+      "Bash(pkill -f \"echo-core\")",
+      "Bash(pkill -f \"main.go\")",
+      "Bash(curl -s -X POST http://localhost:8080/api/file/register -H \"Content-Type: application/json\" -d '{\"userId\":\"test-user\",\"fileName\":\"test.pdf\",\"key\":\"test-key-789\",\"fileType\":1,\"bizType\":1}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/file/register -H \"Content-Type: application/json\" -d '{\"userId\":\"test-user\",\"fileName\":\"test.pdf\",\"key\":\"test-key-new\",\"fileType\":1,\"bizType\":1}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/file/register -H \"Content-Type: application/json\" -d '{\"userId\":\"test-user\",\"fileName\":\"test.pdf\",\"key\":\"test-key-final\",\"fileType\":1,\"bizType\":1}')",
+      "Bash(findstr :8080)",
+      "Bash(taskkill //F //PID 28896)",
+      "Bash(curl -s -X POST http://localhost:8080/api/file/register -H \"Content-Type: application/json\" -d '{\"userId\":\"test-user\",\"fileName\":\"test.pdf\",\"key\":\"test-key-v5\",\"fileType\":1,\"bizType\":1}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/file/register -H \"Content-Type: application/json\" -d '{\"userId\":\"test-user\",\"fileName\":\"test.pdf\",\"key\":\"test-key-v6\",\"fileType\":1,\"bizType\":1}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/file/register -H \"Content-Type: application/json\" -d '{\"userId\":\"test-user\",\"fileName\":\"test.pdf\",\"key\":\"test-key-v7\",\"fileType\":1,\"bizType\":1}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/file/register -H \"Content-Type: application/json\" -d '{\"userId\":\"test-user\",\"fileName\":\"test.pdf\",\"key\":\"test-key-v8\",\"fileType\":1,\"bizType\":1}')",
+      "Bash(go clean *)",
+      "Bash(taskkill *)",
+      "Bash(curl *)",
+      "Bash(findstr LISTENING)",
+      "Bash(git mv *)"
+    ]
+  }
+}
