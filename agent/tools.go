@@ -79,12 +79,14 @@ func evalSimpleExpression(expr string) interface{} {
 type RAGConfig struct {
 	BaseURL string
 	APIKey  string
+	Domain  string
 }
 
 // RAGClient RAG知识库搜索客户端
 type RAGClient struct {
 	baseURL string
 	apiKey  string
+	domain  string
 	client  *http.Client
 }
 
@@ -93,6 +95,17 @@ func NewRAGClient(baseURL, apiKey string) *RAGClient {
 	return &RAGClient{
 		baseURL: baseURL,
 		apiKey:  apiKey,
+		domain:  "",
+		client:  &http.Client{Timeout: 30 * 1e9},
+	}
+}
+
+// NewRAGClientWithDomain 创建RAG客户端（带域名）
+func NewRAGClientWithDomain(baseURL, apiKey, domain string) *RAGClient {
+	return &RAGClient{
+		baseURL: baseURL,
+		apiKey:  apiKey,
+		domain:  domain,
 		client:  &http.Client{Timeout: 30 * 1e9},
 	}
 }
@@ -175,15 +188,21 @@ func (c *RAGClient) SearchKnowledge(query string) (string, error) {
 
 	// 尝试解析新格式（RAG搜索结果）
 	var chatResp ChatResponse
-	if err := json.Unmarshal(body, &chatResp); err == nil && len(chatResp.Candidates) > 0 {
-		log.Printf("[RAGClient] 新格式解析成功 | candidates_count: %d", len(chatResp.Candidates))
-		var results []string
-		for _, c := range chatResp.Candidates {
-			results = append(results, fmt.Sprintf("文件: %s, URL: %s", c.Metadata.FileName, c.Metadata.SourceURL))
+	if err := json.Unmarshal(body, &chatResp); err == nil {
+		log.Printf("[RAGClient] 解析响应成功 | query: %s | candidates_count: %d", chatResp.Query, len(chatResp.Candidates))
+		// 有candidates时构建下载链接
+		if len(chatResp.Candidates) > 0 {
+			var results []string
+			for i := range chatResp.Candidates {
+				candidate := &chatResp.Candidates[i]
+				// 构建完整可下载URL
+				fullURL := c.buildFullURL(candidate.Metadata.SourceURL)
+				results = append(results, fmt.Sprintf("文件: %s, 下载链接: %s", candidate.Metadata.FileName, fullURL))
+			}
+			result := strings.Join(results, "\n")
+			log.Printf("[RAGClient] 搜索完成 | result_len: %d", len(result))
+			return result, nil
 		}
-		result := strings.Join(results, "\n")
-		log.Printf("[RAGClient] 搜索完成 | result_len: %d", len(result))
-		return result, nil
 	}
 
 	// 尝试解析旧格式（ChatResponse）
@@ -277,6 +296,27 @@ func SearchTools(ragClient *RAGClient) []Tool {
 			},
 		},
 	}
+}
+
+// buildFullURL 构建完整的可访问URL
+func (c *RAGClient) buildFullURL(sourceURL string) string {
+	if sourceURL == "" {
+		return ""
+	}
+	// 如果sourceURL已经是完整URL，直接返回
+	if strings.HasPrefix(sourceURL, "http://") || strings.HasPrefix(sourceURL, "https://") {
+		return sourceURL
+	}
+	// 如果sourceURL已经包含了域名（包含hn-bkt.clouddn.com），直接加上https://
+	if strings.Contains(sourceURL, "hn-bkt.clouddn.com") {
+		return "http://" + sourceURL
+	}
+	// 否则拼上domain
+	domain := c.domain
+	if domain == "" {
+		domain = "tfpdkiq9g.hn-bkt.clouddn.com"
+	}
+	return "http://" + domain + "/" + sourceURL
 }
 
 // isEmptyResult 判断返回内容是否表示未找到相关结果

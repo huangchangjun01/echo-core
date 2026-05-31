@@ -5,6 +5,7 @@ import (
 	"echo-core/models"
 	"echo-core/remote"
 	"echo-core/repository"
+	"echo-core/utils"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -36,7 +37,8 @@ func NewChatService(aiClient *remote.AIClient) *ChatService {
 
 	// 初始化RAG客户端
 	ragBaseURL := "http://localhost:8000"
-	svc.ragClient = agent.NewRAGClient(ragBaseURL, "")
+	ragDomain := utils.GetEnv("QINIU_DOMAIN", "tfpdkiq9g.hn-bkt.clouddn.com")
+	svc.ragClient = agent.NewRAGClientWithDomain(ragBaseURL, "", ragDomain)
 
 	// 初始化多Agent编排器
 	svc.initOrchestrator()
