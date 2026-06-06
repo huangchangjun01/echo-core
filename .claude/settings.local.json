@@ -32,7 +32,11 @@
       "Bash(xargs kill -9)",
       "Bash(pkill -f \"echo-core.exe\")",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d['components']['schemas']['ChatRequest'], indent=2\\)\\)\")",
-      "Bash(pkill -f echo-core.exe)"
+      "Bash(pkill -f echo-core.exe)",
+      "Bash(GOMAXPROCS=1 GOGC=20 go build -p 1 -gcflags=\"all=-l -N\" ./...)",
+      "Bash(GOMAXPROCS=1 go vet ./...)",
+      "Bash(GOMAXPROCS=1 GOGC=10 go build -p 1 -o echo-core.exe .)",
+      "Bash(go vet *)"
     ]
   }
 }

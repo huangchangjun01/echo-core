@@ -20,6 +20,7 @@ func SetupRoutes(r *gin.Engine) error {
 	if err := chatRegisterRoutes(api); err != nil {
 		return err
 	}
+	userRegisterRoutes(api)
 	return nil
 }
 
@@ -79,4 +80,17 @@ func chatRegisterRoutes(api *gin.RouterGroup) error {
 		chat.DELETE("/session", chatHandler.ClearSessionHandle) // 清理会话
 	}
 	return nil
+}
+
+// 用户管理相关路由
+func userRegisterRoutes(api *gin.RouterGroup) {
+	userHandler := handlers.NewUserHandler()
+	auth := api.Group("/auth")
+	{
+		auth.POST("/login", userHandler.Login)               // 登录
+		auth.POST("/register", userHandler.Register)         // 注册
+		auth.POST("/checkAccount", userHandler.CheckAccount) // 账号占用校验
+		auth.POST("/check", userHandler.Check)               // 校验会话是否有效
+		auth.POST("/logout", userHandler.Logout)             // 注销会话
+	}
 }

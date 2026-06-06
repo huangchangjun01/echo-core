@@ -337,31 +337,6 @@ go run main.go
 
 ---
 
-## 十、典型交互示例
-
-```bash
-# 1. 获取上传 Token
-curl -X POST http://localhost:8080/api/file/token \
-  -H 'Content-Type: application/json' \
-  -d '{"fileName":"a.pdf","fileSize":1024,"mimeType":"application/pdf","bizType":"knowledge"}'
-
-# 2. 客户端拿到 token + key 后直传七牛云（前端 SDK）
-
-# 3. 通知后端登记并入库 RAG
-curl -X POST http://localhost:8080/api/file/register \
-  -H 'Content-Type: application/json' \
-  -d '{"userId":"u_001","fileName":"a.pdf","key":"knowledge/20260602/<uuid>.pdf","fileType":1,"bizType":0}'
-
-# 4. 多轮对话
-curl -X POST http://localhost:8080/api/chat \
-  -H 'Content-Type: application/json' \
-  -d '{"userId":"u_001","sessionId":"s_001","message":"总结一下我刚才上传的 PDF"}'
-
-# 5. 保存用户偏好
-curl -X POST http://localhost:8080/api/chat/memory \
-  -H 'Content-Type: application/json' \
-  -d '{"userId":"u_001","type":"preference","content":"希望回答简洁、列点输出"}'
-```
 
 
 

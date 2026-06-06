@@ -100,5 +100,6 @@ func autoMigrate(db *gorm.DB) error {
 		&models.UserMemory{},
 		&models.ConversationSummary{},
 		&models.AgentConfig{},
+		&models.User{},
 	)
 }

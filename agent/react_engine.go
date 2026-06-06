@@ -345,7 +345,7 @@ func (o *MultiAgentOrchestrator) routeToAgent(userInput string, history []remote
 
 	// 路由逻辑：根据关键词选择Agent
 	input := strings.ToLower(userInput)
-	searchKeywords := []string{"搜索", "查找", "查询", "信息", "知道", "了解", "介绍", "什么", "如何", "怎么", "为什么", "哪里", "多少", "search", "find", "query", "info"}
+	searchKeywords := []string{"找到", "搜索", "查找", "查询", "信息", "知道", "了解", "介绍", "什么", "如何", "怎么", "为什么", "哪里", "多少", "search", "find", "query", "info"}
 
 	for _, keyword := range searchKeywords {
 		if strings.Contains(input, keyword) {
