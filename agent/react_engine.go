@@ -231,6 +231,174 @@ func (e *ReActEngine) ExecuteWithHistory(history []remote.AIChatMessage, current
 	return reply, history, nil
 }
 
+// ToolExecutionEvent 单条工具调用的执行结果事件（ReAct 流式执行时逐条回调）
+type ToolExecutionEvent struct {
+	ToolCall   remote.AIToolCall
+	ToolResult string
+	Err        error
+}
+
+// ExecuteStream 流式 ReAct 循环
+// 与 Execute 行为等价（同样的 ReAct 步骤、参数解析、错误处理、context 注入），
+// 区别仅在于 AI 调用走 ChatStreamWithTools：每轮 AI 响应中的 content 增量
+// 通过 onContent 回调外抛；工具执行结果通过 onToolEvent 回调外抛。
+//
+// 任一回调返回非 nil 错误会立即中断流。
+func (e *ReActEngine) ExecuteStream(
+	systemPrompt string,
+	messages []remote.AIChatMessage,
+	onContent func(delta string) error,
+	onToolEvent func(event ToolExecutionEvent) error,
+) (string, error) {
+	log.Printf("[ReActEngine] ExecuteStream开始 | messages_count: %d", len(messages))
+
+	if len(messages) == 0 {
+		log.Printf("[ReActEngine] 消息为空")
+		return "", errors.New("messages cannot be empty")
+	}
+
+	// 确保最后一条是用户消息
+	lastMsg := messages[len(messages)-1]
+	if lastMsg.Role != "user" {
+		log.Printf("[ReActEngine] 最后一条不是用户消息 | role: %s", lastMsg.Role)
+		return "", errors.New("last message must be user role")
+	}
+
+	// 构建初始上下文：system + 历史（不含最后一条 user）
+	context := make([]remote.AIChatMessage, 0, len(messages)+10)
+	context = append(context, remote.AIChatMessage{Role: "system", Content: systemPrompt})
+	for i := 0; i < len(messages)-1; i++ {
+		context = append(context, messages[i])
+	}
+	log.Printf("[ReActEngine] 上下文构建完成 | context_size: %d", len(context))
+
+	// 工具定义
+	var toolDefs []remote.AITool
+	for _, t := range e.tools {
+		toolDefs = append(toolDefs, remote.AITool{
+			Type: "function",
+			Function: remote.AIFunctionDef{
+				Name:        t.Name,
+				Description: t.Description,
+				Parameters:  t.Parameters,
+			},
+		})
+	}
+	log.Printf("[ReActEngine] 工具定义收集完成 | tools_count: %d", len(toolDefs))
+
+	// ReAct 循环
+	var currentUserMsg remote.AIChatMessage
+	step := 0
+	for step < e.maxSteps {
+		step++
+		log.Printf("[ReActEngine] ReAct Stream 循环 Step %d/%d", step, e.maxSteps)
+
+		// 构造本轮 user 消息：首次用原 user msg；后续轮次用"请继续"驱动 AI
+		if step == 1 {
+			currentUserMsg = messages[len(messages)-1]
+		} else if currentUserMsg.Content == "" || step > 1 {
+			currentUserMsg = remote.AIChatMessage{
+				Role:    "user",
+				Content: "请基于以上工具结果继续回答。",
+			}
+		}
+
+		execMessages := make([]remote.AIChatMessage, len(context))
+		copy(execMessages, context)
+		execMessages = append(execMessages, currentUserMsg)
+		log.Printf("[ReActEngine] 调用流式AI | execMessages: %d | tools: %d", len(execMessages), len(toolDefs))
+
+		var (
+			fullReply strings.Builder
+			toolCalls []remote.AIToolCall
+		)
+		streamErr := e.aiClient.ChatStreamWithTools(execMessages, toolDefs, func(chunk remote.StreamToolChunk) error {
+			if chunk.Content != "" {
+				fullReply.WriteString(chunk.Content)
+				if onContent != nil {
+					return onContent(chunk.Content)
+				}
+			}
+			if len(chunk.ToolCalls) > 0 {
+				toolCalls = chunk.ToolCalls
+			}
+			return nil
+		})
+		if streamErr != nil {
+			log.Printf("[ReActEngine] AI流式调用失败 | error: %v", streamErr)
+			return "", fmt.Errorf("AI call failed: %w", streamErr)
+		}
+
+		// 把助手消息（含可能的 tool_calls）写入 context
+		assistantMsg := remote.AIChatMessage{
+			Role:      "assistant",
+			Content:   fullReply.String(),
+			ToolCalls: toolCalls,
+		}
+		context = append(context, assistantMsg)
+		log.Printf("[ReActEngine] 助手消息已记录 | tool_calls_count: %d", len(assistantMsg.ToolCalls))
+
+		// 没有工具调用 → 完成
+		if len(toolCalls) == 0 {
+			log.Printf("[ReActEngine] 无工具调用，返回最终回复 | reply_len: %d", len(fullReply.String()))
+			return fullReply.String(), nil
+		}
+
+		// 执行工具
+		log.Printf("[ReActEngine] 检测到工具调用 | tool_calls_count: %d", len(toolCalls))
+		for _, tc := range toolCalls {
+			toolName := tc.Function.Name
+			args := tc.Function.Arguments
+			log.Printf("[ReActEngine] 执行工具调用 | tool_name: %s | args: %s", toolName, args)
+
+			tool, exists := e.tools[toolName]
+			var result string
+			var execErr error
+			if !exists {
+				result = fmt.Sprintf("Error: tool %s not found", toolName)
+				log.Printf("[ReActEngine] 工具不存在 | tool_name: %s", toolName)
+			} else {
+				var params map[string]interface{}
+				if err := json.Unmarshal([]byte(args), &params); err != nil {
+					result = fmt.Sprintf("Error: failed to parse arguments for %s: %v", toolName, err)
+					log.Printf("[ReActEngine] 参数解析失败 | tool_name: %s | error: %v", toolName, err)
+				} else {
+					log.Printf("[ReActEngine] 执行工具 | tool_name: %s | params: %v", toolName, params)
+					result, execErr = tool.Handler(params)
+					if execErr != nil {
+						log.Printf("[ReActEngine] 工具执行出错 | tool_name: %s | error: %v", toolName, execErr)
+						result = fmt.Sprintf("Error executing %s: %v", toolName, execErr)
+					} else {
+						log.Printf("[ReActEngine] 工具执行完成 | tool_name: %s | result_len: %d", toolName, len(result))
+					}
+				}
+			}
+
+			// 回调到 service 层（用于 SSE/WS 透出）
+			if onToolEvent != nil {
+				if err := onToolEvent(ToolExecutionEvent{
+					ToolCall:   tc,
+					ToolResult: result,
+					Err:        execErr,
+				}); err != nil {
+					return "", err
+				}
+			}
+
+			// 工具结果注入 context（对齐 Execute 行为）
+			context = append(context, remote.AIChatMessage{
+				Role:      "tool",
+				Content:   result,
+				ToolCalls: []remote.AIToolCall{{ID: tc.ID, Type: "function", Function: remote.AIFunction{Name: toolName}}},
+			})
+		}
+		log.Printf("[ReActEngine] 工具调用循环完成，继续ReAct")
+	}
+
+	log.Printf("[ReActEngine] 达到最大循环次数 | max_steps: %d", e.maxSteps)
+	return "", errors.New("max steps reached")
+}
+
 // Agent Agent定义
 type Agent struct {
 	Name        string
@@ -261,6 +429,22 @@ func (a *Agent) Run(messages []remote.AIChatMessage) (string, error) {
 		return "", err
 	}
 	log.Printf("[Agent] Run完成 | name: %s | reply_len: %d", a.Name, len(reply))
+	return reply, nil
+}
+
+// RunStream 流式运行 Agent
+func (a *Agent) RunStream(
+	messages []remote.AIChatMessage,
+	onContent func(delta string) error,
+	onToolEvent func(event ToolExecutionEvent) error,
+) (string, error) {
+	log.Printf("[Agent] RunStream | name: %s | messages_count: %d", a.Name, len(messages))
+	reply, err := a.Engine.ExecuteStream(a.Prompt, messages, onContent, onToolEvent)
+	if err != nil {
+		log.Printf("[Agent] RunStream失败 | name: %s | error: %v", a.Name, err)
+		return "", err
+	}
+	log.Printf("[Agent] RunStream完成 | name: %s | reply_len: %d", a.Name, len(reply))
 	return reply, nil
 }
 
@@ -297,6 +481,55 @@ func (o *MultiAgentOrchestrator) ListAgents() []string {
 		names = append(names, name)
 	}
 	return names
+}
+
+// RouteAgent 根据用户输入选 Agent
+// 规则与 Orchestrate 完全一致：命中搜索关键词 → search Agent；否则取第一个注册的 Agent。
+// 无可用 Agent 时返回 nil。
+func (o *MultiAgentOrchestrator) RouteAgent(userInput string) *Agent {
+	if isSearchInput(userInput) {
+		if agent, ok := o.agents["search"]; ok {
+			log.Printf("[Orchestrator] RouteAgent 命中search | input: %s", userInput)
+			return agent
+		}
+	}
+	for _, agent := range o.agents {
+		log.Printf("[Orchestrator] RouteAgent 使用默认 | agent: %s | input: %s", agent.Name, userInput)
+		return agent
+	}
+	log.Printf("[Orchestrator] RouteAgent 无可用Agent | input: %s", userInput)
+	return nil
+}
+
+// RunStream 流式编排执行：先按 RouteAgent 选 Agent，再以流式方式运行
+// history 不应包含当前 user msg（调用方负责把 user msg 追加到 messages 末尾）。
+func (o *MultiAgentOrchestrator) RunStream(
+	userInput string,
+	history []remote.AIChatMessage,
+	onContent func(delta string) error,
+	onToolEvent func(event ToolExecutionEvent) error,
+) (string, error) {
+	log.Printf("[Orchestrator] RunStream开始 | user_input: %s | history_count: %d | available_agents: %d", userInput, len(history), len(o.agents))
+
+	agent := o.RouteAgent(userInput)
+	if agent == nil {
+		log.Printf("[Orchestrator] RunStream 无可用Agent")
+		return "", errors.New("no agents registered")
+	}
+
+	// 构造完整消息列表：history + 当前 user msg
+	fullMessages := make([]remote.AIChatMessage, 0, len(history)+1)
+	fullMessages = append(fullMessages, history...)
+	fullMessages = append(fullMessages, remote.AIChatMessage{Role: "user", Content: userInput})
+
+	reply, err := agent.RunStream(fullMessages, onContent, onToolEvent)
+	if err != nil {
+		log.Printf("[Orchestrator] RunStream Agent.RunStream失败 | agent: %s | error: %v", agent.Name, err)
+		return "", err
+	}
+
+	log.Printf("[Orchestrator] RunStream完成 | agent: %s | reply_len: %d", agent.Name, len(reply))
+	return reply, nil
 }
 
 // Orchestrate 编排执行
@@ -344,20 +577,15 @@ func (o *MultiAgentOrchestrator) routeToAgent(userInput string, history []remote
 	log.Printf("[Orchestrator] routeToAgent | input: %s | default_agent: %s", userInput, defaultAgent.Name)
 
 	// 路由逻辑：根据关键词选择Agent
-	input := strings.ToLower(userInput)
-	searchKeywords := []string{"找到", "搜索", "查找", "查询", "信息", "知道", "了解", "介绍", "什么", "如何", "怎么", "为什么", "哪里", "多少", "search", "find", "query", "info"}
-
-	for _, keyword := range searchKeywords {
-		if strings.Contains(input, keyword) {
-			if agent, ok := o.agents["search"]; ok {
-				log.Printf("[Orchestrator] 匹配到search Agent | keyword: %s", keyword)
-				// 构建包含当前用户输入的完整消息列表
-				fullMessages := make([]remote.AIChatMessage, len(history)+1)
-				copy(fullMessages, history)
-				fullMessages[len(history)] = remote.AIChatMessage{Role: "user", Content: userInput}
-				reply, err := agent.Run(fullMessages)
-				return reply, err
-			}
+	if isSearchInput(userInput) {
+		if agent, ok := o.agents["search"]; ok {
+			log.Printf("[Orchestrator] 匹配到search Agent")
+			// 构建包含当前用户输入的完整消息列表
+			fullMessages := make([]remote.AIChatMessage, len(history)+1)
+			copy(fullMessages, history)
+			fullMessages[len(history)] = remote.AIChatMessage{Role: "user", Content: userInput}
+			reply, err := agent.Run(fullMessages)
+			return reply, err
 		}
 	}
 
@@ -371,4 +599,19 @@ func (o *MultiAgentOrchestrator) routeToAgent(userInput string, history []remote
 
 	log.Printf("[Orchestrator] routeToAgent完成 | reply_len: %d", len(reply))
 	return reply, nil
+}
+
+// searchKeywords 触发 search Agent 的关键词（中英混合）
+// 与 Chat 同步链路完全共用；流式链路也走同一份判定以保证路由一致。
+var searchKeywords = []string{"找到", "搜索", "查找", "查询", "信息", "知道", "了解", "介绍", "什么", "如何", "怎么", "为什么", "哪里", "多少", "search", "find", "query", "info"}
+
+// isSearchInput 判定用户输入是否需要 search Agent 处理
+func isSearchInput(userInput string) bool {
+	input := strings.ToLower(userInput)
+	for _, keyword := range searchKeywords {
+		if strings.Contains(input, keyword) {
+			return true
+		}
+	}
+	return false
 }

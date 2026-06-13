@@ -216,12 +216,30 @@ type StreamChunk struct {
 	Done bool
 	// Err 流过程中出现的错误（非空时 Done=true）
 	Err error
+	// ToolCall 模型决定调用的工具（非空表示 AI 触发了工具调用）
+	// 配合 ToolResult 使用：先发 ToolCall，再发 ToolResult
+	ToolCall *remote.AIToolCall
+	// ToolResult 工具执行结果（含 id/name/result，便于 SSE/WS 客户端关联到 ToolCall）
+	ToolResult *ToolResultEvent
+}
+
+// ToolResultEvent 工具执行结果事件载荷
+type ToolResultEvent struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Result string `json:"result"`
+	Error  string `json:"error,omitempty"`
 }
 
 // ChatStream 流式对话
-// 直接调用 AI 客户端的 ChatStream，不经过 ReAct/工具调用链路，
-// 以保证 SSE / WebSocket 端到端的低延迟体验。
-// onChunk 回调会被逐段调用，Done=true 时表示本次流结束。
+// 走完整的 ReAct 链路（与 Chat 同步接口行为一致）：先经编排器选 Agent，
+// 每轮 AI 调用走流式通道；遇到工具调用时执行工具并把 tool_call / tool_result
+// 事件通过 onChunk 透出给上层。工具调用结束后再次发起流式 AI 调用直到不再产生工具调用。
+//
+// onChunk 回调语义：
+//   - 每段文本产生一次 StreamChunk{Delta, Reply}（与旧版一致）
+//   - 每个工具调用产生两次回调：先 ToolCall、再 ToolResult
+//   - 流结束产生一次 StreamChunk{Done=true, Reply=完整回复}
 func (s *ChatService) ChatStream(req ChatRequest, onChunk func(StreamChunk)) {
 	log.Printf("[ChatService] ChatStream开始 | userId: %s | sessionId: %s | messageLen: %d", req.UserID, req.SessionID, len(req.Message))
 
@@ -260,13 +278,7 @@ func (s *ChatService) ChatStream(req ChatRequest, onChunk func(StreamChunk)) {
 		}
 	}
 
-	// 3. 追加当前用户消息
-	aiMessages = append(aiMessages, remote.AIChatMessage{
-		Role:    "user",
-		Content: req.Message,
-	})
-
-	// 4. 持久化用户消息
+	// 3. 持久化用户消息
 	userMsg := &models.SessionMessage{
 		SessionID: req.SessionID,
 		UserID:    req.UserID,
@@ -278,28 +290,55 @@ func (s *ChatService) ChatStream(req ChatRequest, onChunk func(StreamChunk)) {
 		log.Printf("[ChatService] ChatStream保存用户消息失败: %v", saveErr)
 	}
 
-	// 5. 流式调用AI
-	log.Printf("[ChatService] ChatStream调用AI | context_messages: %d", len(aiMessages))
+	// 4. 走编排器 ReAct 流式链路
+	log.Printf("[ChatService] ChatStream调用编排器 | context_messages: %d", len(aiMessages))
 	var (
 		fullReply strings.Builder
+		streamErr error
 	)
-	streamErr := s.aiClient.ChatStream(aiMessages, nil, func(delta string) error {
-		fullReply.WriteString(delta)
-		onChunk(StreamChunk{
-			Reply: fullReply.String(),
-			Delta: delta,
-		})
-		return nil
-	})
 
-	// 6. 流结束
+	_, streamErr = s.orchestrator.RunStream(req.Message, aiMessages,
+		// onContent: 模型文本片段
+		func(delta string) error {
+			fullReply.WriteString(delta)
+			onChunk(StreamChunk{
+				Reply: fullReply.String(),
+				Delta: delta,
+			})
+			return nil
+		},
+		// onToolEvent: 工具执行结果
+		func(event agent.ToolExecutionEvent) error {
+			log.Printf("[ChatService] ChatStream工具事件 | tool: %s | id: %s | result_len: %d", event.ToolCall.Function.Name, event.ToolCall.ID, len(event.ToolResult))
+			// 先把模型决定的工具调用透出
+			tc := event.ToolCall
+			onChunk(StreamChunk{
+				ToolCall: &tc,
+			})
+			// 再透出工具执行结果
+			resultEvent := &ToolResultEvent{
+				ID:     event.ToolCall.ID,
+				Name:   event.ToolCall.Function.Name,
+				Result: event.ToolResult,
+			}
+			if event.Err != nil {
+				resultEvent.Error = event.Err.Error()
+			}
+			onChunk(StreamChunk{
+				ToolResult: resultEvent,
+			})
+			return nil
+		},
+	)
+
+	// 5. 流结束
 	if streamErr != nil {
-		log.Printf("[ChatService] ChatStream AI调用失败 | error: %v", streamErr)
+		log.Printf("[ChatService] ChatStream 编排器执行失败 | error: %v", streamErr)
 		onChunk(StreamChunk{Done: true, Err: streamErr, Reply: fullReply.String()})
 		return
 	}
 
-	// 7. 持久化助手回复
+	// 6. 持久化助手回复
 	reply := fullReply.String()
 	assistantMsg := &models.SessionMessage{
 		SessionID: req.SessionID,

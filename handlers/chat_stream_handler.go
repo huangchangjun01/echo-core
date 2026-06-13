@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"echo-core/remote"
 	"echo-core/service"
 	"encoding/json"
 	"fmt"
@@ -74,6 +75,18 @@ func (h *ChatStreamHandler) ChatHandleSSE(c *gin.Context) {
 			flusher.Flush()
 			return
 		}
+		// 工具调用：AI 决定调用的工具
+		if chunk.ToolCall != nil {
+			h.writeSSEEvent(c, "tool_call", chunk.ToolCall)
+			flusher.Flush()
+			return
+		}
+		// 工具结果：执行完成后回吐
+		if chunk.ToolResult != nil {
+			h.writeSSEEvent(c, "tool_result", chunk.ToolResult)
+			flusher.Flush()
+			return
+		}
 		if !chunk.Done {
 			h.writeSSEEvent(c, "delta", map[string]string{
 				"delta": chunk.Delta,
@@ -94,7 +107,7 @@ func (h *ChatStreamHandler) ChatHandleSSE(c *gin.Context) {
 }
 
 // writeSSEEvent 写入一个 SSE 事件帧
-func (h *ChatStreamHandler) writeSSEEvent(c *gin.Context, event string, payload interface{}) {
+func (h *ChatStreamHandler) writeSSEEvent(c *gin.Context, event string, payload any) {
 	data, err := json.Marshal(payload)
 	if err != nil {
 		log.Printf("[ChatSSE] 事件序列化失败 | event: %s | error: %v", event, err)
@@ -125,12 +138,14 @@ type WSIncomingMessage struct {
 
 // WSOutgoingMessage 服务端→客户端的 WebSocket 消息
 type WSOutgoingMessage struct {
-	Type      string `json:"type"`                // start / delta / finish / error / pong
-	Delta     string `json:"delta,omitempty"`     // 本次新增文本
-	Reply     string `json:"reply,omitempty"`     // 累计回复
-	SessionID string `json:"sessionId,omitempty"` // 会话ID
-	Error     string `json:"error,omitempty"`     // 错误信息
-	Timestamp int64  `json:"timestamp,omitempty"` // 服务器时间戳（毫秒）
+	Type       string                   `json:"type"`                 // start / delta / finish / error / pong / tool_call / tool_result
+	Delta      string                   `json:"delta,omitempty"`      // 本次新增文本
+	Reply      string                   `json:"reply,omitempty"`      // 累计回复
+	SessionID  string                   `json:"sessionId,omitempty"`  // 会话ID
+	Error      string                   `json:"error,omitempty"`      // 错误信息
+	Timestamp  int64                    `json:"timestamp,omitempty"`  // 服务器时间戳（毫秒）
+	ToolCall   *remote.AIToolCall       `json:"toolCall,omitempty"`   // 工具调用事件
+	ToolResult *service.ToolResultEvent `json:"toolResult,omitempty"` // 工具结果事件
 }
 
 // ChatHandleWS WebSocket 聊天接口
@@ -217,6 +232,26 @@ func (h *ChatStreamHandler) handleChatMessage(conn *websocket.Conn, in WSIncomin
 				Type:      "error",
 				Error:     chunk.Err.Error(),
 				Timestamp: time.Now().UnixMilli(),
+			})
+			return
+		}
+		// 工具调用：AI 决定调用的工具
+		if chunk.ToolCall != nil {
+			_ = conn.WriteJSON(WSOutgoingMessage{
+				Type:      "tool_call",
+				ToolCall:  chunk.ToolCall,
+				SessionID: in.SessionID,
+				Timestamp: time.Now().UnixMilli(),
+			})
+			return
+		}
+		// 工具结果：执行完成后回吐
+		if chunk.ToolResult != nil {
+			_ = conn.WriteJSON(WSOutgoingMessage{
+				Type:       "tool_result",
+				ToolResult: chunk.ToolResult,
+				SessionID:  in.SessionID,
+				Timestamp:  time.Now().UnixMilli(),
 			})
 			return
 		}

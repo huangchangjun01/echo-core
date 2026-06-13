@@ -96,6 +96,17 @@ type StreamDelta struct {
 	ToolCalls []AIToolCall `json:"tool_calls,omitempty"`
 }
 
+// StreamToolChunk 流式回调载荷（增强版，带工具调用感知）
+// 一次回调 Content 与 ToolCalls 互斥（与上游 SSE 帧保持一致）：
+//   - Content: 按到达顺序连续触发的文本片段
+//   - ToolCalls: 仅在 Finish=true 且 finish_reason="tool_calls" 时一次性携带累积结果
+//   - Finish:   true 表示本次流已结束（[DONE] 或 finish_reason 已到）
+type StreamToolChunk struct {
+	Content   string
+	ToolCalls []AIToolCall
+	Finish    bool
+}
+
 // AIClient AI客户端
 type AIClient struct {
 	baseURL string
@@ -285,6 +296,199 @@ func (c *AIClient) ChatStream(messages []AIChatMessage, tools []AITool, handler 
 
 	log.Printf("[AIClient] ChatStream完成 | chunks: %d", chunkCount)
 	return nil
+}
+
+// ChatStreamWithTools 流式聊天，支持工具调用。
+// 与 ChatStream 行为一致，但额外按 index 累积 delta.tool_calls，
+// 在 finish_reason="tool_calls" 时通过 handler 一次性回吐累积结果，
+// 其它场景下仅以 Finish=true 通知流结束。
+func (c *AIClient) ChatStreamWithTools(messages []AIChatMessage, tools []AITool, handler func(StreamToolChunk) error) error {
+	log.Printf("[AIClient] ChatStreamWithTools开始 | messages_count: %d | tools_count: %d", len(messages), len(tools))
+
+	if len(messages) == 0 {
+		log.Printf("[AIClient] 消息为空")
+		return errors.New("messages cannot be empty")
+	}
+
+	req := AIRequest{
+		Model:       c.model,
+		Messages:    messages,
+		Tools:       tools,
+		Temperature: 0.7,
+		Stream:      true,
+	}
+
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		log.Printf("[AIClient] 请求序列化失败 | error: %v", err)
+		return fmt.Errorf("marshal request failed: %w", err)
+	}
+
+	httpReq, err := http.NewRequest("POST", c.baseURL+"/chat/completions", bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Printf("[AIClient] 创建请求失败 | error: %v", err)
+		return fmt.Errorf("create request failed: %w", err)
+	}
+
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Authorization", "Bearer "+c.apiKey)
+	httpReq.Header.Set("Accept", "text/event-stream")
+
+	log.Printf("[AIClient] 发送流式请求")
+	resp, err := c.client.Do(httpReq)
+	if err != nil {
+		log.Printf("[AIClient] 请求失败 | error: %v", err)
+		return fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		log.Printf("[AIClient] AI服务返回错误状态 | status: %d | body: %s", resp.StatusCode, string(body))
+		return fmt.Errorf("AI service returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	log.Printf("[AIClient] 开始解析SSE流式响应")
+	scanner := bufio.NewScanner(resp.Body)
+	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
+
+	// 按 index 累积 tool_calls
+	toolAcc := make(map[int]*AIToolCall)
+	var lastFinishReason string
+	chunkCount := 0
+	finishEmitted := false
+
+	emitFinish := func() error {
+		if finishEmitted {
+			return nil
+		}
+		finishEmitted = true
+		var toolCalls []AIToolCall
+		if lastFinishReason == "tool_calls" && len(toolAcc) > 0 {
+			toolCalls = make([]AIToolCall, 0, len(toolAcc))
+			for i := 0; i < len(toolAcc); i++ {
+				if tc, ok := toolAcc[i]; ok {
+					toolCalls = append(toolCalls, *tc)
+				}
+			}
+			log.Printf("[AIClient] ChatStreamWithTools 累积工具调用 | count: %d", len(toolCalls))
+		}
+		return handler(StreamToolChunk{
+			ToolCalls: toolCalls,
+			Finish:    true,
+		})
+	}
+
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+		if !strings.HasPrefix(line, "data:") {
+			continue
+		}
+		payload := strings.TrimSpace(strings.TrimPrefix(line, "data:"))
+		if payload == "" {
+			continue
+		}
+		if payload == "[DONE]" {
+			if err := emitFinish(); err != nil {
+				log.Printf("[AIClient] 流式处理回调失败 | error: %v", err)
+				return err
+			}
+			break
+		}
+
+		var chunk StreamChunk
+		if err := json.Unmarshal([]byte(payload), &chunk); err != nil {
+			log.Printf("[AIClient] SSE帧解析失败 | error: %v | payload: %s", err, payload)
+			continue
+		}
+		if len(chunk.Choices) == 0 {
+			continue
+		}
+		delta := chunk.Choices[0].Delta
+		if chunk.Choices[0].FinishReason != "" {
+			lastFinishReason = chunk.Choices[0].FinishReason
+		}
+
+		// 文本片段优先外抛
+		if delta.Content != "" {
+			chunkCount++
+			if err := handler(StreamToolChunk{Content: delta.Content}); err != nil {
+				log.Printf("[AIClient] 流式处理回调失败 | error: %v", err)
+				return err
+			}
+		}
+
+		// 累积 tool_calls（同一 id 跨多帧）
+		// 上游 OpenAI 协议里：首次出现携带 id/type/name，后续帧只携带 arguments 片段
+		// 兼容两种情况：
+		//  1) 增量带 id 且与已有 id 相同 → 合并
+		//  2) 增量 id 为空（arguments 增量）→ 合并到 map 末尾最近一次添加的 call
+		//  3) 增量带新 id → 新开一个槽
+		for _, tc := range delta.ToolCalls {
+			placed := false
+			if tc.ID != "" {
+				for k, v := range toolAcc {
+					if v.ID == tc.ID {
+						mergeToolCall(v, tc)
+						toolAcc[k] = v
+						placed = true
+						break
+					}
+				}
+			} else {
+				// 找最近一次添加的非空 call 合并
+				for k := len(toolAcc) - 1; k >= 0; k-- {
+					if toolAcc[k] != nil {
+						mergeToolCall(toolAcc[k], tc)
+						placed = true
+						break
+					}
+				}
+			}
+			if !placed {
+				idx := len(toolAcc)
+				merged := tc // copy
+				toolAcc[idx] = &merged
+			}
+		}
+
+		// 出现 finish_reason 立即回吐（OpenAI 协议里 [DONE] 之后才会再有 finish_reason，
+		// 但部分实现可能省略 [DONE]，需在这里兜底）
+		if chunk.Choices[0].FinishReason != "" {
+			if err := emitFinish(); err != nil {
+				log.Printf("[AIClient] 流式处理回调失败 | error: %v", err)
+				return err
+			}
+			// finish_reason 之后可能还有 [DONE]，循环继续由 [DONE] 兜底；
+			// 若无 [DONE]，浏览器/客户端也会以收到 Finish 终止
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		log.Printf("[AIClient] 读取SSE流失败 | error: %v", err)
+		return fmt.Errorf("read SSE stream failed: %w", err)
+	}
+
+	log.Printf("[AIClient] ChatStreamWithTools完成 | chunks: %d | tool_call_count: %d", chunkCount, len(toolAcc))
+	return nil
+}
+
+// mergeToolCall 合并同一 tool_call 的增量（function.arguments 跨帧累积）
+func mergeToolCall(dst *AIToolCall, src AIToolCall) {
+	if src.ID != "" {
+		dst.ID = src.ID
+	}
+	if src.Type != "" {
+		dst.Type = src.Type
+	}
+	if src.Function.Name != "" {
+		dst.Function.Name = src.Function.Name
+	}
+	if src.Function.Arguments != "" {
+		dst.Function.Arguments += src.Function.Arguments
+	}
 }
 
 // GenerateSummary 生成摘要
