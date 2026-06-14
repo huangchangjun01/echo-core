@@ -49,7 +49,25 @@ func (r *MemoryRepository) SaveUserMemory(memory *models.UserMemory) error {
 	if err != nil {
 		return config.GetDB().Create(memory).Error
 	}
-	return config.GetDB().Model(&existing).Where("id = ?", existing.ID).Update("content", memory.Content).Error
+	// 已存在则覆盖内容（content 已包含合并后的最新记忆）
+	return config.GetDB().Model(&existing).Where("id = ?", existing.ID).Updates(map[string]interface{}{
+		"content":    memory.Content,
+		"updated_at": time.Now(),
+	}).Error
+}
+
+// ListUserMemories 列出某用户全部长期记忆（按更新时间倒序）
+func (r *MemoryRepository) ListUserMemories(userID string) ([]models.UserMemory, error) {
+	var memories []models.UserMemory
+	err := config.GetDB().Where("user_id = ?", userID).
+		Order("updated_at DESC").Find(&memories).Error
+	return memories, err
+}
+
+// DeleteUserMemory 按 userID + memoryType 删除单条长期记忆
+func (r *MemoryRepository) DeleteUserMemory(userID, memoryType string) error {
+	return config.GetDB().Where("user_id = ? AND memory_type = ?", userID, memoryType).
+		Delete(&models.UserMemory{}).Error
 }
 
 func (r *MemoryRepository) DeleteSessionMessages(sessionID string) error {

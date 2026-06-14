@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"echo-core/models"
 	"echo-core/service"
 	"log"
 	"net/http"
@@ -170,6 +171,64 @@ func (h *ChatHandler) SaveUserMemoryHandle(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "memory saved",
+	})
+}
+
+// ListUserMemoriesHandle 列出某用户全部长期记忆
+// GET /api/chat/memory/all?user_id=xxx
+func (h *ChatHandler) ListUserMemoriesHandle(c *gin.Context) {
+	userID := c.Query("user_id")
+	if userID == "" {
+		log.Printf("[ListUserMemoriesHandle] user_id 为空")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id is required"})
+		return
+	}
+
+	log.Printf("[ListUserMemoriesHandle] 列出用户全部记忆 | user_id: %s", userID)
+	memories, err := h.svc.ListUserMemories(userID)
+	if err != nil {
+		log.Printf("[ListUserMemoriesHandle] 列出失败 | user_id: %s | error: %v", userID, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if memories == nil {
+		memories = []models.UserMemory{}
+	}
+
+	log.Printf("[ListUserMemoriesHandle] 列出成功 | user_id: %s | count: %d", userID, len(memories))
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"data": memories,
+	})
+}
+
+// DeleteUserMemoryHandle 删除某用户指定类型的长期记忆
+// DELETE /api/chat/memory?user_id=xxx&type=preference
+func (h *ChatHandler) DeleteUserMemoryHandle(c *gin.Context) {
+	userID := c.Query("user_id")
+	memoryType := c.Query("type")
+	if userID == "" {
+		log.Printf("[DeleteUserMemoryHandle] user_id 为空")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id is required"})
+		return
+	}
+	if memoryType == "" {
+		log.Printf("[DeleteUserMemoryHandle] type 为空")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "type is required"})
+		return
+	}
+
+	log.Printf("[DeleteUserMemoryHandle] 删除用户记忆 | user_id: %s | type: %s", userID, memoryType)
+	if err := h.svc.DeleteUserMemory(userID, memoryType); err != nil {
+		log.Printf("[DeleteUserMemoryHandle] 删除失败 | user_id: %s | type: %s | error: %v", userID, memoryType, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	log.Printf("[DeleteUserMemoryHandle] 删除成功 | user_id: %s | type: %s", userID, memoryType)
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"message": "memory deleted",
 	})
 }
 

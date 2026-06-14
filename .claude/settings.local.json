@@ -59,7 +59,9 @@
       "Bash(go env *)",
       "Bash(go get *)",
       "Bash(./wstest.exe -msg \"用一句话告诉我2加3等于几\")",
-      "WebFetch(domain:api.minimaxi.com)"
+      "WebFetch(domain:api.minimaxi.com)",
+      "Bash(cmd.exe *)",
+      "Bash(powershell *)"
     ]
   }
 }

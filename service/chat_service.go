@@ -18,6 +18,7 @@ import (
 type ChatService struct {
 	memRepo      *repository.MemoryRepository
 	summarizer   *Summarizer
+	memorySvc    *MemoryService
 	aiClient     *remote.AIClient
 	orchestrator *agent.MultiAgentOrchestrator
 	ragClient    *agent.RAGClient
@@ -33,6 +34,7 @@ func NewChatService(aiClient *remote.AIClient) *ChatService {
 	svc := &ChatService{
 		memRepo:    memRepo,
 		summarizer: NewSummarizer(aiClient, memRepo),
+		memorySvc:  NewMemoryService(aiClient, memRepo),
 		aiClient:   aiClient,
 	}
 
@@ -140,6 +142,13 @@ func (s *ChatService) Chat(req ChatRequest) (*ChatResponse, error) {
 		return nil, errors.New("message is required")
 	}
 
+	// 加载用户长期记忆（跨会话生效），注入到 system 消息，紧随 Agent prompt 之后
+	log.Printf("[ChatService] 加载用户长期记忆 | userId: %s", req.UserID)
+	memCtx, memErr := s.memorySvc.BuildMemoryContext(req.UserID)
+	if memErr != nil {
+		log.Printf("[ChatService] 加载用户长期记忆失败（不影响主流程）| userId: %s | error: %v", req.UserID, memErr)
+	}
+
 	// 获取历史消息
 	log.Printf("[ChatService] 正在获取历史消息 | sessionId: %s | userId: %s", req.SessionID, req.UserID)
 	history, err := s.memRepo.GetSessionMessages(req.SessionID, req.UserID, 100)
@@ -151,7 +160,13 @@ func (s *ChatService) Chat(req ChatRequest) (*ChatResponse, error) {
 
 	// 转换历史消息为AI消息格式
 	// tool 角色必须保留原 role 与 tool_call_id，否则 LLM 会因 tool_call_id 为空返 400 (2013)
-	aiMessages := make([]remote.AIChatMessage, 0, len(history))
+	aiMessages := make([]remote.AIChatMessage, 0, len(history)+1)
+	if memCtx != "" {
+		aiMessages = append(aiMessages, remote.AIChatMessage{
+			Role:    "system",
+			Content: memCtx,
+		})
+	}
 	for _, h := range history {
 		aiMessages = append(aiMessages, remote.AIChatMessage{
 			Role:       h.Role,
@@ -216,6 +231,9 @@ func (s *ChatService) Chat(req ChatRequest) (*ChatResponse, error) {
 		// 不影响主流程
 	}
 
+	// 异步从本轮对话抽取长期记忆（不阻塞主响应）
+	s.memorySvc.ExtractAsync(req.UserID, req.Message, reply)
+
 	log.Printf("[ChatService] 聊天处理完成 | user_id: %s | session_id: %s | reply: %s", req.UserID, req.SessionID, reply)
 	return &ChatResponse{
 		Reply:     reply,
@@ -275,13 +293,26 @@ func (s *ChatService) ChatStream(req ChatRequest, onChunk func(StreamChunk)) {
 	}
 
 	// 1. 加载历史上下文
+	// 1.1 加载用户长期记忆（跨会话生效），注入到 system 消息
+	log.Printf("[ChatService] ChatStream加载用户长期记忆 | userId: %s", req.UserID)
+	memCtx, memErr := s.memorySvc.BuildMemoryContext(req.UserID)
+	if memErr != nil {
+		log.Printf("[ChatService] ChatStream加载用户长期记忆失败（不影响主流程）| userId: %s | error: %v", req.UserID, memErr)
+	}
+
 	history, err := s.memRepo.GetSessionMessages(req.SessionID, req.UserID, 100)
 	if err != nil {
 		log.Printf("[ChatService] ChatStream获取历史失败 | error: %v", err)
 		onChunk(StreamChunk{Done: true, Err: fmt.Errorf("get history failed: %w", err)})
 		return
 	}
-	aiMessages := make([]remote.AIChatMessage, 0, len(history)+1)
+	aiMessages := make([]remote.AIChatMessage, 0, len(history)+2)
+	if memCtx != "" {
+		aiMessages = append(aiMessages, remote.AIChatMessage{
+			Role:    "system",
+			Content: memCtx,
+		})
+	}
 	for _, h := range history {
 		aiMessages = append(aiMessages, remote.AIChatMessage{
 			Role:       h.Role,
@@ -373,6 +404,9 @@ func (s *ChatService) ChatStream(req ChatRequest, onChunk func(StreamChunk)) {
 		log.Printf("[ChatService] ChatStream保存助手回复失败: %v", saveErr)
 	}
 
+	// 7. 异步从本轮对话抽取长期记忆
+	s.memorySvc.ExtractAsync(req.UserID, req.Message, reply)
+
 	log.Printf("[ChatService] ChatStream完成 | userId: %s | sessionId: %s | reply_len: %d", req.UserID, req.SessionID, len(reply))
 	onChunk(StreamChunk{Done: true, Reply: reply})
 }
@@ -390,6 +424,16 @@ func (s *ChatService) SaveUserMemory(userID, memoryType, content string) error {
 		Content:    content,
 	}
 	return s.memRepo.SaveUserMemory(memory)
+}
+
+// ListUserMemories 列出某用户全部长期记忆
+func (s *ChatService) ListUserMemories(userID string) ([]models.UserMemory, error) {
+	return s.memorySvc.LoadUserMemories(userID)
+}
+
+// DeleteUserMemory 删除用户某条长期记忆
+func (s *ChatService) DeleteUserMemory(userID, memoryType string) error {
+	return s.memRepo.DeleteUserMemory(userID, memoryType)
 }
 
 // GetSummary 获取会话摘要
