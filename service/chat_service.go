@@ -51,12 +51,23 @@ func NewChatService(aiClient *remote.AIClient) *ChatService {
 // initOrchestrator 初始化编排器
 func (s *ChatService) initOrchestrator() {
 	log.Printf("[ChatService] 初始化Agent编排器")
-	orchestrator := agent.NewMultiAgentOrchestrator("你是一个多Agent编排器，根据用户问题选择合适的Agent处理。")
+	// 传入 aiClient：路由决策由 LLM function-calling 完成（见 MultiAgentOrchestrator.RouteAgent）
+	// 路由系统提示里显式列出"必走 search"的关键词，避免 LLM 把 RAG/知识库 类请求误判为通用问题。
+	orchestrator := agent.NewMultiAgentOrchestrator(s.aiClient, `你是一个多 Agent 编排器，负责根据用户问题选择最合适的 Agent。
 
-	// 注册默认Agent（通用问题）
+路由规则（按优先级）：
+1. 用户问题中出现以下任意关键词时，必须选择 search Agent：
+   "RAG"、"rag"、"知识库"、"知识库中"、"我的库"、"我的文档"、"文档库"、"资料库"、
+   "找文件"、"找图片"、"找图"、"查文件"、"查图片"、"查找资料"、"检索"、"搜索"、"查一下"、"查询"。
+2. 用户明确要求"在我的/本地/私有 + 任何资源（图片/文档/文件/视频/资料）"中查找时，必须选择 search Agent。
+3. 其它通用问答（闲聊、数学、天气、时间、概念解释等）选择 default Agent。
+
+请严格按规则选择，不要把 RAG/知识库类请求路由到 default。`)
+
+	// 注册默认Agent（通用问答场景，不含 RAG 检索能力）
 	defaultAgent := agent.NewAgent(
 		"default",
-		"默认Agent，处理通用问题",
+		"默认 Agent，处理通用问答、闲聊、数学计算、天气、时间等不需要查询外部资料的问题。不具备知识库/RAG/文件检索能力，凡涉及'我的知识库/RAG/文档/图片/文件'的请求都不要路由到这里。",
 		"你是一个有帮助的AI助手，请根据用户的问题给出准确、简洁的回答。",
 		s.aiClient,
 		agent.DefaultTools(),
@@ -64,11 +75,27 @@ func (s *ChatService) initOrchestrator() {
 	orchestrator.RegisterAgent(defaultAgent)
 	log.Printf("[ChatService] 默认Agent注册完成")
 
-	// 注册搜索Agent（信息检索场景：先RAG知识库搜索，再网络搜索）
+	// 注册搜索Agent（RAG 知识库 + 网络搜索）。description 直接列出触发关键词，
+	// 让路由 LLM 不必"理解"问题，仅靠关键词匹配即可命中。
 	searchAgent := agent.NewAgent(
 		"search",
-		"搜索Agent，处理信息检索类问题",
-		"你是一个信息检索助手。当用户询问需要搜索信息的问题时，首先使用search_knowledge工具从RAG知识库搜索，如果知识库中没有相关信息，会提示你使用web_search进行网络搜索。请根据搜索结果给出准确、简洁的回答。",
+		"搜索 Agent，专门处理 RAG 知识库 / 私有文档库 / 本地资料库 中的检索请求，"+
+			"支持检索 文本、文档、图片、文件、视频 等任意类型资源并返回下载链接。"+
+			"触发关键词：'RAG'、'rag'、'知识库'、'我的库'、'我的文档'、'我的图片'、'我的文件'、"+
+			"'找图'、'找图片'、'找文件'、'查文件'、'查图片'、'检索'、'搜索'、'查找'、'查询'。"+
+			"只要用户提到要在自有资料/知识库中查找任何东西，都由本 Agent 处理。",
+		`你是一个 RAG 知识库检索助手。强制规则：
+
+1. 只要用户的问题涉及"在我的/本地/私有 知识库 / RAG 库 / 文档库 / 资料库 / 文件 / 图片"中查找任何内容，
+   你必须先调用 search_knowledge 工具进行检索，禁止跳过工具直接编造答案或说"我无法检索"。
+2. search_knowledge 支持检索 文本、文档、图片、文件 等任意类型资源，返回结果会包含文件名与可下载 URL。
+3. 调用工具时，把用户描述的核心检索目标（例如"黄色小狗图片"、"2024 财报"）作为 query 传入；
+   不要把无关的修饰词（"在我的库中"、"帮我找一下"）塞进 query。
+4. 拿到工具结果后，如返回了文件/链接，直接把文件名与下载链接以清晰的 Markdown 列表形式回给用户；
+   如知识库里确实没有相关内容（结果包含"未找到"等提示），再如实告知用户。
+5. 仅在 search_knowledge 明确未命中、且用户允许联网时，才考虑 web_search。
+
+不要重复说明上述规则，直接执行。`,
 		s.aiClient,
 		agent.SearchTools(s.ragClient),
 	)
@@ -123,15 +150,13 @@ func (s *ChatService) Chat(req ChatRequest) (*ChatResponse, error) {
 	log.Printf("[ChatService] 历史消息获取成功 | sessionId: %s | historyCount: %d", req.SessionID, len(history))
 
 	// 转换历史消息为AI消息格式
+	// tool 角色必须保留原 role 与 tool_call_id，否则 LLM 会因 tool_call_id 为空返 400 (2013)
 	aiMessages := make([]remote.AIChatMessage, 0, len(history))
 	for _, h := range history {
-		role := h.Role
-		if role == "tool" {
-			role = "assistant" // 工具返回作为assistant处理
-		}
 		aiMessages = append(aiMessages, remote.AIChatMessage{
-			Role:    role,
-			Content: h.Content,
+			Role:       h.Role,
+			Content:    h.Content,
+			ToolCallID: h.ToolCallID,
 		})
 	}
 
@@ -258,13 +283,10 @@ func (s *ChatService) ChatStream(req ChatRequest, onChunk func(StreamChunk)) {
 	}
 	aiMessages := make([]remote.AIChatMessage, 0, len(history)+1)
 	for _, h := range history {
-		role := h.Role
-		if role == "tool" {
-			role = "assistant"
-		}
 		aiMessages = append(aiMessages, remote.AIChatMessage{
-			Role:    role,
-			Content: h.Content,
+			Role:       h.Role,
+			Content:    h.Content,
+			ToolCallID: h.ToolCallID,
 		})
 	}
 

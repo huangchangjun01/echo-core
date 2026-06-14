@@ -24,10 +24,14 @@ type AIRequest struct {
 }
 
 // AIChatMessage 聊天消息
+//   - assistant 角色：填 ToolCalls，描述模型决定调用哪些工具
+//   - tool 角色：填 ToolCallID，引用 assistant 那条消息里某个 tool_call.id
+//   - 其它角色：仅 Role + Content
 type AIChatMessage struct {
-	Role      string       `json:"role"`
-	Content   interface{}  `json:"content"`
-	ToolCalls []AIToolCall `json:"tool_calls,omitempty"`
+	Role       string       `json:"role"`
+	Content    interface{}  `json:"content,omitempty"`
+	ToolCallID string       `json:"tool_call_id,omitempty"`
+	ToolCalls  []AIToolCall `json:"tool_calls,omitempty"`
 }
 
 // AIToolCall 工具调用
@@ -132,7 +136,13 @@ func NewAIClient(baseURL, apiKey, model string) *AIClient {
 
 // Chat 实现聊天功能
 func (c *AIClient) Chat(messages []AIChatMessage, tools []AITool) (*AIResponse, error) {
-	log.Printf("[AIClient] Chat开始 | messages_count: %d | tools_count: %d", len(messages), len(tools))
+	return c.ChatWithToolChoice(messages, tools, nil)
+}
+
+// ChatWithToolChoice 实现聊天功能，并允许指定 tool_choice（"auto" / "required" / "none" / 强制指定 function）。
+// 多数调用方应使用 Chat；当需要强制模型走某条工具路径时（如 Agent 路由器）使用本方法。
+func (c *AIClient) ChatWithToolChoice(messages []AIChatMessage, tools []AITool, toolChoice interface{}) (*AIResponse, error) {
+	log.Printf("[AIClient] Chat开始 | messages_count: %d | tools_count: %d | tool_choice: %v", len(messages), len(tools), toolChoice)
 
 	if len(messages) == 0 {
 		log.Printf("[AIClient] 消息为空")
@@ -150,6 +160,7 @@ func (c *AIClient) Chat(messages []AIChatMessage, tools []AITool) (*AIResponse, 
 		Model:       c.model,
 		Messages:    messages,
 		Tools:       tools,
+		ToolChoice:  toolChoice,
 		Temperature: 0.7,
 	}
 

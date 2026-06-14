@@ -9,10 +9,11 @@ type SessionMessage struct {
 	ID         uint      `json:"id" gorm:"primaryKey"`
 	SessionID  string    `json:"session_id" gorm:"index;size:64;not null"`
 	UserID     string    `json:"user_id" gorm:"index;size:64;not null"`
-	Role       string    `json:"role" gorm:"size:20;not null"` // user/assistant/system
+	Role       string    `json:"role" gorm:"size:20;not null"` // user/assistant/system/tool
 	Content    string    `json:"content" gorm:"type:text"`
-	ToolCalls  string    `json:"tool_calls" gorm:"type:text"`  // JSON格式存储工具调用
-	ToolResult string    `json:"tool_result" gorm:"type:text"`  // JSON格式存储工具结果
+	ToolCalls  string    `json:"tool_calls" gorm:"type:text"`       // assistant 角色的工具调用(JSON)
+	ToolResult string    `json:"tool_result" gorm:"type:text"`      // 工具结果(JSON)；tool 角色时使用
+	ToolCallID string    `json:"tool_call_id" gorm:"size:64;index"` // tool 角色消息引用的 assistant tool_call.id
 	CreatedAt  time.Time `json:"created_at" gorm:"autoCreateTime"`
 }
 
@@ -26,7 +27,7 @@ type UserMemory struct {
 	UserID     string    `json:"user_id" gorm:"index;size:64;not null"`
 	MemoryType string    `json:"memory_type" gorm:"size:50;not null"` // preference/info/summary/knowledge
 	Content    string    `json:"content" gorm:"type:text;not null"`
-	Embedding  string    `json:"embedding" gorm:"type:text"`          // 向量数据(JSON格式)
+	Embedding  string    `json:"embedding" gorm:"type:text"` // 向量数据(JSON格式)
 	CreatedAt  time.Time `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt  time.Time `json:"updated_at" gorm:"autoUpdateTime"`
 }

@@ -145,9 +145,9 @@ func (e *ReActEngine) Execute(systemPrompt string, messages []remote.AIChatMessa
 					obs := fmt.Sprintf("Error: tool %s not found", toolName)
 					log.Printf("[ReActEngine] 工具不存在 | tool_name: %s", toolName)
 					context = append(context, remote.AIChatMessage{
-						Role:      "tool",
-						Content:   obs,
-						ToolCalls: []remote.AIToolCall{{ID: tc.ID, Type: "function", Function: remote.AIFunction{Name: toolName}}},
+						Role:       "tool",
+						Content:    obs,
+						ToolCallID: tc.ID,
 					})
 					continue
 				}
@@ -158,9 +158,9 @@ func (e *ReActEngine) Execute(systemPrompt string, messages []remote.AIChatMessa
 					obs := fmt.Sprintf("Error: failed to parse arguments for %s: %v", toolName, err)
 					log.Printf("[ReActEngine] 参数解析失败 | tool_name: %s | error: %v", toolName, err)
 					context = append(context, remote.AIChatMessage{
-						Role:      "tool",
-						Content:   obs,
-						ToolCalls: []remote.AIToolCall{{ID: tc.ID, Type: "function", Function: remote.AIFunction{Name: toolName}}},
+						Role:       "tool",
+						Content:    obs,
+						ToolCallID: tc.ID,
 					})
 					continue
 				}
@@ -176,9 +176,9 @@ func (e *ReActEngine) Execute(systemPrompt string, messages []remote.AIChatMessa
 
 				// 将结果注入上下文
 				context = append(context, remote.AIChatMessage{
-					Role:      "tool",
-					Content:   result,
-					ToolCalls: []remote.AIToolCall{{ID: tc.ID, Type: "function", Function: remote.AIFunction{Name: toolName}}},
+					Role:       "tool",
+					Content:    result,
+					ToolCallID: tc.ID,
 				})
 			}
 			log.Printf("[ReActEngine] 工具调用循环完成，继续ReAct")
@@ -387,9 +387,9 @@ func (e *ReActEngine) ExecuteStream(
 
 			// 工具结果注入 context（对齐 Execute 行为）
 			context = append(context, remote.AIChatMessage{
-				Role:      "tool",
-				Content:   result,
-				ToolCalls: []remote.AIToolCall{{ID: tc.ID, Type: "function", Function: remote.AIFunction{Name: toolName}}},
+				Role:       "tool",
+				Content:    result,
+				ToolCallID: tc.ID,
 			})
 		}
 		log.Printf("[ReActEngine] 工具调用循环完成，继续ReAct")
@@ -452,15 +452,25 @@ func (a *Agent) RunStream(
 type MultiAgentOrchestrator struct {
 	agents     map[string]*Agent
 	orchPrompt string
+	aiClient   *remote.AIClient
 }
 
 // NewMultiAgentOrchestrator 创建编排器
-func NewMultiAgentOrchestrator(orchPrompt string) *MultiAgentOrchestrator {
-	log.Printf("[Orchestrator] 创建编排器 | prompt_len: %d", len(orchPrompt))
+// aiClient 用于在 RouteAgent 中做 function-calling 路由决策：
+// 注册 Agent 时若尚未持有 aiClient，可传 nil 并在 RegisterAgent 完成后通过
+// SetRouterClient 注入；为简化使用，构造时一并传入更直观。
+func NewMultiAgentOrchestrator(aiClient *remote.AIClient, orchPrompt string) *MultiAgentOrchestrator {
+	log.Printf("[Orchestrator] 创建编排器 | prompt_len: %d | has_ai_client: %v", len(orchPrompt), aiClient != nil)
 	return &MultiAgentOrchestrator{
 		agents:     make(map[string]*Agent),
 		orchPrompt: orchPrompt,
+		aiClient:   aiClient,
 	}
+}
+
+// SetRouterClient 在 NewMultiAgentOrchestrator 时未传入 aiClient 的情况下注入
+func (o *MultiAgentOrchestrator) SetRouterClient(aiClient *remote.AIClient) {
+	o.aiClient = aiClient
 }
 
 // RegisterAgent 注册Agent
@@ -484,21 +494,122 @@ func (o *MultiAgentOrchestrator) ListAgents() []string {
 }
 
 // RouteAgent 根据用户输入选 Agent
-// 规则与 Orchestrate 完全一致：命中搜索关键词 → search Agent；否则取第一个注册的 Agent。
+// 优先走 LLM function-calling 路由器（详见 routeWithLLM）；失败时回退到第一个注册的 Agent。
 // 无可用 Agent 时返回 nil。
 func (o *MultiAgentOrchestrator) RouteAgent(userInput string) *Agent {
-	if isSearchInput(userInput) {
-		if agent, ok := o.agents["search"]; ok {
-			log.Printf("[Orchestrator] RouteAgent 命中search | input: %s", userInput)
+	if len(o.agents) == 0 {
+		log.Printf("[Orchestrator] RouteAgent 无可用Agent | input: %s", userInput)
+		return nil
+	}
+	// 仅 1 个 Agent 时直接返回，避免无谓的 LLM 调用
+	if len(o.agents) == 1 {
+		for _, agent := range o.agents {
+			log.Printf("[Orchestrator] RouteAgent 唯一Agent跳过路由 | agent: %s | input: %s", agent.Name, userInput)
 			return agent
 		}
 	}
+
+	if o.aiClient != nil {
+		name, err := o.routeWithLLM(userInput)
+		if err != nil {
+			log.Printf("[Orchestrator] RouteAgent LLM路由失败，使用兜底Agent | error: %v | input: %s", err, userInput)
+		} else if agent, ok := o.agents[name]; ok {
+			log.Printf("[Orchestrator] RouteAgent LLM路由命中 | agent: %s | input: %s", name, userInput)
+			return agent
+		} else {
+			log.Printf("[Orchestrator] RouteAgent LLM返回未知Agent | name: %s | input: %s", name, userInput)
+		}
+	} else {
+		log.Printf("[Orchestrator] RouteAgent 未配置aiClient，跳过LLM路由 | input: %s", userInput)
+	}
+
+	// 兜底：第一个注册的 Agent
 	for _, agent := range o.agents {
-		log.Printf("[Orchestrator] RouteAgent 使用默认 | agent: %s | input: %s", agent.Name, userInput)
+		log.Printf("[Orchestrator] RouteAgent 兜底首个Agent | agent: %s | input: %s", agent.Name, userInput)
 		return agent
 	}
-	log.Printf("[Orchestrator] RouteAgent 无可用Agent | input: %s", userInput)
 	return nil
+}
+
+// routeWithLLM 通过 LLM function-calling 选择 Agent
+// 构造一个名为 select_agent 的工具，其 name 字段 enum 由已注册 Agent 动态生成；
+// 强制 tool_choice=required 确保模型必须给出选择。
+func (o *MultiAgentOrchestrator) routeWithLLM(userInput string) (string, error) {
+	// 1. 构造 Agent 描述
+	agentNames := make([]string, 0, len(o.agents))
+	agentList := make([]string, 0, len(o.agents))
+	for name, agent := range o.agents {
+		agentNames = append(agentNames, name)
+		agentList = append(agentList, fmt.Sprintf("- %s: %s", name, agent.Description))
+	}
+
+	// 2. 构造 select_agent 工具定义（enum 由已注册 Agent 名称动态填充）
+	selectTool := remote.AITool{
+		Type: "function",
+		Function: remote.AIFunctionDef{
+			Name:        "select_agent",
+			Description: "根据用户问题选择最合适的 Agent 处理。必须从 enum 中选择一个 Agent 名称。",
+			Parameters: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"name": map[string]interface{}{
+						"type":        "string",
+						"enum":        agentNames,
+						"description": "选中的 Agent 名称",
+					},
+				},
+				"required": []interface{}{"name"},
+			},
+		},
+	}
+
+	// 3. 构造消息
+	systemMsg := remote.AIChatMessage{
+		Role: "system",
+		Content: o.orchPrompt + "\n\n可用 Agent 列表：\n" + strings.Join(agentList, "\n") +
+			"\n\n请调用 select_agent 工具，从 enum 中选择一个最合适的 Agent。",
+	}
+	userMsg := remote.AIChatMessage{
+		Role:    "user",
+		Content: userInput,
+	}
+
+	// 4. 调用 LLM，强制 tool_choice=required
+	log.Printf("[Orchestrator] routeWithLLM 调用LLM选Agent | input_len: %d | agents: %v", len(userInput), agentNames)
+	resp, err := o.aiClient.ChatWithToolChoice(
+		[]remote.AIChatMessage{systemMsg, userMsg},
+		[]remote.AITool{selectTool},
+		"required",
+	)
+	if err != nil {
+		return "", fmt.Errorf("router LLM call failed: %w", err)
+	}
+	if len(resp.Choices) == 0 {
+		return "", errors.New("router LLM returned no choices")
+	}
+
+	// 5. 解析 tool_call
+	choice := resp.Choices[0]
+	if len(choice.Message.ToolCalls) == 0 {
+		return "", errors.New("router LLM did not call select_agent (tool_choice=required was set)")
+	}
+	tc := choice.Message.ToolCalls[0]
+	if tc.Function.Name != "select_agent" {
+		return "", fmt.Errorf("router LLM called unexpected tool: %s", tc.Function.Name)
+	}
+
+	var args struct {
+		Name string `json:"name"`
+	}
+	if err := json.Unmarshal([]byte(tc.Function.Arguments), &args); err != nil {
+		return "", fmt.Errorf("parse router tool args: %w (raw: %s)", err, tc.Function.Arguments)
+	}
+	if args.Name == "" {
+		return "", errors.New("router LLM returned empty agent name")
+	}
+
+	log.Printf("[Orchestrator] routeWithLLM 选中 | name: %s | input: %s", args.Name, userInput)
+	return args.Name, nil
 }
 
 // RunStream 流式编排执行：先按 RouteAgent 选 Agent，再以流式方式运行
@@ -572,46 +683,30 @@ func (o *MultiAgentOrchestrator) Orchestrate(userInput string, history []remote.
 	return choice, "", nil
 }
 
-// routeToAgent 路由到具体Agent
+// routeToAgent 路由到具体Agent（同步链路，沿用 RouteAgent 的 LLM 路由器）
+// 历史兼容保留：行为与 RouteAgent 完全一致——LLM 选 Agent，回退到首个注册 Agent。
 func (o *MultiAgentOrchestrator) routeToAgent(userInput string, history []remote.AIChatMessage, defaultAgent *Agent) (string, error) {
 	log.Printf("[Orchestrator] routeToAgent | input: %s | default_agent: %s", userInput, defaultAgent.Name)
 
-	// 路由逻辑：根据关键词选择Agent
-	if isSearchInput(userInput) {
-		if agent, ok := o.agents["search"]; ok {
-			log.Printf("[Orchestrator] 匹配到search Agent")
-			// 构建包含当前用户输入的完整消息列表
-			fullMessages := make([]remote.AIChatMessage, len(history)+1)
-			copy(fullMessages, history)
-			fullMessages[len(history)] = remote.AIChatMessage{Role: "user", Content: userInput}
-			reply, err := agent.Run(fullMessages)
-			return reply, err
-		}
+	// 优先 LLM 路由；失败时回退到传入的 defaultAgent
+	agent := o.RouteAgent(userInput)
+	if agent == nil {
+		agent = defaultAgent
+	}
+	if agent == nil {
+		return "", errors.New("no agents registered")
 	}
 
-	// 默认使用第一个Agent
-	log.Printf("[Orchestrator] 使用默认Agent | agent: %s", defaultAgent.Name)
-	reply, err := defaultAgent.Run(history)
+	// 构造包含当前用户输入的完整消息列表
+	fullMessages := make([]remote.AIChatMessage, len(history)+1)
+	copy(fullMessages, history)
+	fullMessages[len(history)] = remote.AIChatMessage{Role: "user", Content: userInput}
+	reply, err := agent.Run(fullMessages)
 	if err != nil {
-		log.Printf("[Orchestrator] Agent.Run失败 | error: %v", err)
+		log.Printf("[Orchestrator] routeToAgent Agent.Run失败 | agent: %s | error: %v", agent.Name, err)
 		return "", err
 	}
 
-	log.Printf("[Orchestrator] routeToAgent完成 | reply_len: %d", len(reply))
+	log.Printf("[Orchestrator] routeToAgent完成 | agent: %s | reply_len: %d", agent.Name, len(reply))
 	return reply, nil
-}
-
-// searchKeywords 触发 search Agent 的关键词（中英混合）
-// 与 Chat 同步链路完全共用；流式链路也走同一份判定以保证路由一致。
-var searchKeywords = []string{"找到", "搜索", "查找", "查询", "信息", "知道", "了解", "介绍", "什么", "如何", "怎么", "为什么", "哪里", "多少", "search", "find", "query", "info"}
-
-// isSearchInput 判定用户输入是否需要 search Agent 处理
-func isSearchInput(userInput string) bool {
-	input := strings.ToLower(userInput)
-	for _, keyword := range searchKeywords {
-		if strings.Contains(input, keyword) {
-			return true
-		}
-	}
-	return false
 }

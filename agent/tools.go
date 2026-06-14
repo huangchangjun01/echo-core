@@ -232,14 +232,19 @@ func (c *RAGClient) SearchKnowledge(query string) (string, error) {
 func SearchTools(ragClient *RAGClient) []Tool {
 	return []Tool{
 		{
-			Name:        "search_knowledge",
-			Description: "搜索知识库获取相关信息。首先从自身RAG库中搜索相关信息，如果知识库中没有相关信息，则返回空结果提示需要网络搜索。",
+			Name: "search_knowledge",
+			Description: "在用户的 RAG 知识库 / 私有文档库 中检索任意类型的资源，" +
+				"包括 文本、文档、图片、图像、PDF、文件、视频 等。返回命中的文件名与可下载 URL。" +
+				"只要用户的问题涉及'我的知识库/RAG/文档/图片/文件/资料'，必须优先调用本工具，不要跳过。" +
+				"未命中时返回提示文本，此时可考虑回退到 web_search。",
 			Parameters: map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
 					"query": map[string]interface{}{
-						"type":        "string",
-						"description": "搜索查询词，描述你想要搜索的信息",
+						"type": "string",
+						"description": "检索关键词，提炼用户想找的核心目标，例如：" +
+							"'黄色小狗图片'、'2024 财报 PDF'、'产品介绍文档'。" +
+							"不要带上'在我的库中'、'帮我找一下'这类无关修饰词。",
 					},
 				},
 				"required": []interface{}{"query"},
