@@ -115,6 +115,7 @@ type ChatRequest struct {
 	Messages []map[string]interface{} `json:"messages"`
 	Query    string                   `json:"query"`
 	Model    string                   `json:"model,omitempty"`
+	UserID   string                   `json:"userId,omitempty"`
 }
 
 // ChatResponse Python服务聊天响应
@@ -127,7 +128,7 @@ type ChatResponse struct {
 			FileID    string `json:"fileId"`
 			FileName  string `json:"fileName"`
 			UserID    string `json:"userId"`
-			SourceURL string `json:"source_url"`
+			SourceURL string `json:"sourceUrl"`
 		} `json:"metadata"`
 	} `json:"candidates"`
 }
@@ -142,27 +143,44 @@ type RAGSearchResponse struct {
 	} `json:"related"`
 }
 
+// Attachment RAG 命中文件的结构化信息
+// 通过 ToolExecutionEvent / ToolResultEvent 一路传给前端，
+// 让前端能直接渲染下载入口（缩略图、超链接等），不必再解析工具结果文本。
+type Attachment struct {
+	FileID   string `json:"fileId,omitempty"`
+	FileName string `json:"fileName"`
+	URL      string `json:"url"`
+}
+
 // SearchKnowledge 搜索RAG知识库
-func (c *RAGClient) SearchKnowledge(query string) (string, error) {
-	log.Printf("[RAGClient] 开始搜索知识库 | query: %s", query)
+// userID 由调用方按当次会话身份注入，会一并提交给 Python /chat 接口，
+// 用于在知识库侧做用户隔离 / 数据范围过滤。
+//
+// 返回 (人类可读文本, 结构化命中附件, error)：
+//   - 文本结果用于注入 LLM 上下文 / 工具消息
+//   - 附件用于前端直接渲染下载入口（缩略图、文件链接等）
+//   - 未命中时附件为空但文本仍可能非空（包含"未找到"等提示）
+func (c *RAGClient) SearchKnowledge(query string, userID string) (string, []Attachment, error) {
+	log.Printf("[RAGClient] 开始搜索知识库 | userId: %s | query: %s", userID, query)
 
 	reqBody := ChatRequest{
 		Messages: []map[string]interface{}{
 			{"role": "user", "content": query},
 		},
-		Query: query,
+		Query:  query,
+		UserID: userID,
 	}
 
 	jsonData, err := json.Marshal(reqBody)
 	if err != nil {
-		return "", fmt.Errorf("请求序列化失败: %w", err)
+		return "", nil, fmt.Errorf("请求序列化失败: %w", err)
 	}
 
 	log.Printf("[RAGClient] 请求数据: %s", string(jsonData))
 
 	req, err := http.NewRequest("POST", c.baseURL+"/chat", bytes.NewBuffer(jsonData))
 	if err != nil {
-		return "", fmt.Errorf("创建请求失败: %w", err)
+		return "", nil, fmt.Errorf("创建请求失败: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	if c.apiKey != "" {
@@ -171,37 +189,43 @@ func (c *RAGClient) SearchKnowledge(query string) (string, error) {
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("请求失败: %w", err)
+		return "", nil, fmt.Errorf("请求失败: %w", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("读取响应失败: %w", err)
+		return "", nil, fmt.Errorf("读取响应失败: %w", err)
 	}
 
 	log.Printf("[RAGClient] 响应状态: %d | body: %s", resp.StatusCode, string(body))
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("RAG服务返回错误状态 %d: %s", resp.StatusCode, string(body))
+		return "", nil, fmt.Errorf("RAG服务返回错误状态 %d: %s", resp.StatusCode, string(body))
 	}
 
 	// 尝试解析新格式（RAG搜索结果）
 	var chatResp ChatResponse
 	if err := json.Unmarshal(body, &chatResp); err == nil {
 		log.Printf("[RAGClient] 解析响应成功 | query: %s | candidates_count: %d", chatResp.Query, len(chatResp.Candidates))
-		// 有candidates时构建下载链接
+		// 有candidates时构建下载链接 + 收集结构化 attachments
 		if len(chatResp.Candidates) > 0 {
 			var results []string
+			attachments := make([]Attachment, 0, len(chatResp.Candidates))
 			for i := range chatResp.Candidates {
 				candidate := &chatResp.Candidates[i]
 				// 构建完整可下载URL
 				fullURL := c.buildFullURL(candidate.Metadata.SourceURL)
 				results = append(results, fmt.Sprintf("文件: %s, 下载链接: %s", candidate.Metadata.FileName, fullURL))
+				attachments = append(attachments, Attachment{
+					FileID:   candidate.Metadata.FileID,
+					FileName: candidate.Metadata.FileName,
+					URL:      fullURL,
+				})
 			}
 			result := strings.Join(results, "\n")
-			log.Printf("[RAGClient] 搜索完成 | result_len: %d", len(result))
-			return result, nil
+			log.Printf("[RAGClient] 搜索完成 | result_len: %d | attachments: %d", len(result), len(attachments))
+			return result, attachments, nil
 		}
 	}
 
@@ -210,7 +234,7 @@ func (c *RAGClient) SearchKnowledge(query string) (string, error) {
 	if err := json.Unmarshal(body, &oldResp); err == nil {
 		log.Printf("[RAGClient] 旧格式解析成功 | answer_len: %d | related_count: %d", len(oldResp.Answer), len(oldResp.Related))
 		if oldResp.Answer != "" {
-			return oldResp.Answer, nil
+			return oldResp.Answer, nil, nil
 		}
 	}
 
@@ -218,18 +242,56 @@ func (c *RAGClient) SearchKnowledge(query string) (string, error) {
 	var simpleResp map[string]interface{}
 	if err2 := json.Unmarshal(body, &simpleResp); err2 == nil {
 		if answer, ok := simpleResp["answer"].(string); ok {
-			return answer, nil
+			return answer, nil, nil
 		}
 		if content, ok := simpleResp["content"].(string); ok {
-			return content, nil
+			return content, nil, nil
 		}
 	}
 
-	return "", fmt.Errorf("解析响应失败: unknown format, body: %s", string(body))
+	return "", nil, fmt.Errorf("解析响应失败: unknown format, body: %s", string(body))
 }
 
 // SearchTools 返回搜索相关工具集（用于信息检索场景）
-func SearchTools(ragClient *RAGClient) []Tool {
+// userID 通过闭包绑定到 Handler，避免暴露给 LLM 作为可决策入参；
+// 调用方（ChatService）需要按请求构造一份带当次 userID 的工具集。
+//
+// search_knowledge 同时实现了 Handler 和 MetaHandler：
+//   - Handler 返回 LLM 友好的文本，用于注入 ReAct 上下文
+//   - MetaHandler 额外返回结构化 attachments，由 ReActEngine 透传给上层 service，
+//     最终给前端用于直接渲染下载链接 / 缩略图
+func SearchTools(ragClient *RAGClient, userID string) []Tool {
+	// 真正的检索实现：被 Handler / MetaHandler 共享，
+	// 返回 (用于注入 LLM 的文本, 命中文件 attachments, error)
+	searchImpl := func(params map[string]interface{}) (string, []Attachment, error) {
+		query, ok := params["query"].(string)
+		if !ok || query == "" {
+			return "", nil, fmt.Errorf("query parameter is required")
+		}
+
+		log.Printf("[SearchKnowledge] 开始RAG知识库搜索 | userId: %s | query: %s", userID, query)
+
+		if ragClient == nil {
+			log.Printf("[SearchKnowledge] RAG客户端未初始化，使用模拟返回")
+			return "知识库搜索功能暂不可用，请稍后重试或直接回答。", nil, nil
+		}
+
+		result, attachments, err := ragClient.SearchKnowledge(query, userID)
+		if err != nil {
+			log.Printf("[SearchKnowledge] 搜索失败 | userId: %s | error: %v", userID, err)
+			return fmt.Sprintf("知识库搜索失败: %v", err), nil, err
+		}
+
+		// 检查返回内容是否表示未找到
+		if isEmptyResult(result) {
+			log.Printf("[SearchKnowledge] 知识库未找到相关内容 | userId: %s", userID)
+			return "知识库中没有找到相关信息，AI将尝试其他方式获取答案。", nil, nil
+		}
+
+		log.Printf("[SearchKnowledge] 搜索完成 | userId: %s | result_len: %d | attachments: %d", userID, len(result), len(attachments))
+		return fmt.Sprintf("【知识库搜索结果】\n%s", result), attachments, nil
+	}
+
 	return []Tool{
 		{
 			Name: "search_knowledge",
@@ -250,33 +312,10 @@ func SearchTools(ragClient *RAGClient) []Tool {
 				"required": []interface{}{"query"},
 			},
 			Handler: func(params map[string]interface{}) (string, error) {
-				query, ok := params["query"].(string)
-				if !ok || query == "" {
-					return "", fmt.Errorf("query parameter is required")
-				}
-
-				log.Printf("[SearchKnowledge] 开始RAG知识库搜索 | query: %s", query)
-
-				if ragClient == nil {
-					log.Printf("[SearchKnowledge] RAG客户端未初始化，使用模拟返回")
-					return "知识库搜索功能暂不可用，请稍后重试或直接回答。", nil
-				}
-
-				result, err := ragClient.SearchKnowledge(query)
-				if err != nil {
-					log.Printf("[SearchKnowledge] 搜索失败 | error: %v", err)
-					return fmt.Sprintf("知识库搜索失败: %v", err), err
-				}
-
-				// 检查返回内容是否表示未找到
-				if isEmptyResult(result) {
-					log.Printf("[SearchKnowledge] 知识库未找到相关内容")
-					return "知识库中没有找到相关信息，AI将尝试其他方式获取答案。", nil
-				}
-
-				log.Printf("[SearchKnowledge] 搜索完成 | result_len: %d", len(result))
-				return fmt.Sprintf("【知识库搜索结果】\n%s", result), nil
+				result, _, err := searchImpl(params)
+				return result, err
 			},
+			MetaHandler: searchImpl,
 		},
 		{
 			Name:        "web_search",

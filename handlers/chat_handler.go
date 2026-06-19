@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"echo-core/middleware"
 	"echo-core/models"
 	"echo-core/service"
 	"fmt"
@@ -29,9 +30,17 @@ func (h *ChatHandler) ChatHandle(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	// 鉴权优先级：middleware 注入的 userId > 请求体 userId
+	// 请求体里的 userId 仅作为兼容回退（新客户端应依赖鉴权中间件，不传 userId）
+	if uid, ok := middleware.MustUserID(c); ok && uid != "" {
+		if req.UserID != "" && req.UserID != uid {
+			log.Printf("[ChatHandle] WARN 请求体 userId 与 session 不一致 | body=%s session=%s", req.UserID, uid)
+		}
+		req.UserID = uid
+	}
 	log.Printf("[ChatHandle] 请求解析成功 | userId: %s | sessionId: %s | messageLen: %d", req.UserID, req.SessionID, len(req.Message))
 
-	// 设置默认值
 	if req.SessionID == "" {
 		log.Printf("[ChatHandle] sessionId 为空")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "sessionId is required"})

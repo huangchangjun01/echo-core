@@ -2,6 +2,7 @@ package routes
 
 import (
 	"echo-core/handlers"
+	"echo-core/middleware"
 	"echo-core/remote"
 	"echo-core/service"
 	"fmt"
@@ -12,27 +13,32 @@ import (
 
 // SetupRoutes 设置所有路由
 func SetupRoutes(r *gin.Engine) error {
+	// 全局 request_id 中间件——所有路由都受益，便于日志串联
+	r.Use(middleware.RequestID())
+
 	api := r.Group("/api")
+	// /auth/* 走公开路由（注册/登录/校验），无需 session
+	if err := userRegisterRoutes(api); err != nil {
+		return err
+	}
+	// /file/* 与 /chat/* 走鉴权中间件
 	if err := fileRegisterRoutes(api); err != nil {
 		return err
 	}
 	if err := chatRegisterRoutes(api); err != nil {
 		return err
 	}
-	if err := userRegisterRoutes(api); err != nil {
-		return err
-	}
 	return nil
 }
 
-// 文件相关的路由
+// 文件相关的路由（鉴权）
 func fileRegisterRoutes(api *gin.RouterGroup) error {
 	fileHandler, err := handlers.NewFileHandler()
 	if err != nil {
 		return fmt.Errorf("create file handler: %w", err)
 	}
 	{
-		file := api.Group("/file")
+		file := api.Group("/file", middleware.RequireSession())
 		{
 			file.POST("/token", fileHandler.GetUploadTokenHandler)  // 获取上传token
 			file.POST("/register", fileHandler.RegisterFileHandler) // 注册文件信息
@@ -41,7 +47,7 @@ func fileRegisterRoutes(api *gin.RouterGroup) error {
 	return nil
 }
 
-// 注册聊天相关的路由
+// 注册聊天相关的路由（鉴权）
 func chatRegisterRoutes(api *gin.RouterGroup) error {
 	// 创建AI客户端
 	baseURL := os.Getenv("LLM_BASE_URL")
@@ -57,7 +63,7 @@ func chatRegisterRoutes(api *gin.RouterGroup) error {
 	// 创建流式聊天处理器（SSE + WebSocket）
 	chatStreamHandler := handlers.NewChatStreamHandler(chatSvc)
 
-	chat := api.Group("/chat")
+	chat := api.Group("/chat", middleware.RequireSession())
 	{
 		// POST /api/chat         流式聊天（SSE，返回 text/event-stream）
 		chat.POST("", chatStreamHandler.ChatHandleSSE)
@@ -77,16 +83,16 @@ func chatRegisterRoutes(api *gin.RouterGroup) error {
 	return nil
 }
 
-// 用户管理相关路由
+// 用户管理相关路由（公开）
 func userRegisterRoutes(api *gin.RouterGroup) error {
 	userHandler := handlers.NewUserHandler()
 	auth := api.Group("/auth")
 	{
-		auth.POST("/login", userHandler.Login)               // 登录
-		auth.POST("/register", userHandler.Register)         // 注册
-		auth.POST("/checkAccount", userHandler.CheckAccount) // 账号占用校验
-		auth.POST("/check", userHandler.Check)               // 校验会话是否有效
-		auth.POST("/logout", userHandler.Logout)             // 注销会话
+		auth.POST("/login", userHandler.Login)                // 登录
+		auth.POST("/register", userHandler.Register)          // 注册
+		auth.POST("/checkAccount", userHandler.CheckAccount)  // 账号占用校验
+		auth.POST("/check", userHandler.Check)                // 校验会话是否有效
+		auth.POST("/logout", userHandler.Logout)              // 注销会话
 	}
 	return nil
 }

@@ -10,6 +10,7 @@ import (
 
 	"echo-core/config"
 	"echo-core/routes"
+	"echo-core/utils"
 )
 
 func main() {
@@ -17,6 +18,10 @@ func main() {
 	initConfig()
 	// 初始化数据库
 	config.InitDB()
+	// 显式初始化全局 SessionStore（确保启动期单例，避免并发请求触发懒加载
+	// 时多个 goroutine 同时进入初始化分支的微小窗口）。同时注册优雅关停。
+	utils.InitSessionStore(0)
+	defer utils.StopSessionStore()
 
 	// 现在可以用 os.Getenv() 读取了
 	port := os.Getenv("APP_PORT")

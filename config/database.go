@@ -94,7 +94,6 @@ func GetDB() *gorm.DB {
 // autoMigrate 自动迁移表结构
 func autoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
-		&models.Department{},
 		&models.File{},
 		&models.SessionMessage{},
 		&models.UserMemory{},

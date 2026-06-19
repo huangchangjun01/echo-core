@@ -73,7 +73,24 @@
       "Bash(kill 699)",
       "Bash(grep \"SELECT.*FROM.*\\\\`conversation_summary\\\\`\" /tmp/echo-server2.log)",
       "Bash(kill 769)",
-      "Bash(grep \"SELECT.*FROM.*\\\\`conversation_summary\\\\`\" /tmp/echo-server3.log)"
+      "Bash(grep \"SELECT.*FROM.*\\\\`conversation_summary\\\\`\" /tmp/echo-server3.log)",
+      "Bash(go mod *)",
+      "Bash(go test *)",
+      "Bash(echo \"Server PID: $!\")",
+      "Bash(kill 43264)",
+      "Bash(cmd //c \"taskkill /PID 43264 /F\")",
+      "Bash(/tmp/echo-core-bin)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(cmd //c \"taskkill /IM echo-core-bin.exe /F\")",
+      "Bash(cmd //c \"taskkill /PID 41528 /F\")",
+      "Bash(cmd //c \"taskkill /PID 4027 /F\")",
+      "Bash(cmd //c \"taskkill /PID 21732 /F\")",
+      "Bash(pandoc --version)",
+      "Bash(/e/Python/Python313/python.exe --version)",
+      "Bash(/e/Python/Python313/python.exe -c \"import reportlab; print\\(reportlab.Version\\)\")",
+      "Bash(/e/Python/Python313/python.exe -m pip install --quiet reportlab)",
+      "Bash(/e/Python/Python313/python.exe generate_report.py)",
+      "Bash(/e/Python/Python313/python.exe -c ' *)"
     ]
   }
 }

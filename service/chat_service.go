@@ -22,9 +22,13 @@ type ChatService struct {
 	summarizer   *Summarizer
 	memorySvc    *MemoryService
 	aiClient     *remote.AIClient
-	orchestrator *agent.MultiAgentOrchestrator
-	ragClient    *agent.RAGClient
-	promptCache  PromptCache
+	defaultAgent *agent.Agent
+	// extraAgents 通过 RegisterAgent 注册的自定义 Agent。
+	// 每次 buildOrchestrator 时一并塞入临时编排器，避免按请求创建编排器时丢失自定义 Agent。
+	extraAgents map[string]*agent.Agent
+	orchPrompt  string
+	ragClient   *agent.RAGClient
+	promptCache PromptCache
 }
 
 // NewChatService 创建聊天服务
@@ -39,6 +43,7 @@ func NewChatService(aiClient *remote.AIClient) *ChatService {
 		summarizer:  NewSummarizer(aiClient, memRepo),
 		memorySvc:   NewMemoryService(aiClient, memRepo),
 		aiClient:    aiClient,
+		extraAgents: make(map[string]*agent.Agent),
 		promptCache: NewMemoryPromptCache(),
 	}
 
@@ -55,11 +60,14 @@ func NewChatService(aiClient *remote.AIClient) *ChatService {
 }
 
 // initOrchestrator 初始化编排器
+// 历史方法名保留语义：实际只构建"默认 Agent"与"路由 prompt"，
+// search Agent 与对应的 orchestrator 改为按请求 userId 即席构造（见 buildOrchestrator）。
+// 这样做的原因：search_knowledge 工具需要把当次会话身份的 userId 透传到 Python /chat，
+// 避免出现一个 ChatService 实例被多用户复用、userId 串号的隐患。
 func (s *ChatService) initOrchestrator() {
 	log.Printf("[ChatService] 初始化Agent编排器")
-	// 传入 aiClient：路由决策由 LLM function-calling 完成（见 MultiAgentOrchestrator.RouteAgent）
 	// 路由系统提示里显式列出"必走 search"的关键词，避免 LLM 把 RAG/知识库 类请求误判为通用问题。
-	orchestrator := agent.NewMultiAgentOrchestrator(s.aiClient, `你是一个多 Agent 编排器，负责根据用户问题选择最合适的 Agent。
+	s.orchPrompt = `你是一个多 Agent 编排器，负责根据用户问题选择最合适的 Agent。
 
 路由规则（按优先级）：
 1. 用户问题中出现以下任意关键词时，必须选择 search Agent：
@@ -68,20 +76,28 @@ func (s *ChatService) initOrchestrator() {
 2. 用户明确要求"在我的/本地/私有 + 任何资源（图片/文档/文件/视频/资料）"中查找时，必须选择 search Agent。
 3. 其它通用问答（闲聊、数学、天气、时间、概念解释等）选择 default Agent。
 
-请严格按规则选择，不要把 RAG/知识库类请求路由到 default。`)
+请严格按规则选择，不要把 RAG/知识库类请求路由到 default。`
 
-	// 注册默认Agent（通用问答场景，不含 RAG 检索能力）
-	defaultAgent := agent.NewAgent(
+	// 默认 Agent 不依赖 userId，可以在服务初始化时一次性构造，避免每请求开销。
+	s.defaultAgent = agent.NewAgent(
 		"default",
 		"默认 Agent，处理通用问答、闲聊、数学计算、天气、时间等不需要查询外部资料的问题。不具备知识库/RAG/文件检索能力，凡涉及'我的知识库/RAG/文档/图片/文件'的请求都不要路由到这里。",
 		"你是一个有帮助的AI助手，请根据用户的问题给出准确、简洁的回答。",
 		s.aiClient,
 		agent.DefaultTools(),
 	)
-	orchestrator.RegisterAgent(defaultAgent)
-	log.Printf("[ChatService] 默认Agent注册完成")
+	log.Printf("[ChatService] 默认Agent初始化完成")
+}
 
-	// 注册搜索Agent（RAG 知识库 + 网络搜索）。description 直接列出触发关键词，
+// buildOrchestrator 按请求 userId 即席构造编排器
+// 默认 Agent 复用 ChatService 持有的实例；search Agent 因为要把 userId 通过闭包绑定到
+// search_knowledge 工具，必须按请求新建。MultiAgentOrchestrator 是轻量结构体，
+// 每请求新建一份对性能几乎无影响，但能避免多用户共享 SearchTools 闭包的串号问题。
+func (s *ChatService) buildOrchestrator(userID string) *agent.MultiAgentOrchestrator {
+	orchestrator := agent.NewMultiAgentOrchestrator(s.aiClient, s.orchPrompt)
+	orchestrator.RegisterAgent(s.defaultAgent)
+
+	// 搜索 Agent（RAG 知识库 + 网络搜索）。description 直接列出触发关键词，
 	// 让路由 LLM 不必"理解"问题，仅靠关键词匹配即可命中。
 	searchAgent := agent.NewAgent(
 		"search",
@@ -103,12 +119,15 @@ func (s *ChatService) initOrchestrator() {
 
 不要重复说明上述规则，直接执行。`,
 		s.aiClient,
-		agent.SearchTools(s.ragClient),
+		agent.SearchTools(s.ragClient, userID),
 	)
 	orchestrator.RegisterAgent(searchAgent)
-	log.Printf("[ChatService] 搜索Agent注册完成")
 
-	s.orchestrator = orchestrator
+	// 自定义 Agent 不依赖 userId，统一加入临时编排器
+	for _, a := range s.extraAgents {
+		orchestrator.RegisterAgent(a)
+	}
+	return orchestrator
 }
 
 // ChatRequest 聊天请求
@@ -124,9 +143,12 @@ type ChatRequest struct {
 
 // ChatResponse 聊天响应
 type ChatResponse struct {
-	Reply     string `json:"reply"`
-	SessionID string `json:"session_id"`
-	Summary   string `json:"summary,omitempty"`
+	Reply     string             `json:"reply"`
+	SessionID string             `json:"session_id"`
+	Summary   string             `json:"summary,omitempty"`
+	// Attachments 本次对话期间工具命中的文件列表（例如 RAG search_knowledge）。
+	// 前端可据此直接渲染下载入口/缩略图；为空表示没有命中或没有走带附件的工具。
+	Attachments []agent.Attachment `json:"attachments,omitempty"`
 }
 
 // Chat 核心聊天功能
@@ -220,12 +242,14 @@ func (s *ChatService) Chat(req ChatRequest) (*ChatResponse, error) {
 
 	// 9) 执行对话
 	log.Printf("[ChatService] 调用Agent编排器 | context_messages: %d", len(aiMessages))
-	reply, _, err := s.orchestrator.Orchestrate(req.Message, aiMessages)
+	// 按请求 userId 构造编排器：让 search_knowledge 工具能把 userId 透传到 Python /chat
+	orchestrator := s.buildOrchestrator(req.UserID)
+	reply, _, attachments, err := orchestrator.RunSyncWithMeta(req.Message, aiMessages)
 	if err != nil {
 		log.Printf("[ChatService] Agent编排执行失败 | error: %v", err)
 		return nil, fmt.Errorf("chat failed: %w", err)
 	}
-	log.Printf("[ChatService] Agent编排执行成功 | reply_len: %d", len(reply))
+	log.Printf("[ChatService] Agent编排执行成功 | reply_len: %d | attachments: %d", len(reply), len(attachments))
 
 	// 10) 保存用户消息
 	log.Printf("[ChatService] 保存用户消息到数据库 | session_id: %s | user_id: %s", req.SessionID, req.UserID)
@@ -260,8 +284,9 @@ func (s *ChatService) Chat(req ChatRequest) (*ChatResponse, error) {
 
 	log.Printf("[ChatService] 聊天处理完成 | user_id: %s | session_id: %s | reply: %s", req.UserID, req.SessionID, reply)
 	return &ChatResponse{
-		Reply:     reply,
-		SessionID: req.SessionID,
+		Reply:       reply,
+		SessionID:   req.SessionID,
+		Attachments: attachments,
 	}, nil
 }
 
@@ -288,6 +313,9 @@ type StreamChunk struct {
 	ToolCall *remote.AIToolCall
 	// ToolResult 工具执行结果（含 id/name/result，便于 SSE/WS 客户端关联到 ToolCall）
 	ToolResult *ToolResultEvent
+	// Attachments 仅在 Done 帧时填充：本轮对话所有工具调用累计命中的附件列表。
+	// 前端可在收到 finish 时统一渲染下载入口。
+	Attachments []agent.Attachment
 }
 
 // ToolResultEvent 工具执行结果事件载荷
@@ -296,6 +324,9 @@ type ToolResultEvent struct {
 	Name   string `json:"name"`
 	Result string `json:"result"`
 	Error  string `json:"error,omitempty"`
+	// Attachments 工具命中的结构化附件（例如 RAG 命中的文件 fileId / fileName / 下载 URL）
+	// 仅在工具实现了 MetaHandler 且确实有命中时非空，供前端直接渲染下载入口。
+	Attachments []agent.Attachment `json:"attachments,omitempty"`
 }
 
 // ChatStream 流式对话
@@ -390,11 +421,14 @@ func (s *ChatService) ChatStream(req ChatRequest, onChunk func(StreamChunk)) {
 	fullMessages = append(fullMessages, remote.AIChatMessage{Role: "user", Content: req.Message})
 
 	var (
-		fullReply strings.Builder
-		streamErr error
+		fullReply      strings.Builder
+		streamErr      error
+		allAttachments []agent.Attachment
 	)
 
-	_, streamErr = s.orchestrator.RunStream(req.Message, fullMessages,
+	// 按请求 userId 构造编排器：让 search_knowledge 工具能把 userId 透传到 Python /chat
+	orchestrator := s.buildOrchestrator(req.UserID)
+	_, streamErr = orchestrator.RunStream(req.Message, fullMessages,
 		// onContent: 模型文本片段
 		func(delta string) error {
 			fullReply.WriteString(delta)
@@ -406,17 +440,22 @@ func (s *ChatService) ChatStream(req ChatRequest, onChunk func(StreamChunk)) {
 		},
 		// onToolEvent: 工具执行结果
 		func(event agent.ToolExecutionEvent) error {
-			log.Printf("[ChatService] ChatStream工具事件 | tool: %s | id: %s | result_len: %d", event.ToolCall.Function.Name, event.ToolCall.ID, len(event.ToolResult))
+			log.Printf("[ChatService] ChatStream工具事件 | tool: %s | id: %s | result_len: %d | attachments: %d", event.ToolCall.Function.Name, event.ToolCall.ID, len(event.ToolResult), len(event.Attachments))
+			// 累计到 Done 帧统一回吐，方便前端"finish 时一次性渲染"
+			if len(event.Attachments) > 0 {
+				allAttachments = append(allAttachments, event.Attachments...)
+			}
 			// 先把模型决定的工具调用透出
 			tc := event.ToolCall
 			onChunk(StreamChunk{
 				ToolCall: &tc,
 			})
-			// 再透出工具执行结果
+			// 再透出工具执行结果（含命中的结构化附件）
 			resultEvent := &ToolResultEvent{
-				ID:     event.ToolCall.ID,
-				Name:   event.ToolCall.Function.Name,
-				Result: event.ToolResult,
+				ID:          event.ToolCall.ID,
+				Name:        event.ToolCall.Function.Name,
+				Result:      event.ToolResult,
+				Attachments: event.Attachments,
 			}
 			if event.Err != nil {
 				resultEvent.Error = event.Err.Error()
@@ -431,7 +470,7 @@ func (s *ChatService) ChatStream(req ChatRequest, onChunk func(StreamChunk)) {
 	// 8) 流结束
 	if streamErr != nil {
 		log.Printf("[ChatService] ChatStream 编排器执行失败 | error: %v", streamErr)
-		onChunk(StreamChunk{Done: true, Err: streamErr, Reply: fullReply.String()})
+		onChunk(StreamChunk{Done: true, Err: streamErr, Reply: fullReply.String(), Attachments: allAttachments})
 		return
 	}
 
@@ -451,8 +490,8 @@ func (s *ChatService) ChatStream(req ChatRequest, onChunk func(StreamChunk)) {
 	// 10) 异步从本轮对话抽取长期记忆
 	s.memorySvc.ExtractAsync(req.UserID, req.Message, reply)
 
-	log.Printf("[ChatService] ChatStream完成 | userId: %s | sessionId: %s | reply_len: %d", req.UserID, req.SessionID, len(reply))
-	onChunk(StreamChunk{Done: true, Reply: reply})
+	log.Printf("[ChatService] ChatStream完成 | userId: %s | sessionId: %s | reply_len: %d | attachments: %d", req.UserID, req.SessionID, len(reply), len(allAttachments))
+	onChunk(StreamChunk{Done: true, Reply: reply, Attachments: allAttachments})
 }
 
 // GetUserMemory 获取用户记忆
@@ -570,21 +609,27 @@ func (s *ChatService) CacheStatsFull() CacheStatsFull {
 }
 
 // RegisterAgent 注册自定义Agent
+// 自定义 Agent 与请求 userId 无关，仅保存到 extraAgents；
+// 每次请求 buildOrchestrator 时会一并注册到临时编排器。
 func (s *ChatService) RegisterAgent(name, description, prompt string, tools []agent.Tool) error {
-	if s.orchestrator == nil {
-		return errors.New("orchestrator not initialized")
+	if name == "" {
+		return errors.New("agent name is required")
 	}
-	agentInstance := agent.NewAgent(name, description, prompt, s.aiClient, tools)
-	s.orchestrator.RegisterAgent(agentInstance)
+	if s.extraAgents == nil {
+		s.extraAgents = make(map[string]*agent.Agent)
+	}
+	s.extraAgents[name] = agent.NewAgent(name, description, prompt, s.aiClient, tools)
 	return nil
 }
 
 // GetAgents 获取所有Agent
+// 内置 default + search；自定义 Agent 通过 RegisterAgent 加入。
 func (s *ChatService) GetAgents() []string {
-	if s.orchestrator == nil {
-		return nil
+	names := []string{"default", "search"}
+	for name := range s.extraAgents {
+		names = append(names, name)
 	}
-	return s.orchestrator.ListAgents()
+	return names
 }
 
 // SaveMessageWithTools 保存带工具调用的消息

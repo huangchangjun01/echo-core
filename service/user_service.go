@@ -30,10 +30,14 @@ type UserService struct {
 }
 
 // NewUserService 构造 UserService
+//
+// sessions 使用 utils 包提供的全局单例 store，避免早期"每个 service
+// 实例独立 store"导致跨请求 session 失效的 bug。后续切 Redis 只需改
+// utils/session_store.go 的实现，本构造函数无感。
 func NewUserService() *UserService {
 	return &UserService{
 		repo:     repository.NewUserRepository(),
-		sessions: utils.NewMemorySessionStore(24 * time.Hour),
+		sessions: utils.GetSessionStore(),
 	}
 }
 

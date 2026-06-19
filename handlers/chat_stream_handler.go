@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"echo-core/agent"
+	"echo-core/middleware"
 	"echo-core/remote"
 	"echo-core/service"
 	"encoding/json"
@@ -29,10 +31,12 @@ func NewChatStreamHandler(svc *service.ChatService) *ChatStreamHandler {
 // Content-Type: text/event-stream
 // 事件帧格式：
 //
-//	event: start   | data: {"sessionId":"..."}
-//	event: delta   | data: {"delta":"片段文本","reply":"累计文本"}
-//	event: finish  | data: {"reply":"完整回复","sessionId":"..."}
-//	event: error   | data: {"error":"错误信息"}
+//	event: start        | data: {"sessionId":"..."}
+//	event: delta        | data: {"delta":"片段文本","reply":"累计文本"}
+//	event: tool_call    | data: { ...AIToolCall... }
+//	event: tool_result  | data: {"id":"...","name":"...","result":"...","attachments":[{...}]}
+//	event: finish       | data: {"reply":"完整回复","sessionId":"...","attachments":[{...}]}
+//	event: error        | data: {"error":"错误信息"}
 func (h *ChatStreamHandler) ChatHandleSSE(c *gin.Context) {
 	log.Printf("[ChatSSE] 收到SSE聊天请求 | IP: %s", c.ClientIP())
 
@@ -41,6 +45,10 @@ func (h *ChatStreamHandler) ChatHandleSSE(c *gin.Context) {
 		log.Printf("[ChatSSE] 请求参数解析失败: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+	// 鉴权中间件已注入 userId，强制覆盖请求体里的值（防冒用）
+	if uid, ok := middleware.MustUserID(c); ok && uid != "" {
+		req.UserID = uid
 	}
 	if req.UserID == "" || req.SessionID == "" || req.Message == "" {
 		log.Printf("[ChatSSE] 参数缺失 | userId: %s | sessionId: %s", req.UserID, req.SessionID)
@@ -95,10 +103,11 @@ func (h *ChatStreamHandler) ChatHandleSSE(c *gin.Context) {
 			flusher.Flush()
 			return
 		}
-		// 结束帧
-		h.writeSSEEvent(c, "finish", map[string]string{
-			"reply":     chunk.Reply,
-			"sessionId": req.SessionID,
+		// 结束帧：携带累计命中的 attachments，便于前端 finish 时统一渲染下载入口
+		h.writeSSEEvent(c, "finish", gin.H{
+			"reply":       chunk.Reply,
+			"sessionId":   req.SessionID,
+			"attachments": chunk.Attachments,
 		})
 		flusher.Flush()
 	})
@@ -138,14 +147,15 @@ type WSIncomingMessage struct {
 
 // WSOutgoingMessage 服务端→客户端的 WebSocket 消息
 type WSOutgoingMessage struct {
-	Type       string                   `json:"type"`                 // start / delta / finish / error / pong / tool_call / tool_result
-	Delta      string                   `json:"delta,omitempty"`      // 本次新增文本
-	Reply      string                   `json:"reply,omitempty"`      // 累计回复
-	SessionID  string                   `json:"sessionId,omitempty"`  // 会话ID
-	Error      string                   `json:"error,omitempty"`      // 错误信息
-	Timestamp  int64                    `json:"timestamp,omitempty"`  // 服务器时间戳（毫秒）
-	ToolCall   *remote.AIToolCall       `json:"toolCall,omitempty"`   // 工具调用事件
-	ToolResult *service.ToolResultEvent `json:"toolResult,omitempty"` // 工具结果事件
+	Type        string                   `json:"type"`                  // start / delta / finish / error / pong / tool_call / tool_result
+	Delta       string                   `json:"delta,omitempty"`       // 本次新增文本
+	Reply       string                   `json:"reply,omitempty"`       // 累计回复
+	SessionID   string                   `json:"sessionId,omitempty"`   // 会话ID
+	Error       string                   `json:"error,omitempty"`       // 错误信息
+	Timestamp   int64                    `json:"timestamp,omitempty"`   // 服务器时间戳（毫秒）
+	ToolCall    *remote.AIToolCall       `json:"toolCall,omitempty"`    // 工具调用事件
+	ToolResult  *service.ToolResultEvent `json:"toolResult,omitempty"`  // 工具结果事件
+	Attachments []agent.Attachment       `json:"attachments,omitempty"` // finish 帧累计的命中文件附件
 }
 
 // ChatHandleWS WebSocket 聊天接口
@@ -154,6 +164,10 @@ type WSOutgoingMessage struct {
 // 客户端发送 {"type":"chat","userId":"...","sessionId":"...","message":"..."}
 // 服务端推送：start -> delta*N -> finish / error
 // 心跳：客户端可发 {"type":"ping"}，服务端回 {"type":"pong"}
+//
+// 鉴权：路由层已挂 RequireSession()；若鉴权失败会在 upgrade 前 401 终止，
+// 不会进入本 handler。upgrade 之后的 chat 帧，userId 会被 server 端用
+// session 注入的 userId 覆盖，避免冒用。
 func (h *ChatStreamHandler) ChatHandleWS(c *gin.Context) {
 	log.Printf("[ChatWS] 收到WebSocket升级请求 | IP: %s", c.ClientIP())
 
@@ -164,6 +178,9 @@ func (h *ChatStreamHandler) ChatHandleWS(c *gin.Context) {
 	}
 	defer conn.Close()
 	log.Printf("[ChatWS] WebSocket连接建立 | remote: %s", conn.RemoteAddr())
+
+	// 把鉴权注入的 userId 拿出来，chat 帧处理时用它覆盖请求体里的 userId
+	wsUserID, _ := middleware.MustUserID(c)
 
 	// 读取循环：阻塞读取客户端消息
 	for {
@@ -188,6 +205,10 @@ func (h *ChatStreamHandler) ChatHandleWS(c *gin.Context) {
 		case "ping":
 			_ = conn.WriteJSON(WSOutgoingMessage{Type: "pong", Timestamp: time.Now().UnixMilli()})
 		case "chat":
+			// 强制覆盖 userId 为 session 注入的真实用户，防止 WS 帧 body 里伪造
+			if wsUserID != "" {
+				in.UserID = wsUserID
+			}
 			h.handleChatMessage(conn, in)
 		default:
 			_ = conn.WriteJSON(WSOutgoingMessage{
@@ -257,10 +278,11 @@ func (h *ChatStreamHandler) handleChatMessage(conn *websocket.Conn, in WSIncomin
 		}
 		if chunk.Done {
 			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:      "finish",
-				Reply:     chunk.Reply,
-				SessionID: in.SessionID,
-				Timestamp: time.Now().UnixMilli(),
+				Type:        "finish",
+				Reply:       chunk.Reply,
+				SessionID:   in.SessionID,
+				Timestamp:   time.Now().UnixMilli(),
+				Attachments: chunk.Attachments,
 			})
 			return
 		}
