@@ -1,10 +1,11 @@
 # Echo Core · 虚拟情感陪伴微模型训练指南
 
-> **版本**: v1.0  
-> **日期**: 2026-06-22  
+> **版本**: v2.0  
+> **日期**: 2026-06-23  
 > **目标**: 为虚拟陪伴平台 Echo Core 设计情感微模型的训练方案  
 > **受众**: 无模型训练基础的开发者  
-> **分支**: `memory-plan`
+> **分支**: `plan`  
+> **更新**: 对齐最新架构：对话逻辑 + ReAct 在 Python，Go 只做会话管理
 
 ---
 
@@ -715,14 +716,28 @@ python -m vllm.entrypoints.openai.api_server \
 
 ### 10.3 与 Echo Core 集成
 
-```go
-// 在 Echo Core 中接入情感微模型
-// 修改 remote/ai_client.go 中的 baseURL 指向情感模型服务
+```
+架构概览：
 
-// .env 配置
-EMOTION_MODEL_BASE_URL=http://localhost:8000/v1
-EMOTION_MODEL_API_KEY=your-key
-EMOTION_MODEL_NAME=emotion-companion-v1
+Go 后端（Echo Core）                          Python AI 服务
+┌──────────────────────┐        一次HTTP      ┌──────────────────────────┐
+│  ChatService         │ ──────────────────►  │ 对话服务 (POST /chat/stream)│
+│  ├── 加载历史消息     │                      │                          │
+│  ├── 调 Python 对话   │                      │  ├── 记忆检索（进程内）    │
+│  ├── 流式透传        │                      │  ├── 轻量 ReAct（2步）     │
+│  └── 保存消息        │                      │  │   ├── 小模型前缀生成    │
+│                      │                      │  │   └── 大模型续写        │
+│                      │ ◄── SSE 流式 ──────── │  └── 流式返回            │
+└──────────────────────┘                      └──────────────────────────┘
+```
+
+Python 对话服务配置：
+```python
+# .env
+EMOTION_MODEL_BASE_URL=http://localhost:8000/v1    # vLLM 推理地址
+EMOTION_MODEL_NAME=emotion-companion-v1            # 训练后的模型名
+LARGE_MODEL_BASE_URL=https://api.openai.com/v1     # 大模型（续写用）
+LARGE_MODEL_NAME=gpt-4o                            # 或 Qwen-Max
 ```
 
 ### 10.4 灰度发布策略

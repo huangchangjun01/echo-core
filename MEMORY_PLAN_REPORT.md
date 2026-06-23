@@ -1,9 +1,10 @@
 # Echo Core · 分层记忆系统评估报告
 
-> **版本**: v1.0  
-> **日期**: 2026-06-22  
+> **版本**: v2.0  
+> **日期**: 2026-06-23  
 > **目标**: 为虚拟陪伴平台 Echo Core 设计并实现生产级分层记忆系统  
-> **分支**: `memory-plan`
+> **分支**: `plan`  
+> **更新**: 数据库改为 MySQL + Qdrant，实现语言改为 Python（记忆系统全部在 Python AI 服务中）
 
 ---
 
@@ -12,7 +13,7 @@
 1. [开源记忆系统调研](#1-开源记忆系统调研)
 2. [方案决策：开源接入 vs 自研](#2-方案决策开源接入-vs-自研)
 3. [自研分层记忆系统详细设计方案](#3-自研分层记忆系统详细设计方案)
-4. [Go 服务中实现的关键步骤](#4-go-服务中实现的关键步骤)
+4. [Python 服务中实现的关键步骤](#4-python-服务中实现的关键步骤)
 5. [总结与风险提示](#5-总结与风险提示)
 
 ---
@@ -412,148 +413,147 @@ type MemoryConsolidator struct {
 
 ---
 
-## 4. Go 服务中实现的关键步骤
+## 4. Python 服务中实现的关键步骤
+
+> **注意**: 记忆系统全部在 Python AI 服务中实现。Go 侧只保留会话管理，不再包含记忆处理逻辑。
 
 ### 4.1 实施路线图
 
 ```
-Phase 1 (内核升级)         Phase 2 (检索增强)         Phase 3 (智能进阶)
+Phase 1 (基础设施)          Phase 2 (记忆引擎)          Phase 3 (智能进阶)
 ┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
-│ 1. 数据模型升级   │  ──▶  │ 5. 向量检索器     │  ──▶  │ 9. 记忆关系图谱   │
-│ 2. 原子事实抽取   │       │ 6. Embedding 优化 │       │ 10. 记忆后台整理  │
-│ 3. 分层归档逻辑   │       │ 7. 语义去重升级   │       │ 11. 遗忘曲线      │
-│ 4. 分层注入引擎   │       │ 8. 情感标注系统   │       │ 12. 记忆可见性控制│
+│ 1. MySQL 表结构   │  ──▶  │ 5. 向量检索器     │  ──▶  │ 9. 记忆关系图谱   │
+│ 2. Qdrant 部署    │       │ 6. Embedding 优化 │       │ 10. 记忆后台整理  │
+│ 3. 原子事实抽取   │       │ 7. 语义去重升级   │       │ 11. 遗忘曲线      │
+│ 4. 分层归档逻辑   │       │ 8. 情感标注系统   │       │ 12. 记忆压缩      │
 └─────────────────┘       └─────────────────┘       └─────────────────┘
     第 1-2 周                   第 3-4 周                   第 5-6 周
 ```
 
-### 4.2 Phase 1: 内核升级（第 1-2 周）
+### 4.2 Phase 1: 基础设施（第 1-2 周）
 
-#### 步骤 1: 数据模型升级
+#### 步骤 1: MySQL 表结构创建
 
-**文件**: `models/memory.go`
+**文件**: `migrations/001_create_memory_tables.sql`
 
-- [ ] 升级 `UserMemory` 结构体，新增字段：`MemoryTier`, `Importance`, `EmotionTag`, `EmotionIntensity`, `AccessCount`, `LastAccessAt`, `ValidFrom`, `ValidUntil`, `EmbeddingJSON`, `ParentID`, `RelationType`, `SourceSessionID`, `SourceMessageID`
-- [ ] 新增 `MemoryRelation` 模型
-- [ ] 新增 `EmotionMemoryIndex` 模型
-- [ ] 在 `AutoMigrate()` 中注册新模型
+- [ ] 创建 `identity_memory` 表（身份记忆，1 条/用户，永久 L0）
+- [ ] 创建 `episodic_memory` 表（情景记忆，核心表，L0/L1/L2 分层）
+- [ ] 创建 `perceptual_memory` 表（感知记忆，穿戴设备帧，30 天归档）
+- [ ] 创建 `summary_memory` 表（摘要记忆，LLM 定期压缩生成）
+- [ ] 创建 `persona_memory` 表（人格记忆，虚拟人物设定）
+- [ ] 创建 `memory_relations` 表（跨表关系：因果/更新/矛盾）
+- [ ] 添加索引：user_id + tier / category / emotion / captured_at
 
-**文件**: `repository/memory_repository.go`
+#### 步骤 2: Qdrant 部署与集合创建
 
-- [ ] 新增 `GetMemoriesByTier(userID, tier)` — 按层级查询
-- [ ] 新增 `GetTopMemories(userID, tier, limit)` — 按重要性排序查询
-- [ ] 新增 `SearchMemoriesByEmotion(userID, emotionTag)` — 情感维度查询
-- [ ] 新增 `UpdateMemoryTier(memoryID, tier)` — 层级变更
-- [ ] 新增 `IncrementAccessCount(memoryID)` — 访问计数
-- [ ] 新增 `MarkExpired(memoryID)` — 标记过期
-- [ ] 新增 `SaveMemoryRelation(relation)` — 保存关系
-- [ ] 新增 `GetMemoryChain(memoryID)` — 获取记忆演化链
+**文件**: `scripts/setup_qdrant.py`
 
-#### 步骤 2: 原子事实抽取
+- [ ] 部署 Qdrant 服务（Docker 或云服务）
+- [ ] 创建文本向量集合 `episodic_memory`（768 维，BGE-M3）
+- [ ] 创建图片向量集合 `multimodal_image`（512 维，CLIP）
+- [ ] 创建音频向量集合 `multimodal_audio`（256 维，Whisper）
+- [ ] 创建视频向量集合 `multimodal_video`（512 维，VideoMAE）
+- [ ] 配置 HNSW 索引参数
 
-**文件**: `service/memory_service.go`
+#### 步骤 3: 原子事实抽取
 
-- [ ] 重构 `extractWithLLM` prompt：要求 LLM 以"原子事实"粒度输出
-- [ ] 每条原子事实独立存储（不再按 type 合并到一个 content 字段）
-- [ ] 新增 `extractAtomFacts(userMsg, asstReply) → []AtomicMemoryItem` 方法
-- [ ] `AtomicMemoryItem` 新增字段：`EmotionTag`, `EmotionIntensity`, `Importance`
+**文件**: `services/memory/extractor.py`
 
-#### 步骤 3: 分层归档逻辑
+- [ ] 实现 `extract_atom_facts(user_msg, asst_reply) → List[AtomicFact]`
+- [ ] LLM prompt 要求以"原子事实"粒度输出
+- [ ] 每条原子事实独立存储（不再按 type 合并）
+- [ ] 同时抽取因果关系：causes/leads_to/related_to/contradicts
+- [ ] 输出格式校验 + 容错处理
 
-**文件**: `service/memory_service.go`
+#### 步骤 4: 分层归档逻辑
 
-- [ ] 新增 `classifyMemoryTier(memory) → int` 方法，实现 L0/L1/L2 判定规则
-- [ ] 新增 `calculateImportance(memory) → float64` 方法
-- [ ] 在 `ExtractAndSave` 中调用分层归档逻辑
+**文件**: `services/memory/tier.py`
 
-#### 步骤 4: 分层注入引擎
+- [ ] 实现 `classify_tier(fact, emotion_tag, intensity) → int`（L0/L1/L2 判定）
+- [ ] 实现 `calculate_importance(fact) → float`
+- [ ] L0 判定规则：importance >= 0.8，或身份信息，或情感强度 >= 0.7
+- [ ] L2 判定规则：importance < 0.3，或 ValidUntil 已过期
 
-**文件**: `service/memory_service.go`
-
-- [ ] 重构 `BuildMemoryContext`：
-  - L0: 全量加载，格式化为紧凑文本（≤500 tokens）
-  - L1: 语义检索 Top-N（后续 Phase 2 实现，当前先按重要性排序取 Top 5）
-- [ ] 新增 `BuildMemoryContextL0(userID) → string` — 仅 L0
-- [ ] 新增 `BuildMemoryContextL1(userID, query) → string` — L1 按需检索
-- [ ] 新增 `SearchMemoryTool` — 注册为 Agent 工具，让 LLM 可主动搜索 L2 归档记忆
-
-### 4.3 Phase 2: 检索增强（第 3-4 周）
+### 4.3 Phase 2: 记忆引擎（第 3-4 周）
 
 #### 步骤 5: 向量检索器
 
-**文件**: 新增 `service/vector_retriever.go`
+**文件**: `services/memory/retriever.py`
 
-- [ ] 实现 `VectorRetriever` 结构体
-- [ ] 实现基于内存的向量检索（适用于小规模，1000 条以内）
-  - 余弦相似度计算
-  - Top-K 检索
-- [ ] 预留向量数据库接口（Milvus/Qdrant/pgvector）
-- [ ] 实现 `SearchSimilar(query, tier, topK) → []UserMemory`
+- [ ] 实现 `semantic_search(user_id, query, tier, top_k) → List[Memory]`
+- [ ] Qdrant 文本向量检索
+- [ ] 检索得分公式：语义相似度(0.5) + 时间衰减(0.2) + 情感强度(0.2) + 重要性(0.1)
+- [ ] 实现时间衰减函数：`decay = e^(-λ * days_since_last_access)`
+- [ ] 多模态检索：跨模态向量查询
 
 #### 步骤 6: Embedding 优化
 
-**文件**: `remote/ai_client.go` / 新增 `service/embedding_cache.go`
+**文件**: `services/embedding/service.py`
 
-- [ ] 实现 embedding 结果缓存（LRU，容量 10000）
-- [ ] 评估本地 embedding 模型（Ollama + bge-small）降低延迟
-- [ ] 批量 embedding 支持（减少 API 调用次数）
+- [ ] 实现 embedding 结果缓存（Redis，TTL 24h）
+- [ ] 批量 embedding 支持（减少 API 调用次数，攒批 10 条）
+- [ ] 本地 embedding 模型评估（Ollama + bge-small）
+- [ ] 多模态 embedding：CLIP（图片）、Whisper（音频）、VideoMAE（视频）
 
 #### 步骤 7: 语义去重升级
 
-**文件**: `service/memory_service.go`
+**文件**: `services/memory/dedup.py`
 
-- [ ] 重构 `mergeMemories` → `resolveMemoryRelations`
-- [ ] 实现向量召回候选（Top-3）→ LLM 判重 → 关系识别
-- [ ] 实现 `update`, `contradict`, `extend`, `new` 四种关系处理
-- [ ] 写入 `MemoryRelation` 表
+- [ ] 实现 `resolve_relations(user_id, embedding, content) → RelationType`
+- [ ] Qdrant 向量召回候选（Top-3）→ LLM 判重
+- [ ] 五种关系处理：duplicate（跳过）/ update（标记过期）/ contradict（标记过期）/ extend（保留）/ new（新建）
+- [ ] 写入 `memory_relations` 表
 
 #### 步骤 8: 情感标注系统
 
-**文件**: 新增 `service/emotion_service.go`
+**文件**: `services/memory/emotion.py`
 
-- [ ] 实现 `AnnotateEmotion(memory) → (tag, intensity)` 方法
-- [ ] 调用 LLM 进行情感分析（使用专用 prompt）
-- [ ] 写入 `EmotionMemoryIndex` 表
-- [ ] 实现 `GetMemoriesByEmotion(userID, tag)` 查询
+- [ ] 实现 `annotate_emotion(content) → (tag, intensity)`
+- [ ] LLM 情感分析 prompt
+- [ ] 写入 `episodic_memory.emotion_tag` / `emotion_intensity`
+- [ ] 情感维度检索 API
 
 ### 4.4 Phase 3: 智能进阶（第 5-6 周）
 
 #### 步骤 9: 记忆关系图谱
 
-**文件**: 新增 `service/memory_graph.go`
+**文件**: `services/memory/graph.py`
 
-- [ ] 实现 `MemoryGraph` 结构体
-- [ ] 查询记忆演化链：`GetMemoryChain(memoryID)`
-- [ ] 查询用户记忆关系图：`GetUserMemoryGraph(userID)`
-- [ ] 基于图的多跳推理检索（未来用于情感微模型联动）
+- [ ] 实现因果链查询（MySQL 递归 CTE）
+- [ ] 实现记忆演化链：`get_memory_chain(memory_id)`
+- [ ] 实现用户记忆关系图：`get_user_memory_graph(user_id)`
+- [ ] 为 LLM 格式化因果链文本
 
 #### 步骤 10: 记忆后台整理
 
-**文件**: 新增 `service/memory_consolidator.go`
+**文件**: `services/memory/consolidator.py`
 
-- [ ] 实现 `MemoryConsolidator` 定时任务
-- [ ] 实现 L1→L2 降级逻辑
-- [ ] 实现相似记忆合并
-- [ ] 实现矛盾记忆清理
-- [ ] 实现 Importance 重算
-- [ ] 在 `main.go` 中启动 `MemoryConsolidator`
+- [ ] 实现 `MemoryConsolidator`（APScheduler 定时任务）
+- [ ] 每天凌晨：L1 超过 30 天未访问 → 降级 L2
+- [ ] 每天凌晨：LLM 生成"今日日记" → summary_memory
+- [ ] 每周：相似记忆合并
+- [ ] 每周：矛盾记忆清理，旧版本标记过期
+- [ ] 每月：perceptual_memory 压缩归档
 
 #### 步骤 11: 遗忘曲线
 
-**文件**: `service/memory_service.go`
+**文件**: `services/memory/decay.py`
 
-- [ ] 实现 `calculateRetentionRate(memory) → float64` — Ebbinghaus 遗忘曲线
-- [ ] 实现 `calculateDecayScore(memory) → float64` — 时间衰减得分
+- [ ] 实现 `calculate_retention_rate(memory) → float` — Ebbinghaus 遗忘曲线
+- [ ] 实现 `calculate_decay_score(memory) → float` — 时间衰减得分
 - [ ] 在检索排序中集成遗忘曲线得分
-- [ ] 在 `MemoryConsolidator` 中实现过期记忆自动降级
+- [ ] 自动降级：retention_rate < 0.3 → L2
 
-#### 步骤 12: 记忆可见性控制
+#### 步骤 12: 记忆压缩
 
-**文件**: `service/memory_service.go`
+**文件**: `services/memory/compressor.py`
 
-- [ ] 实现 `MemoryVisibility` 枚举（private/shared/public）
-- [ ] 在 `BuildMemoryContext` 中按可见性过滤
-- [ ] 提供 API 供用户管理记忆可见性
+- [ ] 实现 `compress_daily(user_id, date) → SummaryMemory`
+- [ ] 读取当天 episodic + perceptual 记忆
+- [ ] LLM 生成"今日日记"摘要
+- [ ] 选择代表性关键帧
+- [ ] 生成多模态嵌入
+- [ ] 原始数据标记为可归档
 
 ### 4.5 跨切关注点
 
@@ -561,11 +561,11 @@ Phase 1 (内核升级)         Phase 2 (检索增强)         Phase 3 (智能进
 
 | 优化项 | 方案 | 预期收益 |
 |--------|------|----------|
-| Embedding 缓存 | LRU 内存缓存 | -50% embedding API 调用 |
+| Embedding 缓存 | Redis 缓存 | -50% embedding API 调用 |
 | 批量 embedding | 攒批 10 条一起发送 | -80% 网络往返 |
-| L0 记忆预加载 | 用户登录时预热 | 首字时延 -100ms |
-| 向量检索加速 | 内存索引（<1000条）/ pgvector（>1000条） | 检索 <10ms |
-| 异步抽取 | 已有 goroutine 异步 | 0ms 主链路影响 |
+| L0 记忆预加载 | 用户登录时预热（Redis） | 首字时延 -100ms |
+| 向量检索 | Qdrant HNSW 索引 | 检索 <10ms |
+| 异步抽取 | 对话后异步处理 | 0ms 主链路影响 |
 
 #### 监控指标
 
@@ -597,13 +597,16 @@ Phase 1 (内核升级)         Phase 2 (检索增强)         Phase 3 (智能进
 
 | 决策项 | 结论 | 核心理由 |
 |--------|------|----------|
-| 开源 vs 自研 | **自研** | Go 语言栈不匹配、领域需求定制化、现有基础良好 |
+| 开源 vs 自研 | **自研** | Python 生态统一管理、领域需求定制化、Go 侧只做会话管理 |
+| 实现语言 | **Python** | LLM 编排、向量计算、记忆抽取在 Python 进程内完成，零网络开销 |
 | 架构设计 | **三层记忆(L0/L1/L2)** | 借鉴 OpenViking 分层 + Letta 内存层级 |
+| 数据库 | **MySQL + Qdrant** | MySQL 存关系型数据，Qdrant 做全模态向量检索 |
 | 记忆粒度 | **原子事实** | 借鉴 SuperMemory，提升检索精度 + 去重效果 |
+| 记忆表设计 | **5 实体表 + 1 关系表** | 按生命周期和读写模式分表，各司其职 |
 | 去重策略 | **向量召回 + LLM 判重** | 借鉴 Mem0，解决当前 Contains 粗粒度问题 |
 | 时序管理 | **双时序(valid_from/valid_until)** | 借鉴 Zep，支持记忆时效性推理 |
-| 关系追踪 | **关系版本化** | 借鉴 SuperMemory，支持 update/contradict/extend/derive |
-| 情感集成 | **情感标签+强度+索引** | 为本项目"情感微模型"预留接口 |
+| 关系追踪 | **关系版本化 + 因果链** | 借鉴 SuperMemory，支持 update/contradict/causes |
+| 情感集成 | **情感标签+强度** | 为本项目"情感微模型"预留接口 |
 | 后台整理 | **定时 Consolidator** | 借鉴 M3-Agent 记忆线程 + Letta sleep-time agent |
 
 ### 5.2 风险与缓解
@@ -611,8 +614,8 @@ Phase 1 (内核升级)         Phase 2 (检索增强)         Phase 3 (智能进
 | 风险 | 影响 | 缓解措施 |
 |------|------|----------|
 | LLM 抽取质量不稳定 | 脏记忆膨胀 | 严格的 prompt 约束 + 输出格式校验 + 人工抽查 |
-| 向量检索性能瓶颈 | 检索延迟增加 | 分阶段：先内存索引（<1000条），后续接 pgvector |
-| 记忆爆炸（用户量增长） | 存储和检索成本上升 | L2 归档策略 + 遗忘曲线自动清理 + 每用户记忆上限 |
+| 向量检索性能瓶颈 | 检索延迟增加 | 分阶段：先 Qdrant HNSW 索引（<10ms），多模态集合独立调优 |
+| 记忆爆炸（用户量增长） | 存储和检索成本上升 | L2 归档策略 + 遗忘曲线自动清理 + 每用户记忆上限 + LLM 定期压缩 |
 | 情感标注偏差 | 检索结果偏离用户真实状态 | 允许用户手动修正情感标签 + 多轮对话交叉验证 |
 | 与情感微模型集成延迟 | 两系统信息不同步 | 预留共享 embedding 接口 + 统一事件总线 |
 
