@@ -1,0 +1,23 @@
+# Checklist
+
+- [ ] Agent 目录（agent/react_engine.go、agent/tools.go、agent/react_engine_test.go）已删除
+- [ ] service/memory_service.go 已删除
+- [ ] service/summarizer_service.go 已删除
+- [ ] service/prompt_cache.go 已删除
+- [ ] remote/vector_remote.go 已删除
+- [ ] remote/request/ 目录已删除
+- [ ] remote/response/ 目录已删除
+- [ ] dto/chat_dto.go 已删除
+- [ ] models/memory.go 中仅保留 SessionMessage，UserMemory/ConversationSummary/AgentConfig 已删除
+- [ ] repository/memory_repository.go 仅保留 SessionMessage 相关方法
+- [ ] remote/python_client.go 已创建，支持流式 SSE 调用 Python /chat 接口
+- [ ] service/chat_service.go 已重写，不再依赖 agent/memory/summarizer/prompt_cache
+- [ ] handlers/chat_handler.go 仅保留 GetHistoryHandle 和 ClearSessionHandle
+- [ ] handlers/chat_stream_handler.go 已精简，删除 WebSocket 和工具调用逻辑
+- [ ] routes/router.go 聊天路由已精简
+- [ ] service/file_service.go RegisterFile 不再调用 Python ingest_file
+- [ ] config/database.go autoMigrate 仅包含 File/SessionMessage/User
+- [ ] 项目编译通过（go build ./...）
+- [ ] REFACTOR_REPORT.md 已生成在根目录
+- [ ] 代码已提交到 echo_refactor 分支并推送
+- [ ] 服务可正常启动，用户/文件/聊天接口功能正常

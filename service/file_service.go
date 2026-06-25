@@ -1,10 +1,7 @@
 package service
 
 import (
-	"echo-core/config"
 	"echo-core/models"
-	"echo-core/remote"
-	remoteRequest "echo-core/remote/request"
 	"echo-core/repository"
 	serviceRequest "echo-core/service/request"
 	"echo-core/utils"
@@ -20,7 +17,6 @@ import (
 
 type FileService struct {
 	fileRepository *repository.FileRepository
-	vectorRemote    *remote.VectorRemote
 }
 
 // GetUploadTokenResult 获取上传token的结果
@@ -41,7 +37,6 @@ type RegisterFileResult struct {
 func NewFileService() (*FileService, error) {
 	return &FileService{
 		fileRepository: repository.NewFileRepository(),
-		vectorRemote:    remote.NewVectorRemote(),
 	}, nil
 }
 
@@ -136,17 +131,10 @@ func (h *FileService) GetUploadToken(fileName string, fileSize int64, mimeType s
 	return nil, fmt.Errorf("获取七牛云token失败，已重试 %d 次，最后一次错误: %v", maxRetries, lastErr)
 }
 
-// RegisterFile 注册文件信息（带事务）
+// RegisterFile 注册文件信息
 func (h *FileService) RegisterFile(req *serviceRequest.RegisterFileRequest) (*RegisterFileResult, error) {
 	log.Printf("[RegisterFile] 收到请求: userId=%s, fileName=%s, key=%s, fileType=%d, bizType=%d",
 		req.UserId, req.FileName, req.Key, req.FileType, req.BizType)
-
-	// 开启事务
-	tx := config.DB.Begin()
-	if tx.Error != nil {
-		log.Printf("[RegisterFile] 开启事务失败: %v", tx.Error)
-		return nil, fmt.Errorf("开启事务失败: %v", tx.Error)
-	}
 
 	// 创建文件记录
 	file := models.File{
@@ -159,41 +147,11 @@ func (h *FileService) RegisterFile(req *serviceRequest.RegisterFileRequest) (*Re
 		Config:   &models.FileConfig{}, // 默认空JSON对象
 	}
 
-	// 使用 FileRepository 创建记录
-	if err := h.fileRepository.CreateWithTx(tx, &file); err != nil {
-		tx.Rollback()
-		log.Printf("[RegisterFile] 文件入库失败，回滚事务: %v", err)
+	if err := h.fileRepository.Create(&file); err != nil {
+		log.Printf("[RegisterFile] 文件入库失败: %v", err)
 		return nil, fmt.Errorf("文件入库失败: %v", err)
 	}
 	log.Printf("[RegisterFile] 文件入库成功: id=%d, key=%s", file.Id, file.Key)
-
-	_, _, _, domain, err := getQiniuConfig()
-	if err != nil {
-		log.Printf("[RegisterFile] 配置检查失败: %v", err)
-		return nil, err
-	}
-	// 调用Python服务 /ingest_file 接口
-	ingestReq := &remoteRequest.IngestFileRequest{
-		UserID: req.UserId,
-	}
-	ingestReq.File.FileID = fmt.Sprintf("%d", file.Id)
-	ingestReq.File.FileName = req.FileName
-	ingestReq.File.FileKey = req.Key
-	ingestReq.File.Url = domain + "/" + req.Key
-	log.Printf("[RegisterFile] 开始调用Python /ingest_file 接口: userId=%s, fileId=%s, fileName=%s, FileKey=%s, Url=%s",
-		ingestReq.UserID, ingestReq.File.FileID, ingestReq.File.FileName, ingestReq.File.FileKey, ingestReq.File.Url)
-
-	if err := h.vectorRemote.IngestFile(ingestReq); err != nil {
-		tx.Rollback()
-		log.Printf("[RegisterFile] 调用Python /ingest_file 接口失败，回滚事务: %v", err)
-		return nil, fmt.Errorf("调用Python服务失败: %v", err)
-	}
-
-	// 提交事务
-	if err := tx.Commit().Error; err != nil {
-		log.Printf("[RegisterFile] 提交事务失败: %v", err)
-		return nil, fmt.Errorf("提交事务失败: %v", err)
-	}
 
 	log.Printf("[RegisterFile] 注册文件成功: id=%d, userId=%s, key=%s", file.Id, file.UserId, file.Key)
 	return &RegisterFileResult{

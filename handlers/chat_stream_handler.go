@@ -1,22 +1,17 @@
 package handlers
 
 import (
-	"echo-core/agent"
 	"echo-core/middleware"
-	"echo-core/remote"
 	"echo-core/service"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 )
 
 // ChatStreamHandler 流式聊天处理器
-// 统一承载 SSE 与 WebSocket 两种流式通道
 type ChatStreamHandler struct {
 	svc *service.ChatService
 }
@@ -33,9 +28,7 @@ func NewChatStreamHandler(svc *service.ChatService) *ChatStreamHandler {
 //
 //	event: start        | data: {"sessionId":"..."}
 //	event: delta        | data: {"delta":"片段文本","reply":"累计文本"}
-//	event: tool_call    | data: { ...AIToolCall... }
-//	event: tool_result  | data: {"id":"...","name":"...","result":"...","attachments":[{...}]}
-//	event: finish       | data: {"reply":"完整回复","sessionId":"...","attachments":[{...}]}
+//	event: finish       | data: {"reply":"完整回复","sessionId":"..."}
 //	event: error        | data: {"error":"错误信息"}
 func (h *ChatStreamHandler) ChatHandleSSE(c *gin.Context) {
 	log.Printf("[ChatSSE] 收到SSE聊天请求 | IP: %s", c.ClientIP())
@@ -71,7 +64,7 @@ func (h *ChatStreamHandler) ChatHandleSSE(c *gin.Context) {
 	}
 
 	// start 帧
-	h.writeSSEEvent(c, "start", map[string]string{"sessionId": req.SessionID})
+	writeSSEEvent(c.Writer, "start", map[string]string{"sessionId": req.SessionID})
 	flusher.Flush()
 
 	log.Printf("[ChatSSE] 开始流式输出 | userId: %s | sessionId: %s", req.UserID, req.SessionID)
@@ -79,35 +72,22 @@ func (h *ChatStreamHandler) ChatHandleSSE(c *gin.Context) {
 	h.svc.ChatStream(req, func(chunk service.StreamChunk) {
 		if chunk.Err != nil {
 			log.Printf("[ChatSSE] 流式错误 | error: %v", chunk.Err)
-			h.writeSSEEvent(c, "error", map[string]string{"error": chunk.Err.Error()})
-			flusher.Flush()
-			return
-		}
-		// 工具调用：AI 决定调用的工具
-		if chunk.ToolCall != nil {
-			h.writeSSEEvent(c, "tool_call", chunk.ToolCall)
-			flusher.Flush()
-			return
-		}
-		// 工具结果：执行完成后回吐
-		if chunk.ToolResult != nil {
-			h.writeSSEEvent(c, "tool_result", chunk.ToolResult)
+			writeSSEEvent(c.Writer, "error", map[string]string{"error": chunk.Err.Error()})
 			flusher.Flush()
 			return
 		}
 		if !chunk.Done {
-			h.writeSSEEvent(c, "delta", map[string]string{
+			writeSSEEvent(c.Writer, "delta", map[string]string{
 				"delta": chunk.Delta,
 				"reply": chunk.Reply,
 			})
 			flusher.Flush()
 			return
 		}
-		// 结束帧：携带累计命中的 attachments，便于前端 finish 时统一渲染下载入口
-		h.writeSSEEvent(c, "finish", gin.H{
-			"reply":       chunk.Reply,
-			"sessionId":   req.SessionID,
-			"attachments": chunk.Attachments,
+		// 结束帧
+		writeSSEEvent(c.Writer, "finish", gin.H{
+			"reply":     chunk.Reply,
+			"sessionId": req.SessionID,
 		})
 		flusher.Flush()
 	})
@@ -116,184 +96,13 @@ func (h *ChatStreamHandler) ChatHandleSSE(c *gin.Context) {
 }
 
 // writeSSEEvent 写入一个 SSE 事件帧
-func (h *ChatStreamHandler) writeSSEEvent(c *gin.Context, event string, payload any) {
+func writeSSEEvent(w http.ResponseWriter, event string, payload any) {
 	data, err := json.Marshal(payload)
 	if err != nil {
 		log.Printf("[ChatSSE] 事件序列化失败 | event: %s | error: %v", event, err)
 		return
 	}
-	if _, err := fmt.Fprintf(c.Writer, "event: %s\ndata: %s\n\n", event, data); err != nil {
+	if _, err := fmt.Fprintf(w, "event: %s\ndata: %s\n\n", event, data); err != nil {
 		log.Printf("[ChatSSE] 事件写入失败 | event: %s | error: %v", event, err)
 	}
-}
-
-// WebSocket 升级器
-// CheckOrigin 始终放行：内网服务，部署时建议收敛
-var wsUpgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 4096,
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-// WSIncomingMessage 客户端→服务端的 WebSocket 消息
-type WSIncomingMessage struct {
-	Type      string `json:"type"`                // 消息类型：chat / ping
-	UserID    string `json:"userId,omitempty"`    // 用户ID
-	SessionID string `json:"sessionId,omitempty"` // 会话ID
-	Message   string `json:"message,omitempty"`   // 聊天内容
-}
-
-// WSOutgoingMessage 服务端→客户端的 WebSocket 消息
-type WSOutgoingMessage struct {
-	Type        string                   `json:"type"`                  // start / delta / finish / error / pong / tool_call / tool_result
-	Delta       string                   `json:"delta,omitempty"`       // 本次新增文本
-	Reply       string                   `json:"reply,omitempty"`       // 累计回复
-	SessionID   string                   `json:"sessionId,omitempty"`   // 会话ID
-	Error       string                   `json:"error,omitempty"`       // 错误信息
-	Timestamp   int64                    `json:"timestamp,omitempty"`   // 服务器时间戳（毫秒）
-	ToolCall    *remote.AIToolCall       `json:"toolCall,omitempty"`    // 工具调用事件
-	ToolResult  *service.ToolResultEvent `json:"toolResult,omitempty"`  // 工具结果事件
-	Attachments []agent.Attachment       `json:"attachments,omitempty"` // finish 帧累计的命中文件附件
-}
-
-// ChatHandleWS WebSocket 聊天接口
-// GET /api/chat/ws
-// 协议：
-// 客户端发送 {"type":"chat","userId":"...","sessionId":"...","message":"..."}
-// 服务端推送：start -> delta*N -> finish / error
-// 心跳：客户端可发 {"type":"ping"}，服务端回 {"type":"pong"}
-//
-// 鉴权：路由层已挂 RequireSession()；若鉴权失败会在 upgrade 前 401 终止，
-// 不会进入本 handler。upgrade 之后的 chat 帧，userId 会被 server 端用
-// session 注入的 userId 覆盖，避免冒用。
-func (h *ChatStreamHandler) ChatHandleWS(c *gin.Context) {
-	log.Printf("[ChatWS] 收到WebSocket升级请求 | IP: %s", c.ClientIP())
-
-	conn, err := wsUpgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		log.Printf("[ChatWS] WebSocket升级失败: %v", err)
-		return
-	}
-	defer conn.Close()
-	log.Printf("[ChatWS] WebSocket连接建立 | remote: %s", conn.RemoteAddr())
-
-	// 把鉴权注入的 userId 拿出来，chat 帧处理时用它覆盖请求体里的 userId
-	wsUserID, _ := middleware.MustUserID(c)
-
-	// 读取循环：阻塞读取客户端消息
-	for {
-		_, raw, err := conn.ReadMessage()
-		if err != nil {
-			log.Printf("[ChatWS] 读取消息失败，连接关闭 | error: %v", err)
-			return
-		}
-
-		var in WSIncomingMessage
-		if err := json.Unmarshal(raw, &in); err != nil {
-			log.Printf("[ChatWS] 消息解析失败 | error: %v", err)
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:      "error",
-				Error:     "invalid message format: " + err.Error(),
-				Timestamp: time.Now().UnixMilli(),
-			})
-			continue
-		}
-
-		switch in.Type {
-		case "ping":
-			_ = conn.WriteJSON(WSOutgoingMessage{Type: "pong", Timestamp: time.Now().UnixMilli()})
-		case "chat":
-			// 强制覆盖 userId 为 session 注入的真实用户，防止 WS 帧 body 里伪造
-			if wsUserID != "" {
-				in.UserID = wsUserID
-			}
-			h.handleChatMessage(conn, in)
-		default:
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:      "error",
-				Error:     "unknown message type: " + in.Type,
-				Timestamp: time.Now().UnixMilli(),
-			})
-		}
-	}
-}
-
-// handleChatMessage 处理单条聊天消息
-func (h *ChatStreamHandler) handleChatMessage(conn *websocket.Conn, in WSIncomingMessage) {
-	log.Printf("[ChatWS] 收到聊天消息 | userId: %s | sessionId: %s | messageLen: %d", in.UserID, in.SessionID, len(in.Message))
-
-	if in.UserID == "" || in.SessionID == "" || in.Message == "" {
-		log.Printf("[ChatWS] 参数缺失 | userId: %s | sessionId: %s", in.UserID, in.SessionID)
-		_ = conn.WriteJSON(WSOutgoingMessage{
-			Type:      "error",
-			Error:     "userId, sessionId and message are required",
-			Timestamp: time.Now().UnixMilli(),
-		})
-		return
-	}
-
-	// start
-	_ = conn.WriteJSON(WSOutgoingMessage{
-		Type:      "start",
-		SessionID: in.SessionID,
-		Timestamp: time.Now().UnixMilli(),
-	})
-
-	req := service.ChatRequest{
-		UserID:    in.UserID,
-		SessionID: in.SessionID,
-		Message:   in.Message,
-	}
-	h.svc.ChatStream(req, func(chunk service.StreamChunk) {
-		if chunk.Err != nil {
-			log.Printf("[ChatWS] 流式错误 | error: %v", chunk.Err)
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:      "error",
-				Error:     chunk.Err.Error(),
-				Timestamp: time.Now().UnixMilli(),
-			})
-			return
-		}
-		// 工具调用：AI 决定调用的工具
-		if chunk.ToolCall != nil {
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:      "tool_call",
-				ToolCall:  chunk.ToolCall,
-				SessionID: in.SessionID,
-				Timestamp: time.Now().UnixMilli(),
-			})
-			return
-		}
-		// 工具结果：执行完成后回吐
-		if chunk.ToolResult != nil {
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:       "tool_result",
-				ToolResult: chunk.ToolResult,
-				SessionID:  in.SessionID,
-				Timestamp:  time.Now().UnixMilli(),
-			})
-			return
-		}
-		if chunk.Done {
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:        "finish",
-				Reply:       chunk.Reply,
-				SessionID:   in.SessionID,
-				Timestamp:   time.Now().UnixMilli(),
-				Attachments: chunk.Attachments,
-			})
-			return
-		}
-		_ = conn.WriteJSON(WSOutgoingMessage{
-			Type:      "delta",
-			Delta:     chunk.Delta,
-			Reply:     chunk.Reply,
-			SessionID: in.SessionID,
-			Timestamp: time.Now().UnixMilli(),
-		})
-	})
-
-	log.Printf("[ChatWS] 聊天消息处理完成 | userId: %s | sessionId: %s", in.UserID, in.SessionID)
 }
