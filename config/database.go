@@ -105,6 +105,11 @@ func GetDB() *gorm.DB {
 	return DB
 }
 
+// SetDBForTest 测试钩子：替换为内存数据库（仅测试代码使用）
+func SetDBForTest(db *gorm.DB) {
+	DB = db
+}
+
 // autoMigrate 自动迁移表结构
 func autoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
