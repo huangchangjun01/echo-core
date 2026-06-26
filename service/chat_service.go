@@ -91,21 +91,25 @@ func (s *ChatService) ChatStream(req ChatRequest, onChunk func(StreamChunk)) {
 	}
 	log.Printf("[ChatService] ChatStream历史消息获取成功 | count: %d", len(history))
 
-	// 转换历史消息为 PythonMessage 格式
-	pythonHistory := make([]remote.PythonMessage, 0, len(history))
+	// 构建 messages 数组（OpenAI 兼容格式）：历史消息 + 当前用户消息
+	messages := make([]remote.PythonMessage, 0, len(history)+1)
 	for _, h := range history {
-		pythonHistory = append(pythonHistory, remote.PythonMessage{
+		messages = append(messages, remote.PythonMessage{
 			Role:    h.Role,
 			Content: h.Content,
 		})
 	}
+	// 追加当前用户消息
+	messages = append(messages, remote.PythonMessage{
+		Role:    "user",
+		Content: req.Message,
+	})
 
-	// 构建 Python 请求
-	pyReq := remote.PythonChatRequest{
-		UserID:    req.UserID,
-		SessionID: req.SessionID,
-		Message:   req.Message,
-		History:   pythonHistory,
+	// 构建 Python /v1/chat/completions 请求
+	pyReq := remote.PythonChatCompletionsRequest{
+		Messages: messages,
+		UserID:   req.UserID,
+		Stream:   true,
 	}
 
 	// 流式调用 Python 服务
