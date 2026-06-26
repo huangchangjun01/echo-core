@@ -5,7 +5,6 @@ go 1.25.0
 require (
 	github.com/gin-gonic/gin v1.12.0
 	github.com/google/uuid v1.6.0
-	github.com/gorilla/websocket v1.5.3
 	github.com/joho/godotenv v1.5.1
 	github.com/qiniu/go-sdk/v7 v7.26.4
 	golang.org/x/crypto v0.49.0
