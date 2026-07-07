@@ -138,7 +138,7 @@ func RequireSession() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sid := extractSessionID(c)
 		if sid == "" {
-			LogWith(c, "[AuthMiddleware] 缺少 sessionId | method=%s path=%s ip=%s", c.Request.Method, c.Request.URL.Path, c.ClientIP())
+			LogWith(c, "AuthMiddleware", "缺少 sessionId | method=%s path=%s ip=%s", c.Request.Method, c.Request.URL.Path, c.ClientIP())
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"code":    401,
 				"message": "unauthorized: missing sessionId",
@@ -148,14 +148,14 @@ func RequireSession() gin.HandlerFunc {
 		sess, err := store.Get(sid)
 		if err != nil {
 			if errors.Is(err, utils.ErrSessionNotFound) {
-				LogWith(c, "[AuthMiddleware] session 无效或已过期 | sid=%s ip=%s", sid, c.ClientIP())
+				LogWith(c, "AuthMiddleware", "session 无效或已过期 | sid=%s ip=%s", sid, c.ClientIP())
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 					"code":    401,
 					"message": "unauthorized: invalid or expired session",
 				})
 				return
 			}
-			LogWith(c, "[AuthMiddleware] session 查询失败 | sid=%s err=%v", sid, err)
+			LogWith(c, "AuthMiddleware", "session 查询失败 | sid=%s err=%v", sid, err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"code":    500,
 				"message": "internal error",
@@ -164,12 +164,15 @@ func RequireSession() gin.HandlerFunc {
 		}
 		// 续期（滑动过期）
 		if err := store.Touch(sid); err != nil {
-			LogWith(c, "[AuthMiddleware] session 续期失败 | sid=%s err=%v", sid, err)
+			LogWith(c, "AuthMiddleware", "session 续期失败 | sid=%s err=%v", sid, err)
 		}
-		// 注入上下文
-		c.Set(CtxKeyUserID, strconv.FormatUint(uint64(sess.UserID), 10))
+		// 注入上下文（gin.Context 供 handler 侧直接用；Request.Context 供 service/remote 层用）
+		uid := strconv.FormatUint(uint64(sess.UserID), 10)
+		c.Set(CtxKeyUserID, uid)
 		c.Set(CtxKeySessionID, sess.SessionID)
 		c.Set(CtxKeyUsername, sess.Username)
+		c.Request = c.Request.WithContext(utils.WithUID(c.Request.Context(), uid))
+		LogWith(c, "AuthMiddleware", "鉴权通过 | sid=%s uid=%s", sid, uid)
 		c.Next()
 	}
 }
@@ -189,9 +192,11 @@ func OptionalSession() gin.HandlerFunc {
 			return
 		}
 		_ = store.Touch(sid)
-		c.Set(CtxKeyUserID, strconv.FormatUint(uint64(sess.UserID), 10))
+		uid := strconv.FormatUint(uint64(sess.UserID), 10)
+		c.Set(CtxKeyUserID, uid)
 		c.Set(CtxKeySessionID, sess.SessionID)
 		c.Set(CtxKeyUsername, sess.Username)
+		c.Request = c.Request.WithContext(utils.WithUID(c.Request.Context(), uid))
 		c.Next()
 	}
 }

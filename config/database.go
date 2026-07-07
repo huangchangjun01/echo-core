@@ -61,11 +61,14 @@ func InitDB() {
 		},
 	}
 
+	utils.LogStartup("db", "host", config.Host, "port", config.Port, "name", config.DBName, "user", config.User, "slowThreshold", "1s", "logLevel", "info")
+	start := time.Now()
 	var err error
 	DB, err = gorm.Open(mysql.Open(dsn), gormConfig)
 	if err != nil {
 		log.Fatalf("数据库连接失败: %v", err)
 	}
+	utils.LogStartup("db", "event", "connected", "latency", fmt.Sprintf("%dms", time.Since(start).Milliseconds()))
 
 	// 获取底层 sql.DB 对象设置连接池
 	sqlDB, err := DB.DB()
@@ -78,11 +81,12 @@ func InitDB() {
 	sqlDB.SetMaxOpenConns(100)          // 最大打开连接
 	sqlDB.SetConnMaxLifetime(time.Hour) // 连接最大存活时间
 
-	log.Println("数据库连接成功")
-
 	// 自动迁移表结构
+	migStart := time.Now()
 	if err := autoMigrate(DB); err != nil {
 		log.Printf("自动迁移失败: %v", err)
+	} else {
+		utils.LogStartup("db", "event", "migrate:ok", "latency", fmt.Sprintf("%dms", time.Since(migStart).Milliseconds()))
 	}
 }
 
@@ -92,13 +96,10 @@ func GetDB() *gorm.DB {
 }
 
 // autoMigrate 自动迁移表结构
+// 当前保留：用户表、文件表。记忆/摘要/Agent 等模型已下线，不再自动建表。
 func autoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&models.File{},
-		&models.SessionMessage{},
-		&models.UserMemory{},
-		&models.ConversationSummary{},
-		&models.AgentConfig{},
 		&models.User{},
 	)
 }

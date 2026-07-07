@@ -2,19 +2,20 @@ package utils
 
 import (
 	"errors"
+	"log"
 	"sync"
 	"time"
 )
 
 // Session 内存中的会话信息
 type Session struct {
-	SessionID  string                 // 会话标识
-	UserID     uint                   // 关联用户ID
-	Username   string                 // 关联用户账号
-	Data       map[string]interface{} // 自定义业务数据，预留给业务扩展
-	CreatedAt  time.Time              // 创建时间
-	UpdatedAt  time.Time              // 最近活跃时间
-	ExpireAt   time.Time              // 过期时间
+	SessionID string                 // 会话标识
+	UserID    uint                   // 关联用户ID
+	Username  string                 // 关联用户账号
+	Data      map[string]interface{} // 自定义业务数据，预留给业务扩展
+	CreatedAt time.Time              // 创建时间
+	UpdatedAt time.Time              // 最近活跃时间
+	ExpireAt  time.Time              // 过期时间
 }
 
 // IsExpired 判断会话是否已过期
@@ -59,6 +60,13 @@ func NewMemorySessionStore(defaultTTL time.Duration) *MemorySessionStore {
 	return store
 }
 
+// Stats 调试用：返回当前会话总数（gc 也会调，但读锁安全）
+func (m *MemorySessionStore) Stats() (total int) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return len(m.sessions)
+}
+
 // Create 创建会话并返回 Session 实例
 func (m *MemorySessionStore) Create(userID uint, username string, ttl time.Duration) (*Session, error) {
 	if ttl <= 0 {
@@ -66,6 +74,7 @@ func (m *MemorySessionStore) Create(userID uint, username string, ttl time.Durat
 	}
 	token, err := GenerateSalt() // 32 字节随机串，足够作为 sessionID
 	if err != nil {
+		log.Printf("[SessionStore.Create] 生成 token 失败 | userID=%d | err=%v", userID, err)
 		return nil, err
 	}
 	now := time.Now()
@@ -80,7 +89,9 @@ func (m *MemorySessionStore) Create(userID uint, username string, ttl time.Durat
 	}
 	m.mu.Lock()
 	m.sessions[token] = sess
+	total := len(m.sessions)
 	m.mu.Unlock()
+	log.Printf("[SessionStore.Create] ok | userID=%d username=%s ttl=%v total=%d", userID, username, ttl, total)
 	return sess, nil
 }
 
@@ -93,12 +104,15 @@ func (m *MemorySessionStore) Get(sessionID string) (*Session, error) {
 	sess, ok := m.sessions[sessionID]
 	m.mu.RUnlock()
 	if !ok {
+		log.Printf("[SessionStore.Get] miss | sid=%s", truncateSID(sessionID))
 		return nil, ErrSessionNotFound
 	}
 	if sess.IsExpired() {
 		m.Delete(sessionID)
+		log.Printf("[SessionStore.Get] expired | sid=%s userID=%d", truncateSID(sessionID), sess.UserID)
 		return nil, ErrSessionNotFound
 	}
+	log.Printf("[SessionStore.Get] hit | sid=%s userID=%d username=%s expireIn=%v", truncateSID(sessionID), sess.UserID, sess.Username, time.Until(sess.ExpireAt))
 	return sess, nil
 }
 
@@ -108,11 +122,13 @@ func (m *MemorySessionStore) Touch(sessionID string) error {
 	defer m.mu.Unlock()
 	sess, ok := m.sessions[sessionID]
 	if !ok {
+		log.Printf("[SessionStore.Touch] miss | sid=%s", truncateSID(sessionID))
 		return ErrSessionNotFound
 	}
 	now := time.Now()
 	sess.UpdatedAt = now
 	sess.ExpireAt = now.Add(m.defaultTTL)
+	log.Printf("[SessionStore.Touch] ok | sid=%s userID=%d newExpireIn=%v", truncateSID(sessionID), sess.UserID, m.defaultTTL)
 	return nil
 }
 
@@ -120,10 +136,14 @@ func (m *MemorySessionStore) Touch(sessionID string) error {
 func (m *MemorySessionStore) Delete(sessionID string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if _, ok := m.sessions[sessionID]; !ok {
+	sess, existed := m.sessions[sessionID]
+	if !existed {
+		log.Printf("[SessionStore.Delete] miss | sid=%s", truncateSID(sessionID))
 		return ErrSessionNotFound
 	}
 	delete(m.sessions, sessionID)
+	total := len(m.sessions)
+	log.Printf("[SessionStore.Delete] ok | sid=%s userID=%d total=%d", truncateSID(sessionID), sess.UserID, total)
 	return nil
 }
 
@@ -143,12 +163,50 @@ func (m *MemorySessionStore) gcLoop() {
 		case <-ticker.C:
 			now := time.Now()
 			m.mu.Lock()
+			removed := 0
 			for id, s := range m.sessions {
 				if now.After(s.ExpireAt) {
 					delete(m.sessions, id)
+					removed++
 				}
 			}
+			remaining := len(m.sessions)
 			m.mu.Unlock()
+			if removed > 0 {
+				log.Printf("[SessionStore.gc] 清理过期会话 | removed=%d remaining=%d", removed, remaining)
+			}
 		}
 	}
+}
+
+// truncateSID 日志里避免完整 sid（64 字符 hex）打满：截前 8 字符 + 长度。
+func truncateSID(sid string) string {
+	const prefix = 8
+	if len(sid) <= prefix {
+		return sid
+	}
+	return sid[:prefix] + "...(len=" + itoa(len(sid)) + ")"
+}
+
+// itoa 避免引入 strconv 的小依赖
+func itoa(n int) string {
+	if n == 0 {
+		return "0"
+	}
+	neg := n < 0
+	if neg {
+		n = -n
+	}
+	var b [20]byte
+	i := len(b)
+	for n > 0 {
+		i--
+		b[i] = byte('0' + n%10)
+		n /= 10
+	}
+	if neg {
+		i--
+		b[i] = '-'
+	}
+	return string(b[i:])
 }

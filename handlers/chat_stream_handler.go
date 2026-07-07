@@ -1,63 +1,94 @@
 package handlers
 
 import (
-	"echo-core/agent"
+	"echo-core/dto"
 	"echo-core/middleware"
-	"echo-core/remote"
 	"echo-core/service"
+	"echo-core/utils"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 )
 
-// ChatStreamHandler 流式聊天处理器
-// 统一承载 SSE 与 WebSocket 两种流式通道
-type ChatStreamHandler struct {
+// ChatHandler 聊天处理器
+// 同一端点 /api/chat 依据请求体中的 stream 字段走两种形态：
+//   - stream=false：同步返回 ChatSyncResponse（JSON）
+//   - stream=true ：SSE 流式逐帧推送 ChatEvent
+//
+// 对话实现完全由 Python 服务完成，本层只做协议适配（HTTP/SSE）+ 入参校验。
+// 流式模式下 Go 端按 Python 服务的 6 类事件原样透传：context / tool / prefix /
+// delta / done / memory_extracted（event 字段等于 ChatEvent.Type，data 字段为
+// ChatEvent 的 JSON 序列化）。前端按 event 名订阅即可。
+type ChatHandler struct {
 	svc *service.ChatService
 }
 
-// NewChatStreamHandler 创建流式聊天处理器
-func NewChatStreamHandler(svc *service.ChatService) *ChatStreamHandler {
-	return &ChatStreamHandler{svc: svc}
+// NewChatHandler 构造 ChatHandler
+func NewChatHandler(svc *service.ChatService) *ChatHandler {
+	return &ChatHandler{svc: svc}
 }
 
-// ChatHandleSSE SSE流式聊天接口
+// Chat 统一入口
 // POST /api/chat
-// Content-Type: text/event-stream
-// 事件帧格式：
-//
-//	event: start        | data: {"sessionId":"..."}
-//	event: delta        | data: {"delta":"片段文本","reply":"累计文本"}
-//	event: tool_call    | data: { ...AIToolCall... }
-//	event: tool_result  | data: {"id":"...","name":"...","result":"...","attachments":[{...}]}
-//	event: finish       | data: {"reply":"完整回复","sessionId":"...","attachments":[{...}]}
-//	event: error        | data: {"error":"错误信息"}
-func (h *ChatStreamHandler) ChatHandleSSE(c *gin.Context) {
-	log.Printf("[ChatSSE] 收到SSE聊天请求 | IP: %s", c.ClientIP())
+func (h *ChatHandler) Chat(c *gin.Context) {
+	utils.LogWith(c, "Chat", "收到请求 | method=POST path=%s ip=%s contentType=%s",
+		c.Request.URL.Path, c.ClientIP(), c.GetHeader("Content-Type"))
 
-	var req service.ChatRequest
+	var req dto.ChatRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.Printf("[ChatSSE] 请求参数解析失败: %v", err)
+		utils.LogWith(c, "Chat", "请求参数解析失败 | err=%v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	// 鉴权中间件已注入 userId，强制覆盖请求体里的值（防冒用）
 	if uid, ok := middleware.MustUserID(c); ok && uid != "" {
 		req.UserID = uid
 	}
-	if req.UserID == "" || req.SessionID == "" || req.Message == "" {
-		log.Printf("[ChatSSE] 参数缺失 | userId: %s | sessionId: %s", req.UserID, req.SessionID)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "userId, sessionId and message are required"})
+	if req.UserID == "" || strings.TrimSpace(req.Message) == "" {
+		utils.LogWith(c, "Chat", "参数缺失 | userId=%q messageLen=%d", req.UserID, len(req.Message))
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userId and message are required"})
 		return
 	}
+	utils.LogWith(c, "Chat", "参数解析完成 | userId=%s sessionId=%s stream=%v msgLen=%d",
+		req.UserID, req.SessionID, req.Stream, len(req.Message))
 
-	// SSE 响应头
-	c.Writer.Header().Set("Content-Type", "text/event-stream")
+	if req.Stream {
+		h.streamResponse(c, req)
+		return
+	}
+	h.syncResponse(c, req)
+}
+
+// syncResponse 同步模式
+func (h *ChatHandler) syncResponse(c *gin.Context, req dto.ChatRequest) {
+	ctx := c.Request.Context()
+	start := time.Now()
+	utils.LogWith(c, "Chat", "进入 sync 模式 | userId=%s sessionId=%s", req.UserID, req.SessionID)
+	resp, err := h.svc.ChatSync(ctx, req)
+	if err != nil {
+		utils.LogWith(c, "Chat", "sync 失败 | userId=%s latency=%dms err=%v", req.UserID, time.Since(start).Milliseconds(), err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	// 本端额外覆盖 latencyMs（若 Python 未填则用本地计时）
+	if resp.LatencyMs == 0 {
+		resp.LatencyMs = time.Since(start).Milliseconds()
+	}
+	utils.LogWith(c, "Chat", "sync 完成 | userId=%s sessionId=%s events=%d replyLen=%d latencyMs=%d",
+		req.UserID, resp.SessionID, len(resp.Events), len(resp.Reply), resp.LatencyMs)
+	c.JSON(http.StatusOK, resp)
+}
+
+// streamResponse SSE 流式
+// 透传 Python 6 类事件：context / tool / prefix / delta / done / memory_extracted
+func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
+	ctx := c.Request.Context()
+	c.Writer.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	c.Writer.Header().Set("Cache-Control", "no-cache")
 	c.Writer.Header().Set("Connection", "keep-alive")
 	c.Writer.Header().Set("X-Accel-Buffering", "no")
@@ -65,235 +96,75 @@ func (h *ChatStreamHandler) ChatHandleSSE(c *gin.Context) {
 
 	flusher, ok := c.Writer.(http.Flusher)
 	if !ok {
-		log.Printf("[ChatSSE] 响应写入器不支持Flusher")
+		utils.LogWith(c, "Chat", "响应写入器不支持 Flusher | userId=%s", req.UserID)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "streaming unsupported"})
 		return
 	}
-
-	// start 帧
-	h.writeSSEEvent(c, "start", map[string]string{"sessionId": req.SessionID})
+	// 立刻 flush 响应头，便于前端尽早建立 EventSource 连接；同时写一条注释帧
+	// 确认 SSE 通道就绪（注释以 ':' 开头，浏览器解析器忽略）。
+	fmt.Fprintf(c.Writer, ": connected userId=%s\n\n", req.UserID)
 	flusher.Flush()
+	utils.LogWith(c, "Chat", "SSE 头已发送 | userId=%s sessionId=%s contentType=%s",
+		req.UserID, req.SessionID, c.Writer.Header().Get("Content-Type"))
+	utils.LogWith(c, "Chat", "开始流式输出 | userId=%s sessionId=%s msgLen=%d",
+		req.UserID, req.SessionID, len(req.Message))
 
-	log.Printf("[ChatSSE] 开始流式输出 | userId: %s | sessionId: %s", req.UserID, req.SessionID)
+	// SSE 事件节流：每 N 条或每 2 秒打一条进度汇总，避免 delta 风暴刷屏
+	const progressEvery = 5
+	progressTicker := time.NewTicker(2 * time.Second)
+	defer progressTicker.Stop()
 
-	h.svc.ChatStream(req, func(chunk service.StreamChunk) {
-		if chunk.Err != nil {
-			log.Printf("[ChatSSE] 流式错误 | error: %v", chunk.Err)
-			h.writeSSEEvent(c, "error", map[string]string{"error": chunk.Err.Error()})
-			flusher.Flush()
-			return
+	start := time.Now()
+	eventSeq := 0
+	typeCounts := make(map[string]int)
+	var lastType string
+	emitProgress := func(force bool) {
+		utils.LogWith(c, "Chat", "SSE 进度 | userId=%s events=%d typeCounts=%v lastType=%s elapsed=%dms",
+			req.UserID, eventSeq, typeCounts, lastType, time.Since(start).Milliseconds())
+	}
+
+	err := h.svc.ChatStream(ctx, req, func(ev dto.ChatEvent) error {
+		eventSeq++
+		typeCounts[ev.Type]++
+		lastType = ev.Type
+		writeErr := writeSSEEvent(c, flusher, eventSeq, ev)
+		// 每 N 条事件打一次进度
+		if eventSeq%progressEvery == 0 {
+			emitProgress(false)
 		}
-		// 工具调用：AI 决定调用的工具
-		if chunk.ToolCall != nil {
-			h.writeSSEEvent(c, "tool_call", chunk.ToolCall)
-			flusher.Flush()
-			return
-		}
-		// 工具结果：执行完成后回吐
-		if chunk.ToolResult != nil {
-			h.writeSSEEvent(c, "tool_result", chunk.ToolResult)
-			flusher.Flush()
-			return
-		}
-		if !chunk.Done {
-			h.writeSSEEvent(c, "delta", map[string]string{
-				"delta": chunk.Delta,
-				"reply": chunk.Reply,
-			})
-			flusher.Flush()
-			return
-		}
-		// 结束帧：携带累计命中的 attachments，便于前端 finish 时统一渲染下载入口
-		h.writeSSEEvent(c, "finish", gin.H{
-			"reply":       chunk.Reply,
-			"sessionId":   req.SessionID,
-			"attachments": chunk.Attachments,
-		})
-		flusher.Flush()
+		return writeErr
 	})
-
-	log.Printf("[ChatSSE] 流式输出完成 | userId: %s | sessionId: %s", req.UserID, req.SessionID)
-}
-
-// writeSSEEvent 写入一个 SSE 事件帧
-func (h *ChatStreamHandler) writeSSEEvent(c *gin.Context, event string, payload any) {
-	data, err := json.Marshal(payload)
+	// ticker 不直接驱动日志（goroutine 风险），仅在错误/成功时汇总
+	_ = progressTicker
 	if err != nil {
-		log.Printf("[ChatSSE] 事件序列化失败 | event: %s | error: %v", event, err)
+		utils.LogWith(c, "Chat", "流式错误 | userId=%s err=%v typeCounts=%v", req.UserID, err, typeCounts)
+		_ = writeSSEEvent(c, flusher, eventSeq+1, dto.ChatEvent{Type: "error", Error: err.Error()})
+		utils.LogWith(c, "Chat", "SSE 流结束(含 error) | userId=%s events=%d elapsed=%dms",
+			req.UserID, eventSeq+1, time.Since(start).Milliseconds())
 		return
 	}
-	if _, err := fmt.Fprintf(c.Writer, "event: %s\ndata: %s\n\n", event, data); err != nil {
-		log.Printf("[ChatSSE] 事件写入失败 | event: %s | error: %v", event, err)
-	}
+	utils.LogWith(c, "Chat", "SSE 流结束 | userId=%s events=%d typeCounts=%v elapsed=%dms",
+		req.UserID, eventSeq, typeCounts, time.Since(start).Milliseconds())
 }
 
-// WebSocket 升级器
-// CheckOrigin 始终放行：内网服务，部署时建议收敛
-var wsUpgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 4096,
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-// WSIncomingMessage 客户端→服务端的 WebSocket 消息
-type WSIncomingMessage struct {
-	Type      string `json:"type"`                // 消息类型：chat / ping
-	UserID    string `json:"userId,omitempty"`    // 用户ID
-	SessionID string `json:"sessionId,omitempty"` // 会话ID
-	Message   string `json:"message,omitempty"`   // 聊天内容
-}
-
-// WSOutgoingMessage 服务端→客户端的 WebSocket 消息
-type WSOutgoingMessage struct {
-	Type        string                   `json:"type"`                  // start / delta / finish / error / pong / tool_call / tool_result
-	Delta       string                   `json:"delta,omitempty"`       // 本次新增文本
-	Reply       string                   `json:"reply,omitempty"`       // 累计回复
-	SessionID   string                   `json:"sessionId,omitempty"`   // 会话ID
-	Error       string                   `json:"error,omitempty"`       // 错误信息
-	Timestamp   int64                    `json:"timestamp,omitempty"`   // 服务器时间戳（毫秒）
-	ToolCall    *remote.AIToolCall       `json:"toolCall,omitempty"`    // 工具调用事件
-	ToolResult  *service.ToolResultEvent `json:"toolResult,omitempty"`  // 工具结果事件
-	Attachments []agent.Attachment       `json:"attachments,omitempty"` // finish 帧累计的命中文件附件
-}
-
-// ChatHandleWS WebSocket 聊天接口
-// GET /api/chat/ws
-// 协议：
-// 客户端发送 {"type":"chat","userId":"...","sessionId":"...","message":"..."}
-// 服务端推送：start -> delta*N -> finish / error
-// 心跳：客户端可发 {"type":"ping"}，服务端回 {"type":"pong"}
+// writeSSEEvent 写入一个标准 SSE 事件帧（Python 协议格式）：
 //
-// 鉴权：路由层已挂 RequireSession()；若鉴权失败会在 upgrade 前 401 终止，
-// 不会进入本 handler。upgrade 之后的 chat 帧，userId 会被 server 端用
-// session 注入的 userId 覆盖，避免冒用。
-func (h *ChatStreamHandler) ChatHandleWS(c *gin.Context) {
-	log.Printf("[ChatWS] 收到WebSocket升级请求 | IP: %s", c.ClientIP())
-
-	conn, err := wsUpgrader.Upgrade(c.Writer, c.Request, nil)
+//	event: <type>     ← 透传 Python.type，前端按事件名订阅
+//	id: <seq>         ← 序号，便于 last-event-id 跟踪
+//	data: <json>      ← ChatEvent 完整 JSON
+//	（空行）
+func writeSSEEvent(c *gin.Context, flusher http.Flusher, seq int, ev dto.ChatEvent) error {
+	data, err := json.Marshal(ev)
 	if err != nil {
-		log.Printf("[ChatWS] WebSocket升级失败: %v", err)
-		return
+		utils.LogWith(c, "Chat", "事件序列化失败 | seq=%d type=%s err=%v", seq, ev.Type, err)
+		return err
 	}
-	defer conn.Close()
-	log.Printf("[ChatWS] WebSocket连接建立 | remote: %s", conn.RemoteAddr())
-
-	// 把鉴权注入的 userId 拿出来，chat 帧处理时用它覆盖请求体里的 userId
-	wsUserID, _ := middleware.MustUserID(c)
-
-	// 读取循环：阻塞读取客户端消息
-	for {
-		_, raw, err := conn.ReadMessage()
-		if err != nil {
-			log.Printf("[ChatWS] 读取消息失败，连接关闭 | error: %v", err)
-			return
-		}
-
-		var in WSIncomingMessage
-		if err := json.Unmarshal(raw, &in); err != nil {
-			log.Printf("[ChatWS] 消息解析失败 | error: %v", err)
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:      "error",
-				Error:     "invalid message format: " + err.Error(),
-				Timestamp: time.Now().UnixMilli(),
-			})
-			continue
-		}
-
-		switch in.Type {
-		case "ping":
-			_ = conn.WriteJSON(WSOutgoingMessage{Type: "pong", Timestamp: time.Now().UnixMilli()})
-		case "chat":
-			// 强制覆盖 userId 为 session 注入的真实用户，防止 WS 帧 body 里伪造
-			if wsUserID != "" {
-				in.UserID = wsUserID
-			}
-			h.handleChatMessage(conn, in)
-		default:
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:      "error",
-				Error:     "unknown message type: " + in.Type,
-				Timestamp: time.Now().UnixMilli(),
-			})
-		}
+	if _, err := fmt.Fprintf(c.Writer, "event: %s\nid: %d\ndata: %s\n\n", ev.Type, seq, data); err != nil {
+		utils.LogWith(c, "Chat", "事件写入失败 | seq=%d type=%s err=%v", seq, ev.Type, err)
+		return err
 	}
-}
-
-// handleChatMessage 处理单条聊天消息
-func (h *ChatStreamHandler) handleChatMessage(conn *websocket.Conn, in WSIncomingMessage) {
-	log.Printf("[ChatWS] 收到聊天消息 | userId: %s | sessionId: %s | messageLen: %d", in.UserID, in.SessionID, len(in.Message))
-
-	if in.UserID == "" || in.SessionID == "" || in.Message == "" {
-		log.Printf("[ChatWS] 参数缺失 | userId: %s | sessionId: %s", in.UserID, in.SessionID)
-		_ = conn.WriteJSON(WSOutgoingMessage{
-			Type:      "error",
-			Error:     "userId, sessionId and message are required",
-			Timestamp: time.Now().UnixMilli(),
-		})
-		return
-	}
-
-	// start
-	_ = conn.WriteJSON(WSOutgoingMessage{
-		Type:      "start",
-		SessionID: in.SessionID,
-		Timestamp: time.Now().UnixMilli(),
-	})
-
-	req := service.ChatRequest{
-		UserID:    in.UserID,
-		SessionID: in.SessionID,
-		Message:   in.Message,
-	}
-	h.svc.ChatStream(req, func(chunk service.StreamChunk) {
-		if chunk.Err != nil {
-			log.Printf("[ChatWS] 流式错误 | error: %v", chunk.Err)
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:      "error",
-				Error:     chunk.Err.Error(),
-				Timestamp: time.Now().UnixMilli(),
-			})
-			return
-		}
-		// 工具调用：AI 决定调用的工具
-		if chunk.ToolCall != nil {
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:      "tool_call",
-				ToolCall:  chunk.ToolCall,
-				SessionID: in.SessionID,
-				Timestamp: time.Now().UnixMilli(),
-			})
-			return
-		}
-		// 工具结果：执行完成后回吐
-		if chunk.ToolResult != nil {
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:       "tool_result",
-				ToolResult: chunk.ToolResult,
-				SessionID:  in.SessionID,
-				Timestamp:  time.Now().UnixMilli(),
-			})
-			return
-		}
-		if chunk.Done {
-			_ = conn.WriteJSON(WSOutgoingMessage{
-				Type:        "finish",
-				Reply:       chunk.Reply,
-				SessionID:   in.SessionID,
-				Timestamp:   time.Now().UnixMilli(),
-				Attachments: chunk.Attachments,
-			})
-			return
-		}
-		_ = conn.WriteJSON(WSOutgoingMessage{
-			Type:      "delta",
-			Delta:     chunk.Delta,
-			Reply:     chunk.Reply,
-			SessionID: in.SessionID,
-			Timestamp: time.Now().UnixMilli(),
-		})
-	})
-
-	log.Printf("[ChatWS] 聊天消息处理完成 | userId: %s | sessionId: %s", in.UserID, in.SessionID)
+	flusher.Flush()
+	utils.LogWith(c, "Chat", "SSE 已发送 | seq=%d type=%s bytes=%d replySoFar=%d",
+		seq, ev.Type, len(data), len(ev.Full)+len(ev.Text))
+	return nil
 }

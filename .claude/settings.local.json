@@ -90,7 +90,12 @@
       "Bash(/e/Python/Python313/python.exe -c \"import reportlab; print\\(reportlab.Version\\)\")",
       "Bash(/e/Python/Python313/python.exe -m pip install --quiet reportlab)",
       "Bash(/e/Python/Python313/python.exe generate_report.py)",
-      "Bash(/e/Python/Python313/python.exe -c ' *)"
+      "Bash(/e/Python/Python313/python.exe -c ' *)",
+      "Bash(./echo-core-new.exe)",
+      "Bash(/e/Python/Python313/python *)",
+      "Bash(kill 4088)",
+      "Bash(awk '{print $NF}')",
+      "Bash(xargs -r -I {} taskkill //F //PID {})"
     ]
   }
 }
