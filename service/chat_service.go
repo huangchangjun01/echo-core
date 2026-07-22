@@ -40,8 +40,8 @@ func validateRequest(req dto.ChatRequest) error {
 
 // ChatSync 同步调用 Python 完成对话
 func (s *ChatService) ChatSync(ctx context.Context, req dto.ChatRequest) (*dto.ChatSyncResponse, error) {
-	utils.LogWithCtx(ctx, "ChatService", "ChatSync 入参 | userId=%s sessionId=%s stream=%v msgLen=%d",
-		req.UserID, req.SessionID, req.Stream, len(req.Message))
+	utils.LogWithCtx(ctx, "ChatService", "ChatSync 入参 | userId=%s sessionId=%s roleId=%s stream=%v msgLen=%d",
+		req.UserID, req.SessionID, req.RoleID, req.Stream, len(req.Message))
 	if err := validateRequest(req); err != nil {
 		utils.LogWithCtx(ctx, "ChatService", "ChatSync 参数校验失败 | userId=%s err=%v", req.UserID, err)
 		return nil, err
@@ -49,6 +49,7 @@ func (s *ChatService) ChatSync(ctx context.Context, req dto.ChatRequest) (*dto.C
 	return s.pythonClient.ChatSync(ctx, remote.PythonChatRequest{
 		UserID:    req.UserID,
 		SessionID: req.SessionID,
+		RoleID:    req.RoleID,
 		Message:   req.Message,
 		Stream:    false,
 	})
@@ -57,8 +58,8 @@ func (s *ChatService) ChatSync(ctx context.Context, req dto.ChatRequest) (*dto.C
 // ChatStream 流式调用 Python 完成对话
 // handler 在每收到一条 ChatEvent 时被回调一次；流结束或出错时由 pythonClient 负责关闭。
 func (s *ChatService) ChatStream(ctx context.Context, req dto.ChatRequest, handler func(dto.ChatEvent) error) error {
-	utils.LogWithCtx(ctx, "ChatService", "ChatStream 入参 | userId=%s sessionId=%s msgLen=%d",
-		req.UserID, req.SessionID, len(req.Message))
+	utils.LogWithCtx(ctx, "ChatService", "ChatStream 入参 | userId=%s sessionId=%s roleId=%s msgLen=%d",
+		req.UserID, req.SessionID, req.RoleID, len(req.Message))
 	if err := validateRequest(req); err != nil {
 		utils.LogWithCtx(ctx, "ChatService", "ChatStream 参数校验失败 | userId=%s err=%v", req.UserID, err)
 		return err
@@ -67,6 +68,7 @@ func (s *ChatService) ChatStream(ctx context.Context, req dto.ChatRequest, handl
 		remote.PythonChatRequest{
 			UserID:    req.UserID,
 			SessionID: req.SessionID,
+			RoleID:    req.RoleID,
 			Message:   req.Message,
 			Stream:    true,
 		},

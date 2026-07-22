@@ -33,9 +33,26 @@ func SetupRoutes(r *gin.Engine) error {
 	if err := fileRegisterRoutes(api); err != nil {
 		return err
 	}
+	// 鉴权路由：角色（CRUD + 自动默认角色）
+	if err := roleRegisterRoutes(api); err != nil {
+		return err
+	}
 	// 鉴权路由：聊天（同步 + SSE 流式）
 	if err := chatRegisterRoutes(api); err != nil {
 		return err
+	}
+	return nil
+}
+
+// 角色相关路由（鉴权）
+func roleRegisterRoutes(api *gin.RouterGroup) error {
+	roleHandler := handlers.NewRoleHandler()
+	role := api.Group("/role", middleware.RequireSession())
+	{
+		role.POST("", roleHandler.Create)      // 创建角色
+		role.GET("", roleHandler.List)         // 列出角色（无角色自动建默认）
+		role.PUT("/:id", roleHandler.Update)   // 修改角色
+		role.DELETE("/:id", roleHandler.Delete) // 删除角色（至少保留 1 个）
 	}
 	return nil
 }
@@ -48,8 +65,11 @@ func fileRegisterRoutes(api *gin.RouterGroup) error {
 	}
 	file := api.Group("/file", middleware.RequireSession())
 	{
-		file.POST("/token", fileHandler.GetUploadTokenHandler)  // 获取上传 token
-		file.POST("/register", fileHandler.RegisterFileHandler) // 登记文件元数据
+		file.POST("/token", fileHandler.GetUploadTokenHandler)    // 获取上传 token
+		file.POST("/register", fileHandler.RegisterFileHandler)   // 登记文件元数据
+		file.GET("/list", fileHandler.ListMemoryFilesHandler)     // 记忆管理：列出文件
+		file.PUT("/:id/desc", fileHandler.UpdateFileDescHandler) // 记忆管理：编辑描述
+		file.POST("/text", fileHandler.CreateTextMemoryHandler)   // 记忆管理：新增纯文本
 	}
 	return nil
 }

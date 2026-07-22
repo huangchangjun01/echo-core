@@ -12,6 +12,8 @@ type IngestFileInfo struct {
 // IngestFileRequest 调用 Python /ingest_file 的请求体
 type IngestFileRequest struct {
 	UserID string         `json:"userId" binding:"required"`
+	Desc   string         `json:"desc,omitempty"`
+	RoleID string         `json:"roleId,omitempty"`
 	File   IngestFileInfo `json:"file" binding:"required"`
 }
 

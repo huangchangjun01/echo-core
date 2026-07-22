@@ -21,6 +21,7 @@ import (
 type PythonChatRequest struct {
 	UserID    string `json:"userId"`
 	SessionID string `json:"sessionId"`
+	RoleID    string `json:"roleId,omitempty"`
 	Message   string `json:"message"`
 	Stream    bool   `json:"stream"`
 }

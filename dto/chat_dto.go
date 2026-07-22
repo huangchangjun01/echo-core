@@ -1,11 +1,12 @@
 package dto
 
 // ChatRequest 聊天请求（对齐 Python /chat）
-// 设计原则：Go 服务只透传 userId / sessionId / message 三个语义字段。
+// 设计原则：Go 服务只透传 userId / sessionId / message / roleId 四个语义字段。
 // stream 控制返回形态：false 走同步 JSON 响应，true 走 SSE 流。
 type ChatRequest struct {
 	UserID    string `json:"userId" binding:"required"`
 	SessionID string `json:"sessionId"`
+	RoleID    string `json:"roleId" binding:"omitempty,max=128"`
 	Message   string `json:"message" binding:"required,min=1,max=4096"`
 	Stream    bool   `json:"stream"`
 }
