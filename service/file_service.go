@@ -58,6 +58,11 @@ type RegisterFileResult struct {
 	Ingestion *dto.IngestFileResponse `json:"ingestion,omitempty"`
 }
 
+// QiniuConfigGetter 暴露给 handler 层读取七牛凭证（用于内部代理下载）
+func QiniuConfigGetter() (accessKey, secretKey, bucket, domain string, err error) {
+	return getQiniuConfig()
+}
+
 // NewFileService 构造 FileService
 func NewFileService() (*FileService, error) {
 	return &FileService{
@@ -149,7 +154,7 @@ func (h *FileService) GetUploadToken(ctx context.Context, fileName string, fileS
 	utils.LogWithCtx(ctx, "FileService.GetUploadToken", "token 生成成功 | key=%s domain=%s tokenLen=%d", key, domain, len(upToken))
 	return &GetUploadTokenResult{
 		Token:     upToken,
-		UploadURL: "https://upload.qiniup.com",
+		UploadURL: "https://up-z2.qiniup.com",
 		Key:       key,
 		Domain:    domain,
 	}, nil
