@@ -102,5 +102,7 @@ func autoMigrate(db *gorm.DB) error {
 		&models.File{},
 		&models.User{},
 		&models.Role{},
+		&models.RecallMemory{},
+		&models.RecallSourceFile{},
 	)
 }

@@ -11,6 +11,7 @@ import (
 	"echo-core/utils"
 	"errors"
 	"fmt"
+	"io"
 	"path"
 	"time"
 
@@ -56,6 +57,11 @@ type RegisterFileResult struct {
 	URL string `json:"url,omitempty"`
 	// Ingestion 字段为非空时表示已成功转发 Python /ingest_file
 	Ingestion *dto.IngestFileResponse `json:"ingestion,omitempty"`
+}
+
+// QiniuConfigGetter 暴露给 handler 层读取七牛凭证（用于内部代理下载）
+func QiniuConfigGetter() (accessKey, secretKey, bucket, domain string, err error) {
+	return getQiniuConfig()
 }
 
 // NewFileService 构造 FileService
@@ -149,7 +155,7 @@ func (h *FileService) GetUploadToken(ctx context.Context, fileName string, fileS
 	utils.LogWithCtx(ctx, "FileService.GetUploadToken", "token 生成成功 | key=%s domain=%s tokenLen=%d", key, domain, len(upToken))
 	return &GetUploadTokenResult{
 		Token:     upToken,
-		UploadURL: "https://upload.qiniup.com",
+		UploadURL: "https://up-z2.qiniup.com",
 		Key:       key,
 		Domain:    domain,
 	}, nil
@@ -411,4 +417,105 @@ func truncateForFilename(s string, n int) string {
 		return s
 	}
 	return string(runes[:n])
+}
+
+// FileDownloadResult 下载结果：流式给前端，避免把整个文件读到内存
+//
+// 注：调用方负责关闭 Body。
+type FileDownloadResult struct {
+	Body        io.ReadCloser
+	ContentType string
+	FileName    string
+}
+
+// DownloadFile 通过七牛 SDK 的源站 API（不走用户配置的 CDN 域名）拉取文件内容。
+//
+// 为什么不用 GetPublicURL 拼出来的直链：
+//   - 用户配置的 QINIU_DOMAIN 可能因为 DNS / CDN 下线 / 跨域配置等原因在浏览器侧
+//     拿不到内容（例如 hn-bkt.clouddn.com 已下线，浏览器 fetch 直接 NetworkError）。
+//   - 服务端走 SDK 的源站 API + UC 区域查询，绕开 CDN 域名，可控且稳定。
+//
+// 鉴权：必须传入 userId，且文件归属必须等于 userId，否则返回 404 风格错误，
+// 防止越权下载他人文件。
+func (h *FileService) DownloadFile(ctx context.Context, userId string, id uint) (*FileDownloadResult, error) {
+	utils.LogWithCtx(ctx, "FileService.DownloadFile", "收到请求 | userId=%s id=%d", userId, id)
+	if userId == "" {
+		return nil, errors.New("userId is required")
+	}
+
+	file, err := h.fileRepo.GetByID(ctx, id)
+	if err != nil {
+		utils.LogWithCtx(ctx, "FileService.DownloadFile", "文件不存在 | id=%d err=%v", id, err)
+		return nil, errors.New("文件不存在")
+	}
+	if file.UserId != userId || file.Status != 1 {
+		// 不区分"不存在"和"无权访问"，统一返回文件不存在，避免泄露他人文件 ID
+		utils.LogWithCtx(ctx, "FileService.DownloadFile", "无权访问 | id=%d fileUserId=%s reqUserId=%s status=%d",
+			id, file.UserId, userId, file.Status)
+		return nil, errors.New("文件不存在")
+	}
+	if file.Key == "" {
+		// 纯文本记忆没有 key（直接以 desc 入库），下载语义不适用
+		utils.LogWithCtx(ctx, "FileService.DownloadFile", "文件无 key（非媒体） | id=%d", id)
+		return nil, errors.New("该文件无媒体内容，不可下载")
+	}
+
+	accessKey, secretKey, bucket, _, err := getQiniuConfig()
+	if err != nil {
+		utils.LogWithCtx(ctx, "FileService.DownloadFile", "七牛配置缺失 | err=%v", err)
+		return nil, err
+	}
+
+	// 查桶所在区域（UC API）。失败时降级到华南 z2（与上传地址 up-z2.qiniup.com 对齐）。
+	var region *storage.Region
+	if r, regErr := storage.GetRegion(accessKey, bucket); regErr == nil && r != nil {
+		region = r
+	} else {
+		utils.LogWithCtx(ctx, "FileService.DownloadFile", "查区域失败，降级 z2 | bucket=%s err=%v", bucket, regErr)
+		fallback := storage.RIDHuanan
+		if r2, ok := storage.GetRegionByID(fallback); ok {
+			region = &r2
+		}
+	}
+	if region == nil {
+		return nil, errors.New("无法解析存储区域")
+	}
+
+	mac := auth.New(accessKey, secretKey)
+	mgr := storage.NewBucketManager(mac, &storage.Config{
+		UseHTTPS: true,
+		Region:   region,
+	})
+
+	out, err := mgr.Get(bucket, file.Key, &storage.GetObjectInput{
+		Context: ctx,
+	})
+	if err != nil {
+		utils.LogWithCtx(ctx, "FileService.DownloadFile", "七牛源站下载失败 | id=%d key=%s err=%v",
+			id, file.Key, err)
+		return nil, fmt.Errorf("从存储下载失败: %v", err)
+	}
+
+	utils.LogWithCtx(ctx, "FileService.DownloadFile", "下载成功 | id=%d key=%s contentType=%s contentLen=%d",
+		id, file.Key, out.ContentType, out.ContentLength)
+
+	contentType := out.ContentType
+	if contentType == "" {
+		// 兜底：服务端没拿到 Content-Type 时按 fileType 粗略给一个，避免浏览器下载成 binary
+		switch file.FileType {
+		case 2:
+			contentType = "image/jpeg"
+		case 3:
+			contentType = "video/mp4"
+		case 4:
+			contentType = "audio/mpeg"
+		default:
+			contentType = "application/octet-stream"
+		}
+	}
+	return &FileDownloadResult{
+		Body:        out,
+		ContentType: contentType,
+		FileName:    file.Name,
+	}, nil
 }

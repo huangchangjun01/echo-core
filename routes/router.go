@@ -41,6 +41,10 @@ func SetupRoutes(r *gin.Engine) error {
 	if err := chatRegisterRoutes(api); err != nil {
 		return err
 	}
+	// 鉴权路由：回忆记忆（文档即记忆）
+	if err := recallMemoryRegisterRoutes(api); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -49,9 +53,9 @@ func roleRegisterRoutes(api *gin.RouterGroup) error {
 	roleHandler := handlers.NewRoleHandler()
 	role := api.Group("/role", middleware.RequireSession())
 	{
-		role.POST("", roleHandler.Create)      // 创建角色
-		role.GET("", roleHandler.List)         // 列出角色（无角色自动建默认）
-		role.PUT("/:id", roleHandler.Update)   // 修改角色
+		role.POST("", roleHandler.Create)       // 创建角色
+		role.GET("", roleHandler.List)          // 列出角色（无角色自动建默认）
+		role.PUT("/:id", roleHandler.Update)    // 修改角色
 		role.DELETE("/:id", roleHandler.Delete) // 删除角色（至少保留 1 个）
 	}
 	return nil
@@ -65,11 +69,12 @@ func fileRegisterRoutes(api *gin.RouterGroup) error {
 	}
 	file := api.Group("/file", middleware.RequireSession())
 	{
-		file.POST("/token", fileHandler.GetUploadTokenHandler)    // 获取上传 token
-		file.POST("/register", fileHandler.RegisterFileHandler)   // 登记文件元数据
-		file.GET("/list", fileHandler.ListMemoryFilesHandler)     // 记忆管理：列出文件
-		file.PUT("/:id/desc", fileHandler.UpdateFileDescHandler) // 记忆管理：编辑描述
-		file.POST("/text", fileHandler.CreateTextMemoryHandler)   // 记忆管理：新增纯文本
+		file.POST("/token", fileHandler.GetUploadTokenHandler)     // 获取上传 token
+		file.POST("/register", fileHandler.RegisterFileHandler)    // 登记文件元数据
+		file.GET("/list", fileHandler.ListMemoryFilesHandler)      // 记忆管理：列出文件
+		file.PUT("/:id/desc", fileHandler.UpdateFileDescHandler)   // 记忆管理：编辑描述
+		file.POST("/text", fileHandler.CreateTextMemoryHandler)    // 记忆管理：新增纯文本
+		file.GET("/:id/download", fileHandler.DownloadFileHandler) // 记忆管理：下载文件二进制
 	}
 	return nil
 }
@@ -87,6 +92,33 @@ func chatRegisterRoutes(api *gin.RouterGroup) error {
 		//   stream=true        ：SSE 流式逐帧推送 ChatEvent
 		chat.POST("", chatHandler.Chat)
 	}
+	return nil
+}
+
+// 回忆记忆相关路由（鉴权）
+func recallMemoryRegisterRoutes(api *gin.RouterGroup) error {
+	recallHandler, err := handlers.NewRecallMemoryHandler()
+	if err != nil {
+		return fmt.Errorf("create recall memory handler: %w", err)
+	}
+	mem := api.Group("/memory", middleware.RequireSession())
+	{
+		mem.POST("/apply", recallHandler.Apply)              // 申请 memoryId
+		mem.POST("/check-topic", recallHandler.CheckTopic)   // 主题唯一性校验
+		mem.POST("/upload-token", recallHandler.UploadToken) // 记忆目录内上传 token
+		mem.POST("/save", recallHandler.Save)                // 保存记忆（异步触发解析）
+		mem.POST("/update", recallHandler.Update)            // 编辑已有记忆（按需触发 AI 重新解析）
+		mem.GET("/list", recallHandler.List)                 // 记忆列表
+		mem.GET("/detail", recallHandler.Detail)             // 记忆详情
+		mem.DELETE("/file", recallHandler.DeleteFile)        // 删除单个源文件
+		mem.DELETE("/theme", recallHandler.DeleteTheme)      // 删除整个主题
+	}
+	// 内部接口：给 echo-ai 拿 md 私有下载 URL（无 session，靠 ECHO_AI_INTERNAL_TOKEN）
+	internal := api.Group("/memory")
+	internal.POST("/md-url", recallHandler.MdUrl)
+	internal.POST("/md-content", recallHandler.MdContent)
+	internal.POST("/md-content/save", recallHandler.UpdateMdContent)
+	internal.POST("/internal/parse-status", recallHandler.UpdateParseStatus) // echo-ai 解析状态回调
 	return nil
 }
 

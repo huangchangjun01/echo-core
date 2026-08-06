@@ -6,7 +6,9 @@ import (
 	"echo-core/service/request"
 	"echo-core/utils"
 	"fmt"
+	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -196,4 +198,68 @@ func (h *FileHandler) CreateTextMemoryHandler(c *gin.Context) {
 	}
 	utils.LogWith(c, "File", "CreateTextMemory 成功 | id=%d roleId=%s latency=%dms", item.ID, item.RoleID, time.Since(start).Milliseconds())
 	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok", "data": item})
+}
+
+// DownloadFileHandler 下载文件二进制流（GET）
+// GET /api/file/:id/download
+//
+// 设计要点：
+//  1. 走七牛 SDK 源站 API，不依赖用户配置的 CDN 域名（CDN 可能 DNS 解析失败 /
+//     已下线，导致前端 fetch 直接 NetworkError）。
+//  2. 设置 Content-Disposition: attachment 让浏览器原生触发下载，而不是渲染。
+//  3. 鉴权：session 中取 userId，service 层校验文件归属，防止越权下载。
+//  4. 流式转发（io.Copy），不在服务端把整个文件加载到内存。
+func (h *FileHandler) DownloadFileHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	start := time.Now()
+	utils.LogWith(c, "File", "DownloadFile 入口 | method=GET path=%s", c.Request.URL.Path)
+
+	userId, ok := middleware.MustUserID(c)
+	if !ok || userId == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"code": 401, "message": "未登录"})
+		return
+	}
+	idStr := c.Param("id")
+	id64, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil || id64 == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "message": "id 非法"})
+		return
+	}
+	id := uint(id64)
+
+	result, err := h.service.DownloadFile(ctx, userId, id)
+	if err != nil {
+		// service 层把"不存在"和"无权访问"合并为同一错误，对外只透出 404
+		msg := err.Error()
+		status := http.StatusInternalServerError
+		code := 500
+		if msg == "文件不存在" {
+			status = http.StatusNotFound
+			code = 404
+		} else if msg == "该文件无媒体内容，不可下载" {
+			status = http.StatusBadRequest
+			code = 400
+		}
+		utils.LogWith(c, "File", "DownloadFile 失败 | id=%d err=%v latency=%dms",
+			id, err, time.Since(start).Milliseconds())
+		c.JSON(status, gin.H{"code": code, "message": msg})
+		return
+	}
+	defer result.Body.Close()
+
+	// 文件名需要 URL 编码，避免中文 / 特殊字符被浏览器截断
+	disposition := fmt.Sprintf("attachment; filename*=UTF-8''%s", url.QueryEscape(result.FileName))
+	c.Header("Content-Type", result.ContentType)
+	c.Header("Content-Disposition", disposition)
+	c.Header("X-Content-Type-Options", "nosniff")
+	// 把状态写入响应头后才能继续写 body
+	c.Status(http.StatusOK)
+
+	written, copyErr := io.Copy(c.Writer, result.Body)
+	utils.LogWith(c, "File", "DownloadFile 完成 | id=%d bytes=%d err=%v latency=%dms",
+		id, written, copyErr, time.Since(start).Milliseconds())
+	if copyErr != nil {
+		// 已经写过 header，不能再 c.JSON；只记日志，靠连接关闭告知客户端
+		utils.LogWithCtx(ctx, "FileHandler.DownloadFileHandler", "流式转发失败 | id=%d err=%v", id, copyErr)
+	}
 }
