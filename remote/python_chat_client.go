@@ -236,8 +236,8 @@ func logStreamEvent(ctx context.Context, seq int, e *dto.ChatEvent, deltaSeq, de
 	switch e.Type {
 	case "context":
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
-			"SSE 帧 #%d type=context | personaLen=%v coreCount=%v l1Count=%v",
-			seq, derefInt(e.PersonaLen), derefInt(e.CoreCount), derefInt(e.L1Count))
+			"SSE 帧 #%d type=context | personaLen=%v l0Count=%v l1Count=%v",
+			seq, derefInt(e.PersonaLen), derefInt(e.L0Count), derefInt(e.L1Count))
 	case "tool":
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
 			"SSE 帧 #%d type=tool | name=%s iter=%v ok=%v summary=%s",
@@ -263,6 +263,14 @@ func logStreamEvent(ctx context.Context, seq int, e *dto.ChatEvent, deltaSeq, de
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
 			"SSE 帧 #%d type=memory_extracted | ok=%v error=%q",
 			seq, derefBool(e.OK), e.Error)
+	case "thinking":
+		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
+			"SSE 帧 #%d type=thinking | stage=%s text=%s",
+			seq, e.Stage, truncateForLog(e.Text, 256))
+	case "memory_recall":
+		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
+			"SSE 帧 #%d type=memory_recall | count=%d hits=%s",
+			seq, e.RecallCount, truncateForLog(serializeHits(e.Hits), 512))
 	default:
 		// 未知 type：整帧 JSON 兜底打印
 		if raw, err := json.Marshal(e); err == nil {
@@ -286,4 +294,16 @@ func derefBool(p *bool) interface{} {
 		return "<nil>"
 	}
 	return *p
+}
+
+// serializeHits 把回忆命中数组序列化为简短 JSON 字符串，便于日志展示。
+func serializeHits(hits []dto.RecallHitItem) string {
+	if len(hits) == 0 {
+		return "[]"
+	}
+	b, err := json.Marshal(hits)
+	if err != nil {
+		return fmt.Sprintf("[serialize_err=%v]", err)
+	}
+	return string(b)
 }
