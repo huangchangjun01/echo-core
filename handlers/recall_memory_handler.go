@@ -1,13 +1,17 @@
 package handlers
 
 import (
+	"crypto/subtle"
 	"echo-core/middleware"
 	"echo-core/repository"
 	"echo-core/service"
 	"echo-core/service/request"
 	"echo-core/utils"
 	"errors"
+	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -347,4 +351,74 @@ func (h *RecallMemoryHandler) MdContent(c *gin.Context) {
 	}
 	utils.LogWith(c, "Recall", "MdContent from db | bytes=%d", len(m.MdContent))
 	c.Data(http.StatusOK, "text/markdown; charset=utf-8", []byte(m.MdContent))
+}
+
+// MemoryMdFileHandler md 下载代理（GET /api/memory/:memoryId/md-file）
+//
+// 用途：托管式下载 - md 文本已经在 DB 缓存（recall_memory.md_content），
+// 由 POST /api/file/authorize(resourceType=memory_md) 签发 HMAC ticket 后浏览器跳转到这里。
+// ticket=HMAC(memoryId|deadline|ip)，无 session 也能下载，60s 过期 + IP 锁由 HMAC 校验保证。
+//
+// 与 internal /api/memory/md-content 的差异：
+//   - 那个是 echo-ai 用 POST + X-Internal-Token 内部调用，鉴权由 token 走
+//   - 这个是浏览器 GET + ticket，鉴权由 HMAC 走；且额外设置 Content-Disposition: attachment
+func (h *RecallMemoryHandler) MemoryMdFileHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	memoryId := c.Param("memoryId")
+	ticket := c.Query("ticket")
+	deadlineStr := c.Query("e")
+
+	if memoryId == "" || ticket == "" || deadlineStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "message": "参数不完整"})
+		return
+	}
+
+	// 1. 校验 deadline 未过期
+	deadline, parseErr := strconv.ParseInt(deadlineStr, 10, 64)
+	if parseErr != nil || deadline <= time.Now().Unix() {
+		utils.LogWith(c, "Recall", "MemoryMdFile ticket 已过期 | memoryId=%s deadline=%d", memoryId, deadline)
+		c.JSON(http.StatusForbidden, gin.H{"code": 403, "message": "下载链接已过期，请重新请求"})
+		return
+	}
+
+	// 2. 校验 HMAC ticket（包含 IP 锁 + 过期 + memoryId）
+	secret, secErr := utils.DownloadSignSecret()
+	if secErr != nil {
+		utils.LogWith(c, "Recall", "MemoryMdFile 签名密钥未配置 | err=%v", secErr)
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "message": "下载签名未配置"})
+		return
+	}
+	clientIP := c.ClientIP()
+	expected := utils.MakeDownloadSign(secret, memoryId, clientIP, deadline)
+	// 防止时序攻击：使用 constant-time 比较
+	if subtle.ConstantTimeCompare([]byte(expected), []byte(ticket)) != 1 {
+		utils.LogWith(c, "Recall", "MemoryMdFile ticket 校验失败 | memoryId=%s ip=%s", memoryId, clientIP)
+		c.JSON(http.StatusForbidden, gin.H{"code": 403, "message": "下载链接无效"})
+		return
+	}
+
+	// 3. 读 DB 取 md_content
+	repo := repository.NewRecallMemoryRepository()
+	m, err := repo.GetByMemoryId(ctx, memoryId)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"code": 404, "message": "记忆不存在"})
+		return
+	}
+	if m.MdContent == "" {
+		c.JSON(http.StatusNotFound, gin.H{"code": 404, "message": "md 内容未缓存"})
+		return
+	}
+
+	// 4. 设置下载响应头
+	filename := memoryId + ".md"
+	disposition := fmt.Sprintf("attachment; filename*=UTF-8''%s", url.QueryEscape(filename))
+	c.Header("Content-Type", "text/markdown; charset=utf-8")
+	c.Header("Content-Disposition", disposition)
+	c.Header("X-Content-Type-Options", "nosniff")
+	c.Status(http.StatusOK)
+	if _, writeErr := c.Writer.Write([]byte(m.MdContent)); writeErr != nil {
+		utils.LogWithCtx(ctx, "Recall", "MemoryMdFile 流式写入失败 | memoryId=%s err=%v", memoryId, writeErr)
+		return
+	}
+	utils.LogWith(c, "Recall", "MemoryMdFile 下载成功 | memoryId=%s bytes=%d ip=%s", memoryId, len(m.MdContent), clientIP)
 }

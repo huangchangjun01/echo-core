@@ -97,7 +97,11 @@ func getQiniuConfig() (accessKey, secretKey, bucket, domain string, err error) {
 	return accessKey, secretKey, bucket, domain, nil
 }
 
-// GetPrivateURL 生成七牛云私有空间临时访问链接
+// GetPrivateURL 生成七牛云私有空间临时访问链接（基于配置的 QINIU_DOMAIN）
+//
+// 用途：triggerIngest / GetMemoryDetail 列表预览等"内部使用或浏览器预览"场景。
+// 注意：QINIU_DOMAIN 是用户配置的 CDN 域名；若该 CDN 已下线（如 *.clouddn.com 被弃用），
+// 浏览器侧会拿到 421 Misdirected Request。托管下载请用 GetPrivateURLBySourceHost。
 func (h *FileService) GetPrivateURL(ctx context.Context, key string, expiresInSeconds int64) (string, error) {
 	accessKey, secretKey, _, domain, err := getQiniuConfig()
 	if err != nil {
@@ -110,6 +114,65 @@ func (h *FileService) GetPrivateURL(ctx context.Context, key string, expiresInSe
 	privateURL := storage.MakePrivateURL(mac, domain, key, deadline)
 	utils.LogWithCtx(ctx, "FileService.GetPrivateURL", "七牛云文件url生成成功 | key=%s expireIn=%ds", key, expiresInSeconds)
 	return privateURL, nil
+}
+
+// GetPrivateURLBySourceHost 通过 Qiniu UC API 查询桶所在区域的源站（IoSrcHost），
+// 签发源站私有 URL。源站不走 CDN，浏览器直连不受 CDN 域名失效影响。
+//
+// 背景：Qiniu 旧 *.clouddn.com CDN 域已下线，浏览器侧 HTTPS SNI 路由异常返回 421。
+// 源站域名（形如 iovip-z2.qbox.me / 区域专属域名）是 SDK 内部稳定使用的入口，
+// 浏览器直接 window.location.href 也可正常下载。
+//
+// 实现：
+//   - 优先 GetRegion UC API 拿 IoSrcHost（与既有 DownloadFile 流式代理同源）
+//   - 失败降级到 z2 华南默认区域
+//   - 最终用 MakePrivateURL(mac, srcHost, key, deadline) 生成签名 URL
+func (h *FileService) GetPrivateURLBySourceHost(ctx context.Context, key string, expiresInSeconds int64) (string, error) {
+	accessKey, secretKey, bucket, _, err := getQiniuConfig()
+	if err != nil {
+		utils.LogWithCtx(ctx, "FileService.GetPrivateURLBySourceHost", "配置检查失败 | err=%v", err)
+		return "", err
+	}
+
+	srcHost, err := resolveBucketSourceHost(ctx, accessKey, bucket)
+	if err != nil {
+		utils.LogWithCtx(ctx, "FileService.GetPrivateURLBySourceHost", "解析源站失败 | err=%v", err)
+		return "", err
+	}
+
+	mac := auth.New(accessKey, secretKey)
+	deadline := time.Now().Add(time.Duration(expiresInSeconds) * time.Second).Unix()
+	privateURL := storage.MakePrivateURL(mac, srcHost, key, deadline)
+	utils.LogWithCtx(ctx, "FileService.GetPrivateURLBySourceHost",
+		"源站 URL 生成成功 | key=%s srcHost=%s expireIn=%ds", key, srcHost, expiresInSeconds)
+	return privateURL, nil
+}
+
+// resolveBucketSourceHost 通过 UC API 查桶所在的源站域名（IoSrcHost）。
+// 失败时降级 z2（华南）默认区域，与既有 DownloadFile 流式代理的 fallback 策略一致。
+func resolveBucketSourceHost(ctx context.Context, accessKey, bucket string) (string, error) {
+	var region *storage.Region
+	if r, regErr := storage.GetRegion(accessKey, bucket); regErr == nil && r != nil {
+		region = r
+	} else {
+		utils.LogWithCtx(ctx, "FileService.resolveBucketSourceHost", "查区域失败，降级 z2 | bucket=%s err=%v", bucket, regErr)
+		fallback := storage.RIDHuanan
+		if r2, ok := storage.GetRegionByID(fallback); ok {
+			region = &r2
+		}
+	}
+	if region == nil {
+		return "", errors.New("无法解析存储区域")
+	}
+	srcHost := region.IoSrcHost
+	if srcHost == "" {
+		// 极少数情况下 IoSrcHost 未填充，退化到 IovipHost（CDN 主入口）
+		srcHost = region.IovipHost
+	}
+	if srcHost == "" {
+		return "", errors.New("区域信息中无 IoSrcHost/IovipHost")
+	}
+	return srcHost, nil
 }
 
 // GetPublicURL 生成七牛云公开空间访问链接

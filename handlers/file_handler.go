@@ -5,18 +5,21 @@ import (
 	"echo-core/service"
 	"echo-core/service/request"
 	"echo-core/utils"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type FileHandler struct {
-	service *service.FileService
+	service     *service.FileService
+	downloadSvc *service.DownloadService
 }
 
 func NewFileHandler() (*FileHandler, error) {
@@ -24,7 +27,10 @@ func NewFileHandler() (*FileHandler, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &FileHandler{service: fileService}, nil
+	return &FileHandler{
+		service:     fileService,
+		downloadSvc: service.NewDownloadService(),
+	}, nil
 }
 
 // GetUploadTokenHandler 获取七牛云上传token (POST)
@@ -200,8 +206,98 @@ func (h *FileHandler) CreateTextMemoryHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok", "data": item})
 }
 
+// AuthorizeDownloadHandler 签发 60s 短期下载 URL（POST /api/file/authorize）
+//
+// 托管式下载入口：
+//  1. 前端调用本接口，body 含 {resourceType, resourceId/fileKey, memoryId?}
+//  2. 后端鉴权 + 算 HMAC(ip_sig) + 落 audit_log
+//  3. 返回 {url, fileName, expiresIn:60}，前端 302 直连七牛
+//
+// 改造背景：原 GET /api/file/:id/download 仍保留作兼容；新代码全部走本接口。
+func (h *FileHandler) AuthorizeDownloadHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	start := time.Now()
+	utils.LogWith(c, "File", "AuthorizeDownload 入口 | method=POST path=%s ip=%s", c.Request.URL.Path, c.ClientIP())
+
+	if h == nil || h.downloadSvc == nil {
+		utils.LogWith(c, "File", "AuthorizeDownload 服务未初始化")
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "message": "download service not initialized"})
+		return
+	}
+
+	userId, ok := middleware.MustUserID(c)
+	if !ok || userId == "" {
+		utils.LogWith(c, "File", "AuthorizeDownload 未取到 session userId | ip=%s", c.ClientIP())
+		c.JSON(http.StatusUnauthorized, gin.H{"code": 401, "message": "未登录"})
+		return
+	}
+
+	var req struct {
+		ResourceType string               `json:"resourceType" binding:"required"`
+		ResourceId   utils.StringOrNumber `json:"resourceId"`
+		FileKey      string               `json:"fileKey"`
+		MemoryId     string               `json:"memoryId"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.LogWith(c, "File", "AuthorizeDownload 参数解析失败 | err=%v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "message": "参数错误: " + err.Error()})
+		return
+	}
+	// resourceId 通过 utils.StringOrNumber 同时接受 JSON string 与 number，
+	// 前端 axios 序列化时 row.id: number 直接发数字也能解出。
+	resourceIdStr := string(req.ResourceId)
+	utils.LogWith(c, "File", "AuthorizeDownload 入参 | userId=%s resourceType=%s resourceId=%s memoryId=%s hasFileKey=%v",
+		userId, req.ResourceType, resourceIdStr, req.MemoryId, req.FileKey != "")
+
+	signedURL, fileName, status, bizErr := h.downloadSvc.AuthorizeDownload(
+		ctx, userId, c.ClientIP(),
+		req.ResourceType, resourceIdStr, req.FileKey, req.MemoryId,
+	)
+
+	if bizErr != nil {
+		msg := bizErr.Error()
+		httpStatus := http.StatusInternalServerError
+		code := 500
+		switch status {
+		case "invalid_request":
+			httpStatus = http.StatusBadRequest
+			code = 400
+		case "not_found":
+			// 不区分"不存在"与"无权"，避免泄露存在性
+			httpStatus = http.StatusNotFound
+			code = 404
+			msg = "资源不存在"
+		case "internal_error":
+			// 内部错误不暴露细节给前端
+			msg = "下载授权失败"
+		}
+		utils.LogWith(c, "File", "AuthorizeDownload 失败 | userId=%s resourceType=%s status=%s bizErr=%v latency=%dms",
+			userId, req.ResourceType, status, bizErr, time.Since(start).Milliseconds())
+		c.JSON(httpStatus, gin.H{"code": code, "message": msg})
+		return
+	}
+
+	utils.LogWith(c, "File", "AuthorizeDownload 成功 | userId=%s resourceType=%s fileName=%s latency=%dms",
+		userId, req.ResourceType, fileName, time.Since(start).Milliseconds())
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"message": "ok",
+		"data": gin.H{
+			"url":       signedURL,
+			"fileName":  fileName,
+			"expiresIn": int(utils.DownloadExpirySeconds),
+		},
+	})
+	// 防止未使用 import 报错
+	_ = errors.New
+	_ = strings.TrimSpace
+}
+
 // DownloadFileHandler 下载文件二进制流（GET）
 // GET /api/file/:id/download
+//
+// Deprecated: 推荐使用 POST /api/file/authorize 走托管式下载（60s 短期 URL +
+// ip_sig + 审计）。本接口作为兼容保留，仍走七牛源站流式代理；新业务请勿调用。
 //
 // 设计要点：
 //  1. 走七牛 SDK 源站 API，不依赖用户配置的 CDN 域名（CDN 可能 DNS 解析失败 /

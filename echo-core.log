@@ -1,0 +1,387 @@
+2026/08/13 15:40:05 ==== [db] host=8.130.81.41 port=3306 name=huangchangjun user=root slowThreshold=1s logLevel=info ====
+2026/08/13 15:40:05 ==== [db] event=connected latency=264ms ====
+
+2026/08/13 15:40:05 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[39.748ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:06 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[89.512ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:06 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[100.224ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'file' AND table_type = 'BASE TABLE'
+
+2026/08/13 15:40:06 [32m
+[0m[33m[29.575ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:06 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[141.890ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:06 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[98.251ms] [34;1m[rows:-][0m SELECT * FROM `file` LIMIT 1
+
+2026/08/13 15:40:06 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[270.494ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'file' ORDER BY ORDINAL_POSITION
+
+2026/08/13 15:40:06 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[58.977ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:06 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[100.874ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:06 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[132.419ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'file' AND index_name = 'idx_file_role_id'
+
+2026/08/13 15:40:07 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[49.793ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:07 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[65.279ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:07 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[121.495ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND table_type = 'BASE TABLE'
+
+2026/08/13 15:40:07 [32m
+[0m[33m[45.102ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:07 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[82.338ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:07 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[78.991ms] [34;1m[rows:-][0m SELECT * FROM `user` LIMIT 1
+
+2026/08/13 15:40:07 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[92.822ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'user' ORDER BY ORDINAL_POSITION
+
+2026/08/13 15:40:07 [32m
+[0m[33m[36.342ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:07 [32m
+[0m[33m[80.500ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:07 [32m
+[0m[33m[111.031ms] [34;1m[rows:3][0m 
+SELECT
+	TABLE_NAME,
+	COLUMN_NAME,
+	INDEX_NAME,
+	NON_UNIQUE 
+FROM
+	information_schema.STATISTICS 
+WHERE
+	TABLE_SCHEMA = 'huangchangjun' 
+	AND TABLE_NAME = 'user' 
+ORDER BY
+	INDEX_NAME,
+	SEQ_IN_INDEX
+
+2026/08/13 15:40:07 [32m
+[0m[33m[45.860ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:07 [32m
+[0m[33m[102.047ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:07 [32m
+[0m[33m[110.545ms] [34;1m[rows:-][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE constraint_schema = 'huangchangjun' AND table_name = 'user' AND constraint_name = 'uni_user_username'
+
+2026/08/13 15:40:08 [32m
+[0m[33m[38.854ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:08 [32m
+[0m[33m[80.425ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:08 [32m
+[0m[33m[214.767ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_username'
+
+2026/08/13 15:40:08 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[48.700ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:08 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[111.621ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:08 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[104.361ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_username'
+
+2026/08/13 15:40:08 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[48.900ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:09 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[480.560ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:09 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[106.656ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_email'
+
+2026/08/13 15:40:09 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[41.367ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:09 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[133.224ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:09 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[118.016ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role' AND table_type = 'BASE TABLE'
+
+2026/08/13 15:40:09 [32m
+[0m[33m[40.043ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:09 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[178.923ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:09 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[109.076ms] [34;1m[rows:-][0m SELECT * FROM `role` LIMIT 1
+
+2026/08/13 15:40:09 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[113.579ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role' ORDER BY ORDINAL_POSITION
+
+2026/08/13 15:40:10 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[44.112ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:10 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[145.776ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:10 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[239.455ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role' AND index_name = 'idx_role_user_id'
+
+2026/08/13 15:40:10 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[90.537ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:10 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[116.222ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:10 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[89.705ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND table_type = 'BASE TABLE'
+
+2026/08/13 15:40:10 [32m
+[0m[33m[143.794ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[656.001ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[112.331ms] [34;1m[rows:-][0m SELECT * FROM `recall_memory` LIMIT 1
+
+2026/08/13 15:40:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[202.213ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' ORDER BY ORDINAL_POSITION
+
+2026/08/13 15:40:12 [32m
+[0m[33m[315.279ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:12 [32m
+[0m[33m[413.118ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:12 [32m
+[0m[33m[166.614ms] [34;1m[rows:4][0m 
+SELECT
+	TABLE_NAME,
+	COLUMN_NAME,
+	INDEX_NAME,
+	NON_UNIQUE 
+FROM
+	information_schema.STATISTICS 
+WHERE
+	TABLE_SCHEMA = 'huangchangjun' 
+	AND TABLE_NAME = 'recall_memory' 
+ORDER BY
+	INDEX_NAME,
+	SEQ_IN_INDEX
+
+2026/08/13 15:40:12 [32m
+[0m[33m[42.253ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:12 [32m
+[0m[33m[115.502ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:12 [32m
+[0m[33m[95.764ms] [34;1m[rows:-][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE constraint_schema = 'huangchangjun' AND table_name = 'recall_memory' AND constraint_name = 'uni_recall_memory_memory_id'
+
+2026/08/13 15:40:13 [32m
+[0m[33m[73.257ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:13 [32m
+[0m[33m[116.333ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:13 [32m
+[0m[33m[203.687ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_memory_memory_id'
+
+2026/08/13 15:40:13 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[350.983ms] [34;1m[rows:0][0m ALTER TABLE `recall_memory` MODIFY COLUMN `subjective_desc` text COMMENT '记忆主观描述(<=1000)'
+
+2026/08/13 15:40:13 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[226.396ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[115.152ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[108.470ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_memory_memory_id'
+
+2026/08/13 15:40:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[49.268ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[99.809ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[129.461ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_user_role'
+
+2026/08/13 15:40:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[92.847ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[204.237ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[135.682ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' AND table_type = 'BASE TABLE'
+
+2026/08/13 15:40:14 [32m
+[0m[33m[65.099ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[204.090ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[155.048ms] [34;1m[rows:-][0m SELECT * FROM `recall_source_file` LIMIT 1
+
+2026/08/13 15:40:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[164.021ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' ORDER BY ORDINAL_POSITION
+
+2026/08/13 15:40:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[51.729ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[90.895ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[139.184ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' AND index_name = 'idx_recall_source_file_memory_id'
+
+2026/08/13 15:40:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[72.915ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[126.446ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[162.656ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND table_type = 'BASE TABLE'
+
+2026/08/13 15:40:16 [32m
+[0m[33m[92.130ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[84.297ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[111.374ms] [34;1m[rows:-][0m SELECT * FROM `audit_log` LIMIT 1
+
+2026/08/13 15:40:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[102.180ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' ORDER BY ORDINAL_POSITION
+
+2026/08/13 15:40:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[41.157ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[100.375ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[86.950ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_user_id'
+
+2026/08/13 15:40:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[96.498ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[145.192ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[150.941ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_action'
+
+2026/08/13 15:40:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[79.123ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[136.639ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[98.302ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_target_type'
+
+2026/08/13 15:40:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[39.538ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[170.218ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[136.402ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_target_id'
+
+2026/08/13 15:40:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[40.922ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[90.703ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[79.451ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_ip'
+
+2026/08/13 15:40:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[41.278ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[147.512ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[474.821ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_status'
+
+2026/08/13 15:40:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[56.750ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/08/13 15:40:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[105.051ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/08/13 15:40:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:102
+[0m[33m[94.800ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_created_at'
+2026/08/13 15:40:18 ==== [db] event=migrate:ok latency=13003ms ====
+2026/08/13 15:40:18 [SessionStore] 初始化全局 SessionStore | ttl: 0s
+2026/08/13 15:40:18 ==== [config] env=debug port=8080 db=root@tcp(8.130.81.41:3306)/huangchangjun pythonBase=http://localhost:8000 qiniu=see QINIU_* envs trustedProxies=127.0.0.1/32,::1/128 ====
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+2026/08/13 15:40:18 [startup] TRUSTED_PROXIES 已配置: [127.0.0.1/32 ::1/128]
+[GIN-debug] GET    /health                   --> echo-core/handlers.(*HealthHandler).Health-fm (5 handlers)
+[GIN-debug] POST   /api/auth/login           --> echo-core/handlers.(*UserHandler).Login-fm (5 handlers)
+[GIN-debug] POST   /api/auth/register        --> echo-core/handlers.(*UserHandler).Register-fm (5 handlers)
+[GIN-debug] POST   /api/auth/checkAccount    --> echo-core/handlers.(*UserHandler).CheckAccount-fm (5 handlers)
+[GIN-debug] POST   /api/auth/check           --> echo-core/handlers.(*UserHandler).Check-fm (5 handlers)
+[GIN-debug] POST   /api/auth/logout          --> echo-core/handlers.(*UserHandler).Logout-fm (5 handlers)
+2026/08/13 15:40:18 ==== [PythonIngestClient] 初始化 | baseURL=http://localhost:8000 timeout=30s ====
+[GIN-debug] POST   /api/file/token           --> echo-core/handlers.(*FileHandler).GetUploadTokenHandler-fm (6 handlers)
+[GIN-debug] POST   /api/file/register        --> echo-core/handlers.(*FileHandler).RegisterFileHandler-fm (6 handlers)
+[GIN-debug] GET    /api/file/list            --> echo-core/handlers.(*FileHandler).ListMemoryFilesHandler-fm (6 handlers)
+[GIN-debug] PUT    /api/file/:id/desc        --> echo-core/handlers.(*FileHandler).UpdateFileDescHandler-fm (6 handlers)
+[GIN-debug] POST   /api/file/text            --> echo-core/handlers.(*FileHandler).CreateTextMemoryHandler-fm (6 handlers)
+[GIN-debug] POST   /api/file/authorize       --> echo-core/handlers.(*FileHandler).AuthorizeDownloadHandler-fm (6 handlers)
+[GIN-debug] GET    /api/file/:id/download    --> echo-core/handlers.(*FileHandler).DownloadFileHandler-fm (6 handlers)
+[GIN-debug] POST   /api/role                 --> echo-core/handlers.(*RoleHandler).Create-fm (6 handlers)
+[GIN-debug] GET    /api/role                 --> echo-core/handlers.(*RoleHandler).List-fm (6 handlers)
+[GIN-debug] PUT    /api/role/:id             --> echo-core/handlers.(*RoleHandler).Update-fm (6 handlers)
+[GIN-debug] DELETE /api/role/:id             --> echo-core/handlers.(*RoleHandler).Delete-fm (6 handlers)
+2026/08/13 15:40:18 [rid=empty uid=empty] [ChatService] 初始化（Python 透传模式）
+2026/08/13 15:40:18 ==== [PythonChatClient] 初始化 | baseURL=http://localhost:8000 timeout=120s ====
+[GIN-debug] POST   /api/chat                 --> echo-core/handlers.(*ChatHandler).Chat-fm (6 handlers)
+2026/08/13 15:40:18 ==== [PythonIngestClient] 初始化 | baseURL=http://localhost:8000 timeout=30s ====
+2026/08/13 15:40:18 ==== [PythonMemoryClient] 初始化 | baseURL=http://localhost:8000 timeout=60s ====
+[GIN-debug] POST   /api/memory/apply         --> echo-core/handlers.(*RecallMemoryHandler).Apply-fm (6 handlers)
+[GIN-debug] POST   /api/memory/check-topic   --> echo-core/handlers.(*RecallMemoryHandler).CheckTopic-fm (6 handlers)
+[GIN-debug] POST   /api/memory/upload-token  --> echo-core/handlers.(*RecallMemoryHandler).UploadToken-fm (6 handlers)
+[GIN-debug] POST   /api/memory/save          --> echo-core/handlers.(*RecallMemoryHandler).Save-fm (6 handlers)
+[GIN-debug] POST   /api/memory/update        --> echo-core/handlers.(*RecallMemoryHandler).Update-fm (6 handlers)
+[GIN-debug] GET    /api/memory/list          --> echo-core/handlers.(*RecallMemoryHandler).List-fm (6 handlers)
+[GIN-debug] GET    /api/memory/detail        --> echo-core/handlers.(*RecallMemoryHandler).Detail-fm (6 handlers)
+[GIN-debug] DELETE /api/memory/file          --> echo-core/handlers.(*RecallMemoryHandler).DeleteFile-fm (6 handlers)
+[GIN-debug] DELETE /api/memory/theme         --> echo-core/handlers.(*RecallMemoryHandler).DeleteTheme-fm (6 handlers)
+[GIN-debug] GET    /api/memory/:memoryId/md-file --> echo-core/handlers.(*RecallMemoryHandler).MemoryMdFileHandler-fm (5 handlers)
+[GIN-debug] POST   /api/memory/md-url        --> echo-core/handlers.(*RecallMemoryHandler).MdUrl-fm (5 handlers)
+[GIN-debug] POST   /api/memory/md-content    --> echo-core/handlers.(*RecallMemoryHandler).MdContent-fm (5 handlers)
+[GIN-debug] POST   /api/memory/md-content/save --> echo-core/handlers.(*RecallMemoryHandler).UpdateMdContent-fm (5 handlers)
+[GIN-debug] POST   /api/memory/internal/parse-status --> echo-core/handlers.(*RecallMemoryHandler).UpdateParseStatus-fm (5 handlers)
+[GIN-debug] GET    /                         --> main.main.func1 (5 handlers)
+2026/08/13 15:40:18 ==== [server] listen=:8080 version=echo-core ====
+[GIN-debug] Listening and serving HTTP on :8080
+[GIN-debug] [ERROR] listen tcp :8080: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2026/08/13 15:40:18 server run failed: listen tcp :8080: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.

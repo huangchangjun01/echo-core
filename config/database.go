@@ -96,7 +96,8 @@ func GetDB() *gorm.DB {
 }
 
 // autoMigrate 自动迁移表结构
-// 当前保留：用户表、文件表、角色表。记忆/摘要/Agent 等模型已下线，不再自动建表。
+// 当前保留：用户表、文件表、角色表、回忆记忆表、审计日志表。
+// 记忆/摘要/Agent 等模型已下线，不再自动建表。
 func autoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&models.File{},
@@ -104,5 +105,6 @@ func autoMigrate(db *gorm.DB) error {
 		&models.Role{},
 		&models.RecallMemory{},
 		&models.RecallSourceFile{},
+		&models.AuditLog{},
 	)
 }

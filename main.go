@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -55,12 +56,17 @@ func main() {
 		"db", dbUser+"@tcp("+dbHost+":"+dbPort+")/"+dbName,
 		"pythonBase", pythonBase,
 		"qiniu", "see QINIU_* envs",
+		"trustedProxies", getTrustedProxiesCSV(),
 	)
 
 	// 5. 设置路由
 	r := gin.New()
 	// gin.New() 不带默认 logger（自定义 AccessLog 覆盖），保留 Recovery 防 panic
 	r.Use(gin.Recovery())
+	// 反向代理信任：未配置时退化为不信任任何代理（Gin 默认信任所有 → IP 可被 XFF 伪造 → 审计不可信）
+	if err := setupTrustedProxies(r); err != nil {
+		log.Fatalf("setup trusted proxies failed: %v", err)
+	}
 	if err := routes.SetupRoutes(r); err != nil {
 		log.Fatalf("setup routes failed: %v", err)
 	}
@@ -83,4 +89,54 @@ func initConfig() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("警告: 未找到 .env 文件，使用系统环境变量")
 	}
+}
+
+// getTrustedProxiesCSV 读 TRUSTED_PROXIES（逗号分隔 CIDR/IP），返回用于日志的可读字符串。
+func getTrustedProxiesCSV() string {
+	v := os.Getenv("TRUSTED_PROXIES")
+	if v == "" {
+		return "(none, 客户端 IP 直接取自 RemoteAddr)"
+	}
+	return v
+}
+
+// setupTrustedProxies 配置 Gin 的可信代理列表。
+//
+// 背景：Gin 默认信任所有代理，会读取 X-Forwarded-For，导致 c.ClientIP() 被请求头伪造，
+// 审计日志 IP 不可信。修复策略：
+//   - TRUSTED_PROXIES 未配置：r.SetTrustedProxies(nil) → 退化为 RemoteAddr（直连最稳）
+//   - TRUSTED_PROXIES 配了：仅信任这些 CIDR/IP，XFF 取最后一跳
+//
+// CIDR 解析失败时整个启动 fail-fast，避免"看似配置了实则没生效"的隐性风险。
+func setupTrustedProxies(r *gin.Engine) error {
+	v := os.Getenv("TRUSTED_PROXIES")
+	if v == "" {
+		// 不信任任何代理
+		if err := r.SetTrustedProxies(nil); err != nil {
+			return err
+		}
+		log.Println("[startup] TRUSTED_PROXIES 未配置，c.ClientIP() 取自 RemoteAddr（XFF 不生效）")
+		return nil
+	}
+	parts := strings.Split(v, ",")
+	proxies := make([]string, 0, len(parts))
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		proxies = append(proxies, p)
+	}
+	if len(proxies) == 0 {
+		if err := r.SetTrustedProxies(nil); err != nil {
+			return err
+		}
+		log.Println("[startup] TRUSTED_PROXIES 解析后为空，c.ClientIP() 取自 RemoteAddr")
+		return nil
+	}
+	if err := r.SetTrustedProxies(proxies); err != nil {
+		return err
+	}
+	log.Printf("[startup] TRUSTED_PROXIES 已配置: %v", proxies)
+	return nil
 }

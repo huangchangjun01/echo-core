@@ -69,12 +69,13 @@ func fileRegisterRoutes(api *gin.RouterGroup) error {
 	}
 	file := api.Group("/file", middleware.RequireSession())
 	{
-		file.POST("/token", fileHandler.GetUploadTokenHandler)     // 获取上传 token
-		file.POST("/register", fileHandler.RegisterFileHandler)    // 登记文件元数据
-		file.GET("/list", fileHandler.ListMemoryFilesHandler)      // 记忆管理：列出文件
-		file.PUT("/:id/desc", fileHandler.UpdateFileDescHandler)   // 记忆管理：编辑描述
-		file.POST("/text", fileHandler.CreateTextMemoryHandler)    // 记忆管理：新增纯文本
-		file.GET("/:id/download", fileHandler.DownloadFileHandler) // 记忆管理：下载文件二进制
+		file.POST("/token", fileHandler.GetUploadTokenHandler)        // 获取上传 token
+		file.POST("/register", fileHandler.RegisterFileHandler)       // 登记文件元数据
+		file.GET("/list", fileHandler.ListMemoryFilesHandler)         // 记忆管理：列出文件
+		file.PUT("/:id/desc", fileHandler.UpdateFileDescHandler)      // 记忆管理：编辑描述
+		file.POST("/text", fileHandler.CreateTextMemoryHandler)       // 记忆管理：新增纯文本
+		file.POST("/authorize", fileHandler.AuthorizeDownloadHandler) // 签发 60s 短期下载 URL（托管式下载入口）
+		file.GET("/:id/download", fileHandler.DownloadFileHandler)    // [Deprecated] 兼容旧下载代理
 	}
 	return nil
 }
@@ -113,6 +114,9 @@ func recallMemoryRegisterRoutes(api *gin.RouterGroup) error {
 		mem.DELETE("/file", recallHandler.DeleteFile)        // 删除单个源文件
 		mem.DELETE("/theme", recallHandler.DeleteTheme)      // 删除整个主题
 	}
+	// md 下载代理：托管式下载 - ticket 校验，不依赖 session（与 RequireSession 解耦）
+	// 必须挂在 api 而不是 mem 上，否则会被 RequireSession 拦掉
+	api.GET("/memory/:memoryId/md-file", recallHandler.MemoryMdFileHandler)
 	// 内部接口：给 echo-ai 拿 md 私有下载 URL（无 session，靠 ECHO_AI_INTERNAL_TOKEN）
 	internal := api.Group("/memory")
 	internal.POST("/md-url", recallHandler.MdUrl)
