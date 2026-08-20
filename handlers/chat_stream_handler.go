@@ -85,8 +85,8 @@ func (h *ChatHandler) syncResponse(c *gin.Context, req dto.ChatRequest) {
 }
 
 // streamResponse SSE 流式
-// 透传 Python 9 类事件：context / resource / tool / prefix / delta / done /
-// memory_extracted / thinking / memory_recall
+// 透传 Python 事件：context / resource / tool / presence / delta / done /
+// memory_extracted / thinking / memory_recall（旧 prefix 事件随级联下线）
 func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
 	ctx := c.Request.Context()
 	c.Writer.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
