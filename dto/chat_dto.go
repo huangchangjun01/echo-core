@@ -58,6 +58,14 @@ type ChatEvent struct {
 	// --- memory_recall 事件：回忆检索命中详情 ---
 	RecallCount int             `json:"count,omitempty"`
 	Hits        []RecallHitItem `json:"hits,omitempty"`
+	// --- mood_update 事件(M2)：三桶心情实时更新 ---
+	InstantVal       float64 `json:"instantVal,omitempty"`
+	InstantIntensity float64 `json:"instantIntensity,omitempty"`
+	InstantEmotion   string  `json:"instantEmotion,omitempty"`
+	ShortVal         float64 `json:"shortVal,omitempty"`
+	BaselineVal      float64 `json:"baselineVal,omitempty"`
+	Expression       string  `json:"expression,omitempty"` // smile/happy/excited/sad/cry/angry/concern/thinking
+	Valence          float64 `json:"valence,omitempty"`
 }
 
 // RecallHitItem 单条回忆命中（memory_recall 事件 hits 数组元素）。

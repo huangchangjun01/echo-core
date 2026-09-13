@@ -45,6 +45,53 @@ func SetupRoutes(r *gin.Engine) error {
 	if err := recallMemoryRegisterRoutes(api); err != nil {
 		return err
 	}
+	// 鉴权路由：角色内核（Persona/OCEAN/Mood/Belief/Relationship/Feedback/Suggestion）
+	if err := roleCoreRegisterRoutes(api); err != nil {
+		return err
+	}
+	return nil
+}
+
+// roleCoreRegisterRoutes 角色内核(role_core)路由注册。
+func roleCoreRegisterRoutes(api *gin.RouterGroup) error {
+	h := handlers.NewRoleCoreHandler()
+	rc := api.Group("/role-core", middleware.RequireSession())
+	{
+		// 人格 persona
+		rc.POST("/persona", h.SavePersona)
+		rc.GET("/persona", h.GetPersona)
+		// OCEAN 五维 traits
+		rc.POST("/traits", h.SaveTraits)
+		rc.GET("/traits", h.GetTraits)
+		// Mood (M2)
+		rc.GET("/mood", h.GetMood)
+		// OCEAN 预设字典(用户可增删改,companion_default 不可删)
+		rc.GET("/presets", h.ListPresets)
+		rc.POST("/presets", h.CreatePreset)
+		rc.PUT("/presets/:id", h.UpdatePreset)
+		rc.DELETE("/presets/:id", h.DeletePreset)
+		// Relationship (M3)
+		rc.GET("/relationship", h.GetRelationship)
+		// Belief (M3)
+		rc.GET("/beliefs", h.ListBeliefs)
+		rc.POST("/beliefs", h.CreateBelief)
+		rc.PUT("/beliefs/:id", h.UpdateBelief)
+		rc.DELETE("/beliefs/:id", h.DeleteBelief)
+		// Feedback (M7)
+		rc.POST("/feedback", h.SubmitFeedback)
+		// Suggestion (M6)
+		rc.GET("/suggestions", h.ListPendingSuggestions)
+		rc.POST("/suggestions/:id/:action", h.ResolveSuggestion)
+		// 完整快照(调试面板)
+		rc.GET("/core", h.GetCoreSnapshot)
+	}
+	// 内部接口（无 session, X-Internal-Token 鉴权）
+	internal := api.Group("/role-core")
+	{
+		internal.POST("/mood/event", h.UpdateMood)
+		internal.POST("/relationship/event", h.AccumulateRelationship)
+		internal.POST("/suggestions", h.CreateSuggestion)
+	}
 	return nil
 }
 

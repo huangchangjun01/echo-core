@@ -11,6 +11,7 @@ import (
 
 	"echo-core/config"
 	"echo-core/routes"
+	"echo-core/scripts"
 	"echo-core/utils"
 )
 
@@ -20,6 +21,9 @@ func main() {
 
 	// 2. 数据库连接
 	config.InitDB()
+
+	// 2.5 personas 主键迁移（M0 历史教训 842d7c5）
+	scripts.RunPersonasMigration()
 
 	// 3. 显式初始化 SessionStore 单例 + 优雅关停
 	utils.InitSessionStore(0)

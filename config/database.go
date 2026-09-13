@@ -96,8 +96,15 @@ func GetDB() *gorm.DB {
 }
 
 // autoMigrate 自动迁移表结构
-// 当前保留：用户表、文件表、角色表、回忆记忆表、审计日志表。
+// 当前保留：用户表、文件表、角色表、回忆记忆表、审计日志表 + Role Core 8 张新表。
 // 记忆/摘要/Agent 等模型已下线，不再自动建表。
+//
+// Role Core 8 张新表（PRD 02_PRD_data_model.md）：
+//
+//	role_persona / role_traits / role_mood / role_belief / role_relationship /
+//	role_core_audit_log / role_feedback / role_evolution_suggestion
+//
+// 全部使用 (user_id, role_id) 复合主键（除 belief/feedback/audit/suggestion 用自增 id）。
 func autoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&models.File{},
@@ -106,5 +113,16 @@ func autoMigrate(db *gorm.DB) error {
 		&models.RecallMemory{},
 		&models.RecallSourceFile{},
 		&models.AuditLog{},
+		// ----- Role Core 8 表（M0）-----
+		&models.RolePersona{},
+		&models.RoleTraits{},
+		&models.RoleMood{},
+		&models.RoleBelief{},
+		&models.RoleRelationship{},
+		&models.RoleCoreAuditLog{},
+		&models.RoleFeedback{},
+		&models.RoleEvolutionSuggestion{},
+		// ----- OCEAN 预设字典（用户可增删改,companion_default 不可删）-----
+		&models.RoleOceanPreset{},
 	)
 }

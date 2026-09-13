@@ -152,3 +152,47 @@ func intToStr(n int) string {
 	}
 	return string(b[i:])
 }
+
+// floatToStr 将 float64 转为字符串（保留 3 位小数，避免日志过宽）。
+// 用于 OCEAN/mood 等小数值的格式化输出。
+func floatToStr(f float64) string {
+	neg := f < 0
+	if neg {
+		f = -f
+	}
+	// 保留 3 位小数：f*1000 取整,拆成整数部分 + 小数部分
+	intPart := int64(f)
+	fracPart := int64((f - float64(intPart)) * 1000)
+	if fracPart >= 1000 {
+		intPart++
+		fracPart -= 1000
+	}
+	// 拼接
+	var b [32]byte
+	i := len(b)
+	// 小数部分：3 位
+	for k := 0; k < 3; k++ {
+		i--
+		b[i] = byte('0' + fracPart%10)
+		fracPart /= 10
+	}
+	// 小数点
+	i--
+	b[i] = '.'
+	// 整数部分
+	if intPart == 0 {
+		i--
+		b[i] = '0'
+	} else {
+		for intPart > 0 {
+			i--
+			b[i] = byte('0' + intPart%10)
+			intPart /= 10
+		}
+	}
+	if neg {
+		i--
+		b[i] = '-'
+	}
+	return string(b[i:])
+}
