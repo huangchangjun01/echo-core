@@ -153,10 +153,54 @@ func (h *RoleCoreHandler) SaveTraits(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok", "data": resp})
 }
 
-// GetTraits 取 OCEAN (GET /api/role-core/traits?roleId=N)
+// SetActivePreset 切换当前使用的 OCEAN 预设 (POST /api/role-core/active-preset)
 //
-// 设计要点：OCEAN 五维尚未填写属于"正常业务态"，返回 HTTP 200 + data:null，
-// 前端按空态 UI（"使用默认预设"按钮）展示。
+// 与 SaveTraits 的职责拆分:
+//   - SaveTraits:写入 OCEAN 五维(POST /traits)
+//   - SetActivePreset:仅切换 active preset,不动 OCEAN 数据
+//
+// 前端对应「保存五维性格配置」+「使用性格」两个独立按钮。
+//
+// 失败:
+//   - 400: 参数错误(binding 校验失败)
+//   - 404: presetType 不存在(ErrPresetNotFound)
+//   - 500: 写库失败
+func (h *RoleCoreHandler) SetActivePreset(c *gin.Context) {
+	ctx := c.Request.Context()
+	userId, ok := h.requireUser(c)
+	if !ok {
+		return
+	}
+	var req dto.SetActivePresetRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "message": "参数错误: " + err.Error()})
+		return
+	}
+	active, err := h.svc.SetActivePreset(ctx, userId, req.RoleID, req.PresetType)
+	if err != nil {
+		// 复用 SaveTraits 的 preset-not-found 错误映射(语义相同)
+		mapRoleCoreErr(c, err, "")
+		return
+	}
+	utils.LogWith(c, "RoleCore", "SetActivePreset 成功 | roleId=%d preset=%s", req.RoleID, active)
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"message": "ok",
+		"data":    dto.SetActivePresetResponse{ActivePresetType: active},
+	})
+}
+
+// GetTraits 取 OCEAN (GET /api/role-core/traits?roleId=N[&presetType=xxx])
+//
+// 返回 dto.TraitsListResponse{List, ActivePresetType}:
+//   - List: 该 (user, role) 下所有已保存预设的 OCEAN 五维
+//   - ActivePresetType: 当前真正生效的预设 key
+//
+// 可选 query presetType:若指定则保持旧行为(单元素数组 + activePresetType),
+// 便于调试面板单独查询某个 preset。
+//
+// 设计要点：OCEAN 五维尚未填写属于"正常业务态"，返回 HTTP 200 + data 完整结构体
+// (list=[], activePresetType=companion_default)，前端按空态 UI 展示。
 func (h *RoleCoreHandler) GetTraits(c *gin.Context) {
 	ctx := c.Request.Context()
 	userId, ok := h.requireUser(c)
@@ -168,16 +212,48 @@ func (h *RoleCoreHandler) GetTraits(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "message": "roleId 必填"})
 		return
 	}
-	resp, err := h.svc.GetTraits(ctx, userId, uint(roleId))
-	if err != nil {
-		if errors.Is(err, service.ErrTraitsNotFound) {
-			utils.LogWith(c, "RoleCore", "GetTraits 未填写 | roleId=%d", roleId)
-			c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok", "data": nil})
+	presetType := c.Query("presetType")
+
+	// 指定 presetType → 单元素数组(保持旧行为,便于调试面板单独查)
+	if presetType != "" {
+		single, gerr := h.svc.GetTraitsByPreset(ctx, userId, uint(roleId), presetType)
+		if gerr != nil {
+			if errors.Is(gerr, service.ErrTraitsNotFound) {
+				utils.LogWith(c, "RoleCore", "GetTraits 未填写 preset=%s | roleId=%d", presetType, roleId)
+				c.JSON(http.StatusOK, gin.H{
+					"code":    200,
+					"message": "ok",
+					"data": dto.TraitsListResponse{
+						List:             []dto.TraitsResponse{},
+						ActivePresetType: "", // 单 preset 查询时无意义,留空
+					},
+				})
+				return
+			}
+			mapRoleCoreErr(c, gerr, "")
 			return
 		}
+		c.JSON(http.StatusOK, gin.H{
+			"code":    200,
+			"message": "ok",
+			"data": dto.TraitsListResponse{
+				List:             []dto.TraitsResponse{*single},
+				ActivePresetType: "",
+			},
+		})
+		return
+	}
+
+	resp, err := h.svc.GetTraits(ctx, userId, uint(roleId))
+	if err != nil {
 		mapRoleCoreErr(c, err, "")
 		return
 	}
+	if resp == nil {
+		resp = &dto.TraitsListResponse{List: []dto.TraitsResponse{}, ActivePresetType: "companion_default"}
+	}
+	utils.LogWith(c, "RoleCore", "GetTraits 成功 | roleId=%d count=%d active=%s",
+		roleId, len(resp.List), resp.ActivePresetType)
 	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok", "data": resp})
 }
 
@@ -446,6 +522,12 @@ func (h *RoleCoreHandler) SubmitFeedback(c *gin.Context) {
 		return
 	}
 	utils.LogWith(c, "RoleCore", "SubmitFeedback 成功 | roleId=%d rating=%d", req.RoleID, req.Rating)
+
+	// 反馈提交后 → 触发关系值累积(positive/negative_feedback 事件)。
+	// OnFeedback 内部按 rating 分流:>0 → positive,<0 → negative,=0 → 跳过。
+	// 失败仅记日志,不影响 feedback 主响应。
+	h.svc.OnFeedback(ctx, userId, req.RoleID, req.Rating)
+
 	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok"})
 }
 

@@ -16,22 +16,22 @@ import (
 
 // Role Core 业务错误哨兵变量
 var (
-	ErrPersonaNotFound       = errors.New("人格不存在")
-	ErrTraitsNotFound        = errors.New("OCEAN五维不存在")
-	ErrInvalidOceanValue     = errors.New("OCEAN五维值越界 [-1,1]")
-	ErrInvalidOceanDelta     = errors.New("OCEAN 单步变更超出硬上限 0.05")
-	ErrMoodNotFound          = errors.New("心情不存在")
-	ErrRelationshipNotFound  = errors.New("关系值不存在")
-	ErrBeliefNotFound        = errors.New("信念不存在")
-	ErrSuggestionNotFound    = errors.New("建议不存在")
-	ErrInvalidSuggestionOp   = errors.New("无效的建议操作")
-	ErrPersonaJsonCorrupt    = errors.New("persona JSON 字段损坏")
-	ErrOceanHardLimitBreach  = errors.New("OCEAN 周变化总量超 0.8")
+	ErrPersonaNotFound      = errors.New("人格不存在")
+	ErrTraitsNotFound       = errors.New("OCEAN五维不存在")
+	ErrInvalidOceanValue    = errors.New("OCEAN五维值越界 [-1,1]")
+	ErrInvalidOceanDelta    = errors.New("OCEAN 单步变更超出硬上限 0.05")
+	ErrMoodNotFound         = errors.New("心情不存在")
+	ErrRelationshipNotFound = errors.New("关系值不存在")
+	ErrBeliefNotFound       = errors.New("信念不存在")
+	ErrSuggestionNotFound   = errors.New("建议不存在")
+	ErrInvalidSuggestionOp  = errors.New("无效的建议操作")
+	ErrPersonaJsonCorrupt   = errors.New("persona JSON 字段损坏")
+	ErrOceanHardLimitBreach = errors.New("OCEAN 周变化总量超 0.8")
 	// 预设字典相关
-	ErrPresetNotFound        = errors.New("OCEAN 预设不存在")
-	ErrPresetProtected       = errors.New("该预设受保护,不可删除")
-	ErrPresetKeyConflict     = errors.New("预设 key 已存在")
-	ErrPresetInvalidKey      = errors.New("预设 key 非法")
+	ErrPresetNotFound    = errors.New("OCEAN 预设不存在")
+	ErrPresetProtected   = errors.New("该预设受保护,不可删除")
+	ErrPresetKeyConflict = errors.New("预设 key 已存在")
+	ErrPresetInvalidKey  = errors.New("预设 key 非法")
 )
 
 // OCEAN 单步变更硬上限（PRD 03_PRD_change_engine.md）
@@ -50,29 +50,33 @@ const (
 //  5. 反馈 feedback 写入 + 累积触发（M7 占位）
 //  6. 演化建议 suggestion 流转：pending → applied/skipped/edited（M6 占位）
 type RoleCoreService struct {
-	personaRepo *repository.RolePersonaRepository
-	traitsRepo  *repository.RoleTraitsRepository
-	moodRepo    *repository.RoleMoodRepository
-	relRepo     *repository.RoleRelationshipRepository
-	beliefRepo  *repository.RoleBeliefRepository
-	auditRepo   *repository.RoleCoreAuditLogRepository
+	personaRepo  *repository.RolePersonaRepository
+	traitsRepo   *repository.RoleTraitsRepository
+	moodRepo     *repository.RoleMoodRepository
+	relRepo      *repository.RoleRelationshipRepository
+	beliefRepo   *repository.RoleBeliefRepository
+	auditRepo    *repository.RoleCoreAuditLogRepository
 	feedbackRepo *repository.RoleFeedbackRepository
-	suggRepo    *repository.RoleEvolutionSuggestionRepository
-	presetRepo  *repository.RoleOceanPresetRepository
+	suggRepo     *repository.RoleEvolutionSuggestionRepository
+	presetRepo   *repository.RoleOceanPresetRepository
+	// activePresetRepo 当前生效预设的持久化(每角色一条)。
+	// 取代早期硬编码「取 companion_default」,让 chat 真正按用户选择读 OCEAN。
+	activePresetRepo *repository.RoleActivePresetRepository
 }
 
 // NewRoleCoreService 构造
 func NewRoleCoreService() *RoleCoreService {
 	return &RoleCoreService{
-		personaRepo:  repository.NewRolePersonaRepository(),
-		traitsRepo:   repository.NewRoleTraitsRepository(),
-		moodRepo:     repository.NewRoleMoodRepository(),
-		relRepo:      repository.NewRoleRelationshipRepository(),
-		beliefRepo:   repository.NewRoleBeliefRepository(),
-		auditRepo:    repository.NewRoleCoreAuditLogRepository(),
-		feedbackRepo: repository.NewRoleFeedbackRepository(),
-		suggRepo:     repository.NewRoleEvolutionSuggestionRepository(),
-		presetRepo:   repository.NewRoleOceanPresetRepository(),
+		personaRepo:      repository.NewRolePersonaRepository(),
+		traitsRepo:       repository.NewRoleTraitsRepository(),
+		moodRepo:         repository.NewRoleMoodRepository(),
+		relRepo:          repository.NewRoleRelationshipRepository(),
+		beliefRepo:       repository.NewRoleBeliefRepository(),
+		auditRepo:        repository.NewRoleCoreAuditLogRepository(),
+		feedbackRepo:     repository.NewRoleFeedbackRepository(),
+		suggRepo:         repository.NewRoleEvolutionSuggestionRepository(),
+		presetRepo:       repository.NewRoleOceanPresetRepository(),
+		activePresetRepo: repository.NewRoleActivePresetRepository(),
 	}
 }
 
@@ -99,14 +103,14 @@ func (s *RoleCoreService) SavePersona(ctx context.Context, userId uint, req *dto
 	if old != nil {
 		// 反序列化旧数据快照
 		oldSnap := struct {
-			Identity       string             `json:"identity"`
-			Background     string             `json:"background"`
-			TraitsTags     []string           `json:"traitsTags"`
-			Values         []string           `json:"values"`
-			SpeakingStyle  string             `json:"speakingStyle"`
-			Taboos         []string           `json:"taboos"`
+			Identity       string                  `json:"identity"`
+			Background     string                  `json:"background"`
+			TraitsTags     []string                `json:"traitsTags"`
+			Values         []string                `json:"values"`
+			SpeakingStyle  string                  `json:"speakingStyle"`
+			Taboos         []string                `json:"taboos"`
 			ExampleDialogs []dto.ExampleDialogItem `json:"exampleDialogs"`
-			Version        int                `json:"version"`
+			Version        int                     `json:"version"`
 		}{
 			Identity: old.Identity, Background: old.Background, SpeakingStyle: old.SpeakingStyle,
 			Version: old.Version,
@@ -176,7 +180,7 @@ func (s *RoleCoreService) GetPersona(ctx context.Context, userId, roleId uint) (
 
 // ===== OCEAN 五维（Traits）=====
 
-// SaveTraits 保存 OCEAN 五维：范围校验 + preset 存在性校验 + 软告警 + 审计。
+// SaveTraits 保存某预设的 OCEAN 五维：范围校验 + preset 存在性校验 + 软告警 + 审计。
 //
 // 软告警(不再以硬上限拒绝):
 //   - 单步变更不再"硬上限拒绝"。0.05 的限制原本是为防止 LLM bug 一次性把 OCEAN
@@ -186,7 +190,9 @@ func (s *RoleCoreService) GetPersona(ctx context.Context, userId, roleId uint) (
 //     前端弹窗让用户确认意图,但后端不阻断。
 //   - 硬上限规则(若需要)留给未来的内部 API,如 LLM-driven 反馈累积。
 //
-// 范围校验 [-1,1] 与 presetType 存在性校验保留 —— 这两类是真的"非法输入"。
+// 范围校验 [-2,2] 与 presetType 存在性校验保留 —— 这两类是真的"非法输入"。
+//
+// 关键设计:每个 (user, role, preset_type) 独立一行,切预设保存互不影响。
 //
 // presetType 由 hardcoded oneof 改为 DB 校验:调用 ListPresets 复用种子逻辑,
 // 保证首次保存 traits 时预设表已就绪。
@@ -194,7 +200,7 @@ func (s *RoleCoreService) SaveTraits(ctx context.Context, userId uint, req *dto.
 	if userId == 0 || req.RoleID == 0 {
 		return nil, errors.New("userId/roleId required")
 	}
-	// 1. 范围校验(真正的非法输入: [-1,1] 之外)
+	// 1. 范围校验(真正的非法输入: [-2,2] 之外)
 	if err := validateOceanRange(req); err != nil {
 		return nil, err
 	}
@@ -214,8 +220,8 @@ func (s *RoleCoreService) SaveTraits(ctx context.Context, userId uint, req *dto.
 		userId, req.RoleID, req.PresetType,
 		req.Openness, req.Conscientiousness, req.Extraversion, req.Agreeableness, req.Neuroticism)
 
-	// 3. 计算 5 维 delta(软告警用,不阻断保存)
-	old, _ := s.traitsRepo.GetByUserRole(ctx, userId, req.RoleID)
+	// 3. 计算 5 维 delta(软告警用,不阻断保存)—— 仅与同 preset 的历史值比较
+	old, _ := s.traitsRepo.GetByUserRolePreset(ctx, userId, req.RoleID, req.PresetType)
 	maxDelta := 0.0
 	if old != nil {
 		deltas := []float64{
@@ -232,22 +238,28 @@ func (s *RoleCoreService) SaveTraits(ctx context.Context, userId uint, req *dto.
 		}
 	}
 
-	// 4. 写入
+	// 4. 写入(preset_type 作为主键一段,不同 preset 写不同行)
 	t := &models.RoleTraits{
 		UserID:            userId,
 		RoleID:            req.RoleID,
+		PresetType:        req.PresetType,
 		Openness:          req.Openness,
 		Conscientiousness: req.Conscientiousness,
 		Extraversion:      req.Extraversion,
 		Agreeableness:     req.Agreeableness,
 		Neuroticism:       req.Neuroticism,
-		PresetType:        req.PresetType,
 	}
 	err = s.traitsRepo.UpsertWithTx(ctx, nil, t)
 	if err != nil {
 		utils.LogWithCtx(ctx, "RoleCoreService.SaveTraits", "写入失败 | err=%v", err)
 		return nil, err
 	}
+
+	// 注意:SaveTraits 不再自动切 active —— 保存 OCEAN 五维与切换"当前使用性格"
+	// 是两件事。前端拆为两个按钮:
+	//   - 「保存五维性格配置」:落库五维值(本方法)
+	//   - 「使用性格」:仅切 active preset(SetActivePreset)
+	// 让用户在不改 OCEAN 的情况下也能切换当前使用的预设。
 
 	// 5. 审计(把 maxDelta 也写进审计日志,便于将来追溯大变更)
 	beforeJSON := ""
@@ -270,40 +282,144 @@ func (s *RoleCoreService) SaveTraits(ctx context.Context, userId uint, req *dto.
 		TriggerEvent: models.AuditTriggerUserEdit,
 	})
 
-	// 6. 取最新行 + 附带软告警(maxDelta/warning 给前端弹窗)
-	resp, err := s.GetTraits(ctx, userId, req.RoleID)
-	if err != nil {
-		return nil, err
+	// 6. 拉回最新行 + 附带软告警(maxDelta/warning 给前端弹窗)
+	tFresh, ferr := s.traitsRepo.GetByUserRolePreset(ctx, userId, req.RoleID, req.PresetType)
+	if ferr != nil {
+		return nil, ferr
 	}
-	if resp != nil {
-		resp.MaxDelta = maxDelta
-		if maxDelta > oceanStepHardLimit {
-			resp.Warning = fmt.Sprintf("本次最大单步变更 %.3f(>0.05),已落库但请确认意图", maxDelta)
-		}
+	resp := traitsToResponse(tFresh)
+	resp.MaxDelta = maxDelta
+	if maxDelta > oceanStepHardLimit {
+		resp.Warning = fmt.Sprintf("本次最大单步变更 %.3f(>0.05),已落库但请确认意图", maxDelta)
 	}
 	return resp, nil
 }
 
-// GetTraits 取 OCEAN 五维(无则返回 ErrTraitsNotFound 哨兵，由 handler 映射为 200 + data:null)
-func (s *RoleCoreService) GetTraits(ctx context.Context, userId, roleId uint) (*dto.TraitsResponse, error) {
-	t, err := s.traitsRepo.GetByUserRole(ctx, userId, roleId)
+// SetActivePreset 切换某 (user, role) 当前生效的 OCEAN 预设。
+//
+// 与 SaveTraits 的职责拆分:
+//   - SaveTraits:写入 OCEAN 五维值(可能改得很细)
+//   - SetActivePreset:仅切换 chat 回复时读哪个 preset,不写 OCEAN
+//
+// 这样前端可以拆为「保存五维性格配置」+「使用性格」两个独立按钮,
+// 用户在不改 OCEAN 的情况下也能切 active 预设。
+//
+// 校验:
+//   - roleId / presetType 必填
+//   - presetType 必须存在于用户的预设字典中(否则 400 ErrPresetNotFound)
+//
+// 返回新 activePresetType。
+func (s *RoleCoreService) SetActivePreset(ctx context.Context, userId, roleId uint, presetType string) (string, error) {
+	if userId == 0 || roleId == 0 {
+		return "", errors.New("userId/roleId required")
+	}
+	if presetType == "" {
+		return "", errors.New("presetType required")
+	}
+	// 校验 preset 存在 + 同时确保预设字典已 seed
+	if _, err := s.ListPresets(ctx, userId); err != nil {
+		return "", err
+	}
+	preset, err := s.presetRepo.GetByUserAndKey(ctx, userId, presetType)
+	if err != nil {
+		return "", err
+	}
+	if preset == nil {
+		return "", fmt.Errorf("%w: presetType=%s", ErrPresetNotFound, presetType)
+	}
+
+	if err := s.activePresetRepo.Upsert(ctx, userId, roleId, presetType); err != nil {
+		utils.LogWithCtx(ctx, "RoleCoreService.SetActivePreset", "upsert 失败 | err=%v", err)
+		return "", err
+	}
+	utils.LogWithCtx(ctx, "RoleCoreService.SetActivePreset",
+		"成功 | userId=%d roleId=%d preset=%s", userId, roleId, presetType)
+	return presetType, nil
+}
+
+// GetTraits 取某 (user, role) 下所有预设的 OCEAN 五维 + 当前生效预设
+//
+// 返回 dto.TraitsListResponse{List, ActivePresetType}:
+//   - List: 所有用户已保存的预设 OCEAN 行(每个 preset 一条)
+//   - ActivePresetType: 当前真正生效的预设 key(决定 chat 回复时读的 OCEAN)
+//
+// 设计要点：切预设展示时,前端按 presetType 在 List 中查找:
+//   - 找到 → 使用该行作为用户自定义值
+//   - 未找到 → 套用预设基线
+//
+// ActivePresetType 与 List 的语义不同:List 是「已保存的 OCEAN」,active 是
+// 「正在被 chat 读的那一个」。
+//
+// 历史演进:
+//   - 早期返回单条 *TraitsResponse → 切换预设互窜 bug
+//   - 改为返回 []TraitsResponse → 修复合并存,但没「当前使用」概念
+//   - 改为返回 TraitsListResponse → 增加 active preset 跟踪
+func (s *RoleCoreService) GetTraits(ctx context.Context, userId, roleId uint) (*dto.TraitsListResponse, error) {
+	list, err := s.traitsRepo.ListByUserRole(ctx, userId, roleId)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]dto.TraitsResponse, 0, len(list))
+	for i := range list {
+		out = append(out, *traitsToResponse(&list[i]))
+	}
+	active, err := s.resolveActivePresetType(ctx, userId, roleId, list)
+	if err != nil {
+		// 解析失败时回退到默认,不阻断 list 返回
+		utils.LogWithCtx(ctx, "RoleCoreService.GetTraits", "resolveActivePresetType 失败 | err=%v", err)
+		active = models.PresetCompanionDefault
+	}
+	return &dto.TraitsListResponse{
+		List:             out,
+		ActivePresetType: active,
+	}, nil
+}
+
+// resolveActivePresetType 决定某 (user, role) 当前真正生效的 preset。
+//
+// 优先级:
+//  1. role_active_preset 表有记录 且 该 preset 在传入的 traitsList 中存在
+//     → 返回该 preset(用户上次保存的)
+//  2. role_active_preset 表有记录 但 traitsList 里没有(可能 preset 被删了
+//     或 trait 行被清空) → 回退到 companion_default
+//  3. role_active_preset 表无记录(全新角色或迁移前数据) → 回退到 companion_default
+//
+// 设计要点：始终返回 preset key 字符串(不是 *models.RoleTraits),调用方需要
+// OCEAN 五维时再用 GetByUserRolePreset 取。
+func (s *RoleCoreService) resolveActivePresetType(ctx context.Context, userId, roleId uint, traitsList []models.RoleTraits) (string, error) {
+	ap, err := s.activePresetRepo.GetByUserRole(ctx, userId, roleId)
+	if err != nil {
+		return models.PresetCompanionDefault, err
+	}
+	if ap == nil {
+		return models.PresetCompanionDefault, nil
+	}
+	// active preset 在 traitsList 里存在 → 用它
+	for i := range traitsList {
+		if traitsList[i].PresetType == ap.PresetType {
+			return ap.PresetType, nil
+		}
+	}
+	// active preset 指向的 trait 行已不存在(可能 preset 被删 / trait 被清)
+	// 兜底到默认,避免 chat 读到空数据
+	utils.LogWithCtx(ctx, "RoleCoreService.resolveActivePresetType",
+		"active preset %s 不在 traitsList 中,回退到默认 | userId=%d roleId=%d",
+		ap.PresetType, userId, roleId)
+	return models.PresetCompanionDefault, nil
+}
+
+// GetTraitsByPreset 取某 (user, role) 下指定 preset 的 OCEAN 五维(单条)
+//
+// 返回 *TraitsResponse + nil 表示找到;返回 nil + ErrTraitsNotFound 表示未保存过(走预设基线)。
+func (s *RoleCoreService) GetTraitsByPreset(ctx context.Context, userId, roleId uint, presetType string) (*dto.TraitsResponse, error) {
+	t, err := s.traitsRepo.GetByUserRolePreset(ctx, userId, roleId, presetType)
 	if err != nil {
 		if err.Error() == "record not found" {
 			return nil, ErrTraitsNotFound
 		}
 		return nil, err
 	}
-	return &dto.TraitsResponse{
-		UserID:            t.UserID,
-		RoleID:            t.RoleID,
-		Openness:          t.Openness,
-		Conscientiousness: t.Conscientiousness,
-		Extraversion:      t.Extraversion,
-		Agreeableness:     t.Agreeableness,
-		Neuroticism:       t.Neuroticism,
-		PresetType:        t.PresetType,
-		UpdatedAt:         t.UpdatedAt.Format(time.RFC3339),
-	}, nil
+	return traitsToResponse(t), nil
 }
 
 // ===== OCEAN 预设字典 =====
@@ -313,34 +429,34 @@ func (s *RoleCoreService) GetTraits(ctx context.Context, userId, roleId uint) (*
 var defaultPresets = []models.RoleOceanPreset{
 	{
 		Key: models.PresetKeyCompanionDefault, Label: "标准陪伴",
-		Description:    "温暖、亲和、低神经质",
-		Openness:       0.4, Conscientiousness: -0.1, Extraversion: 0.2, Agreeableness: 0.7, Neuroticism: -0.4,
+		Description: "温暖、亲和、低神经质",
+		Openness:    0.4, Conscientiousness: -0.1, Extraversion: 0.2, Agreeableness: 0.7, Neuroticism: -0.4,
 		IsProtected: true, // 标准陪伴不可删
 	},
 	{
 		Key: models.PresetKeyRationalAdvisor, Label: "理性顾问",
-		Description:    "逻辑清晰、克制情绪",
-		Openness:       0.2, Conscientiousness: 0.7, Extraversion: -0.3, Agreeableness: 0.2, Neuroticism: -0.5,
+		Description: "逻辑清晰、克制情绪",
+		Openness:    0.2, Conscientiousness: 0.7, Extraversion: -0.3, Agreeableness: 0.2, Neuroticism: -0.5,
 	},
 	{
 		Key: models.PresetKeyEnergeticGirl, Label: "元气少女",
-		Description:    "活力充沛、乐观开朗",
-		Openness:       0.6, Conscientiousness: -0.3, Extraversion: 0.8, Agreeableness: 0.6, Neuroticism: -0.6,
+		Description: "活力充沛、乐观开朗",
+		Openness:    0.6, Conscientiousness: -0.3, Extraversion: 0.8, Agreeableness: 0.6, Neuroticism: -0.6,
 	},
 	{
 		Key: models.PresetKeyGentleSenior, Label: "温柔学长",
-		Description:    "稳重体贴、温和有礼",
-		Openness:       0.3, Conscientiousness: 0.4, Extraversion: 0.1, Agreeableness: 0.6, Neuroticism: -0.3,
+		Description: "稳重体贴、温和有礼",
+		Openness:    0.3, Conscientiousness: 0.4, Extraversion: 0.1, Agreeableness: 0.6, Neuroticism: -0.3,
 	},
 	{
 		Key: models.PresetKeySarcasticFriend, Label: "毒舌损友",
-		Description:    "直率犀利、敢说实话",
-		Openness:       0.5, Conscientiousness: -0.2, Extraversion: 0.4, Agreeableness: -0.2, Neuroticism: -0.1,
+		Description: "直率犀利、敢说实话",
+		Openness:    0.5, Conscientiousness: -0.2, Extraversion: 0.4, Agreeableness: -0.2, Neuroticism: -0.1,
 	},
 	{
 		Key: models.PresetKeyPsychCounselor, Label: "心理咨询师",
-		Description:    "倾听共情、专业支持",
-		Openness:       0.7, Conscientiousness: 0.6, Extraversion: 0, Agreeableness: 0.9, Neuroticism: -0.7,
+		Description: "倾听共情、专业支持",
+		Openness:    0.7, Conscientiousness: 0.6, Extraversion: 0, Agreeableness: 0.9, Neuroticism: -0.7,
 	},
 }
 
@@ -445,6 +561,9 @@ func (s *RoleCoreService) UpdatePreset(ctx context.Context, userId, id uint, req
 }
 
 // DeletePreset 删除预设。is_protected=true 拒绝。
+//
+// 顺带清理：如果该 preset 被设为某个角色的 active preset,清理对应 role_active_preset
+// 记录(避免悬空引用)。下一次访问该角色时会自动回退到 companion_default。
 func (s *RoleCoreService) DeletePreset(ctx context.Context, userId, id uint) error {
 	p, err := s.presetRepo.GetByID(ctx, id)
 	if err != nil {
@@ -459,7 +578,19 @@ func (s *RoleCoreService) DeletePreset(ctx context.Context, userId, id uint) err
 	if p.IsProtected {
 		return ErrPresetProtected
 	}
-	return s.presetRepo.Delete(ctx, id)
+	// 先删 preset 字典,再清 active 记录(顺序无所谓,都是 idempotent)
+	if err := s.presetRepo.Delete(ctx, id); err != nil {
+		return err
+	}
+	// 这里不查 role 表(避免引入额外依赖);用 preset_key 模糊匹配所有
+	// (user_id, role_id) 中 preset_type 等于该 key 的 active 记录。
+	// 用户级 — 但通常一个用户的 preset key 唯一,所以只会匹配到该用户自己的记录。
+	// 用 application 层校验 userId 即可。
+	if perr := s.activePresetRepo.DeleteByUserAndKey(ctx, userId, p.Key); perr != nil {
+		utils.LogWithCtx(ctx, "RoleCoreService.DeletePreset",
+			"清理 active preset 失败(非致命) | key=%s err=%v", p.Key, perr)
+	}
+	return nil
 }
 
 // presetToResponse model → dto
@@ -551,11 +682,33 @@ func (s *RoleCoreService) UpdateMood(ctx context.Context, req *dto.UpdateMoodReq
 	}
 
 	// 2. 从 OCEAN 读 personality_bias
+	//
+	// 历史演进:曾硬编码优先取 companion_default,不能反映用户实际选择。
+	// 修复:改用 active preset —— 用户最近一次点「设置当前性格」保存的 preset。
+	// 这样 chat 心情事件的人格底色与用户在 OCEAN 页选的一致,体验一致。
+	// resolveActivePresetType 已处理:
+	//   - active 表有记录 → 用该 preset 的 OCEAN
+	//   - 没记录/preset 已被删 → 兜底到 companion_default
 	personalityBias := 0.0
 	relationshipInfluence := 0.0
-	if t, terr := s.traitsRepo.GetByUserRole(ctx, req.UserID, req.RoleID); terr == nil && t != nil {
-		// personality_bias = 0.10*O + 0.05*A - 0.15*N
-		personalityBias = 0.10*t.Openness + 0.05*t.Agreeableness - 0.15*t.Neuroticism
+	if traitsList, terr := s.traitsRepo.ListByUserRole(ctx, req.UserID, req.RoleID); terr == nil && len(traitsList) > 0 {
+		activePreset, _ := s.resolveActivePresetType(ctx, req.UserID, req.RoleID, traitsList)
+		var t *models.RoleTraits
+		for i := range traitsList {
+			if traitsList[i].PresetType == activePreset {
+				t = &traitsList[i]
+				break
+			}
+		}
+		if t == nil && len(traitsList) > 0 {
+			// active preset 的 trait 行不存在(理论上 resolveActivePresetType
+			// 已保证 activePreset 在 list 中,但兜底一下)
+			t = &traitsList[0]
+		}
+		if t != nil {
+			// personality_bias = 0.10*O + 0.05*A - 0.15*N
+			personalityBias = 0.10*t.Openness + 0.05*t.Agreeableness - 0.15*t.Neuroticism
+		}
 	}
 	if r, rerr := s.relRepo.GetByUserRole(ctx, req.UserID, req.RoleID); rerr == nil && r != nil {
 		// relationship_influence = intimacy*0.05 (信任感正影响心情)
@@ -799,6 +952,72 @@ func (s *RoleCoreService) AccumulateRelationship(ctx context.Context, userId uin
 		Satisfaction: newSatisfaction,
 		CoDays:       old.CoDays,
 	}, nil
+}
+
+// ===== Relationship 事件触发钩子 =====
+//
+// 历史:AccumulateRelationship 实现了完整的累积算法,但没有任何调用方。
+// 早期 chat 路径透传到 Python 后就直接返回 SSE,没有把「用户发了一条消息」
+// 翻译成后端的 turn 事件 —— 这就是用户报「聊了很多但关系值不变」的根因。
+//
+// 下面是 chat 完成的回调入口,由 chat handler 在 sync/stream 成功路径调用。
+// 失败仅记日志(关系值是辅助指标,不能因为它出错就阻断 chat 主流程)。
+
+// OnChatTurn 一次对话轮次完成后调用:触发 turn 关系事件。
+//
+// 入参 userId/roleId 是字符串(对齐 chat DTO),内部 parse 成 uint。
+// 无角色聊天(roleId 为空)→ 直接跳过,不累积。
+//
+// 注意:此方法不抛错给调用方 —— 失败仅记日志,chat 主流程不该被关系值
+// 写入失败影响。
+func (s *RoleCoreService) OnChatTurn(ctx context.Context, userIdStr, roleIdStr string) {
+	userId, err := strconv.ParseUint(userIdStr, 10, 64)
+	if err != nil || userId == 0 {
+		utils.LogWithCtx(ctx, "RoleCoreService.OnChatTurn", "跳过(userId 解析失败或为 0) | raw=%q err=%v", userIdStr, err)
+		return
+	}
+	roleId, err := strconv.ParseUint(roleIdStr, 10, 64)
+	if err != nil || roleId == 0 {
+		utils.LogWithCtx(ctx, "RoleCoreService.OnChatTurn", "跳过(roleId 解析失败或为 0) | raw=%q err=%v", roleIdStr, err)
+		return
+	}
+	if _, err := s.AccumulateRelationship(ctx, uint(userId), &dto.RelationshipEventRequest{
+		RoleID:    uint(roleId),
+		EventType: "turn",
+		Source:    "chat",
+	}); err != nil {
+		utils.LogWithCtx(ctx, "RoleCoreService.OnChatTurn", "累积失败(忽略) | err=%v", err)
+	}
+}
+
+// OnFeedback 提交反馈后调用:根据 rating 触发 positive/negative_feedback 事件。
+//
+//   - rating > 0 → positive_feedback(信任 +0.02,满意度 +0.02)
+//   - rating < 0 → negative_feedback(信任 -0.02,满意度 -0.02)
+//   - rating == 0 → 不触发(中立反馈不驱动关系值)
+//
+// 同 OnChatTurn:失败仅记日志,不抛给调用方。
+func (s *RoleCoreService) OnFeedback(ctx context.Context, userId uint, roleID uint, rating int) {
+	if userId == 0 || roleID == 0 {
+		return
+	}
+	var eventType string
+	switch {
+	case rating > 0:
+		eventType = "positive_feedback"
+	case rating < 0:
+		eventType = "negative_feedback"
+	default:
+		// rating == 0 中立反馈,不驱动关系值
+		return
+	}
+	if _, err := s.AccumulateRelationship(ctx, userId, &dto.RelationshipEventRequest{
+		RoleID:    roleID,
+		EventType: eventType,
+		Source:    "feedback",
+	}); err != nil {
+		utils.LogWithCtx(ctx, "RoleCoreService.OnFeedback", "累积失败(忽略) | err=%v", err)
+	}
 }
 
 // ===== Belief（M3 接口,M0 占位）=====
@@ -1045,8 +1264,8 @@ func (s *RoleCoreService) ResolveSuggestion(ctx context.Context, userId uint, id
 //   - traits:  {openness, conscientiousness, extraversion, agreeableness, neuroticism, presetType}
 //   - belief:  {topic, stance, confidence, source?, userConfirmed?}
 //   - mood:    {instant_val, instant_intensity, instant_emotion,
-//              short_val, short_intensity, short_emotion,
-//              baseline_val, baseline_intensity, baseline_emotion}
+//     short_val, short_intensity, short_emotion,
+//     baseline_val, baseline_intensity, baseline_emotion}
 func (s *RoleCoreService) applySuggestionToMainTable(ctx context.Context, sug *models.RoleEvolutionSuggestion) error {
 	payload := sug.SuggestionJSON
 	if payload == "" {
@@ -1182,7 +1401,7 @@ func (s *RoleCoreService) SubmitFeedback(ctx context.Context, userId uint, req *
 			SuggestionJSON: `{"identity":"","background":"","traitsTags":[],"values":[],"speakingStyle":"","taboos":[],"exampleDialogs":[]}`,
 			Source:         models.SuggestionSourceFeedback,
 			Confidence:     0.5,
-			Reason:         fmt.Sprintf("用户对消息 %s 给了 -2 强负反馈(comment=%s),请考虑调整人设",
+			Reason: fmt.Sprintf("用户对消息 %s 给了 -2 强负反馈(comment=%s),请考虑调整人设",
 				req.MessageID, req.Comment),
 		}
 		if err := s.suggRepo.Create(ctx, suggestion); err != nil {
@@ -1200,7 +1419,7 @@ func (s *RoleCoreService) SubmitFeedback(ctx context.Context, userId uint, req *
 			SuggestionJSON: `{"topic":"","stance":"","confidence":0.7,"source":"feedback"}`,
 			Source:         models.SuggestionSourceFeedback,
 			Confidence:     0.7,
-			Reason:         fmt.Sprintf("用户对消息 %s 给了 +2 强正反馈(comment=%s),可考虑固化为信念",
+			Reason: fmt.Sprintf("用户对消息 %s 给了 +2 强正反馈(comment=%s),可考虑固化为信念",
 				req.MessageID, req.Comment),
 		}
 		if err := s.suggRepo.Create(ctx, suggestion); err != nil {
@@ -1226,19 +1445,25 @@ func (s *RoleCoreService) GetCoreSnapshot(ctx context.Context, userId, roleId ui
 		snap.Persona = personaToResponse(p)
 	}
 
-	// 2. traits
-	if t, err := s.traitsRepo.GetByUserRole(ctx, userId, roleId); err == nil && t != nil {
-		snap.Traits = &dto.TraitsResponse{
-			UserID:            t.UserID,
-			RoleID:            t.RoleID,
-			Openness:          t.Openness,
-			Conscientiousness: t.Conscientiousness,
-			Extraversion:      t.Extraversion,
-			Agreeableness:     t.Agreeableness,
-			Neuroticism:       t.Neuroticism,
-			PresetType:        t.PresetType,
-			UpdatedAt:         t.UpdatedAt.Format(time.RFC3339),
+	// 2. traits —— 多预设结构下取 active preset(用户最近一次保存的)。
+	//
+	// 历史演进:曾硬编码优先取 companion_default,不能反映用户实际选择。
+	// 修复:用 resolveActivePresetType(向后兼容:无 active 记录时回退 companion_default)
+	if traitsList, err := s.traitsRepo.ListByUserRole(ctx, userId, roleId); err == nil && len(traitsList) > 0 {
+		activePreset, _ := s.resolveActivePresetType(ctx, userId, roleId, traitsList)
+		var t *models.RoleTraits
+		for i := range traitsList {
+			if traitsList[i].PresetType == activePreset {
+				t = &traitsList[i]
+				break
+			}
 		}
+		if t == nil {
+			// 兜底:resolveActivePresetType 已尽量保证 active 在 list 中,
+			// 但万一不在(数据损坏)就用第一行,不让 snapshot 为空
+			t = &traitsList[0]
+		}
+		snap.Traits = traitsToResponse(t)
 	}
 
 	// 3. mood
@@ -1344,6 +1569,21 @@ func traitsToMap(t *models.RoleTraits) map[string]interface{} {
 		"agreeableness":     t.Agreeableness,
 		"neuroticism":       t.Neuroticism,
 		"presetType":        t.PresetType,
+	}
+}
+
+// traitsToResponse model → dto(单一预设)
+func traitsToResponse(t *models.RoleTraits) *dto.TraitsResponse {
+	return &dto.TraitsResponse{
+		UserID:            t.UserID,
+		RoleID:            t.RoleID,
+		PresetType:        t.PresetType,
+		Openness:          t.Openness,
+		Conscientiousness: t.Conscientiousness,
+		Extraversion:      t.Extraversion,
+		Agreeableness:     t.Agreeableness,
+		Neuroticism:       t.Neuroticism,
+		UpdatedAt:         t.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

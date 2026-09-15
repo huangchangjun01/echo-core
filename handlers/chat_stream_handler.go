@@ -24,12 +24,16 @@ import (
 // delta / done / memory_extracted（event 字段等于 ChatEvent.Type，data 字段为
 // ChatEvent 的 JSON 序列化）。前端按 event 名订阅即可。
 type ChatHandler struct {
-	svc *service.ChatService
+	svc     *service.ChatService
+	coreSvc *service.RoleCoreService
 }
 
 // NewChatHandler 构造 ChatHandler
-func NewChatHandler(svc *service.ChatService) *ChatHandler {
-	return &ChatHandler{svc: svc}
+//
+// 注入 roleCoreService 用于在 chat 完成后触发「关系值」累积(turn 事件)。
+// 早期 chat 完成后没有调用任何角色内核接口,导致关系值永远不动。
+func NewChatHandler(svc *service.ChatService, coreSvc *service.RoleCoreService) *ChatHandler {
+	return &ChatHandler{svc: svc, coreSvc: coreSvc}
 }
 
 // Chat 统一入口
@@ -81,6 +85,12 @@ func (h *ChatHandler) syncResponse(c *gin.Context, req dto.ChatRequest) {
 	}
 	utils.LogWith(c, "Chat", "sync 完成 | userId=%s sessionId=%s events=%d replyLen=%d latencyMs=%d",
 		req.UserID, resp.SessionID, len(resp.Events), len(resp.Reply), resp.LatencyMs)
+
+	// chat 成功 → 触发关系值累积(turn 事件)。
+	// OnChatTurn 内部失败仅记日志,不影响 chat 主响应。
+	if h.coreSvc != nil {
+		h.coreSvc.OnChatTurn(ctx, req.UserID, req.RoleID)
+	}
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -119,6 +129,9 @@ func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
 	eventSeq := 0
 	typeCounts := make(map[string]int)
 	var lastType string
+	// 标记是否收到过 done 事件(用于判断「这一轮 turn 是否完成」)。
+	// 流结束 + 没收到 done → 不算成功 turn,不触发关系值累积。
+	turnCompleted := false
 	emitProgress := func(force bool) {
 		utils.LogWith(c, "Chat", "SSE 进度 | userId=%s events=%d typeCounts=%v lastType=%s elapsed=%dms",
 			req.UserID, eventSeq, typeCounts, lastType, time.Since(start).Milliseconds())
@@ -128,6 +141,9 @@ func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
 		eventSeq++
 		typeCounts[ev.Type]++
 		lastType = ev.Type
+		if ev.Type == "done" {
+			turnCompleted = true
+		}
 		writeErr := writeSSEEvent(c, flusher, eventSeq, ev)
 		// 每 N 条事件打一次进度
 		if eventSeq%progressEvery == 0 {
@@ -146,6 +162,14 @@ func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
 	}
 	utils.LogWith(c, "Chat", "SSE 流结束 | userId=%s events=%d typeCounts=%v elapsed=%dms",
 		req.UserID, eventSeq, typeCounts, time.Since(start).Milliseconds())
+
+	// chat 流成功完成 → 触发关系值累积(turn 事件)。
+	// 仅在收到过 done 事件时触发(没收到 done 视为流异常中断,
+	// 例如 Python 端提前断连,不算一次完成的 turn,避免重复累积)。
+	// OnChatTurn 内部失败仅记日志。
+	if turnCompleted && h.coreSvc != nil {
+		h.coreSvc.OnChatTurn(ctx, req.UserID, req.RoleID)
+	}
 }
 
 // writeSSEEvent 写入一个标准 SSE 事件帧（Python 协议格式）：

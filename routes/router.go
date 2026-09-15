@@ -63,6 +63,8 @@ func roleCoreRegisterRoutes(api *gin.RouterGroup) error {
 		// OCEAN 五维 traits
 		rc.POST("/traits", h.SaveTraits)
 		rc.GET("/traits", h.GetTraits)
+		// 切换当前使用的预设(与 SaveTraits 拆分:仅切 active,不写 OCEAN)
+		rc.POST("/active-preset", h.SetActivePreset)
 		// Mood (M2)
 		rc.GET("/mood", h.GetMood)
 		// OCEAN 预设字典(用户可增删改,companion_default 不可删)
@@ -131,7 +133,10 @@ func fileRegisterRoutes(api *gin.RouterGroup) error {
 func chatRegisterRoutes(api *gin.RouterGroup) error {
 	// 构造聊天服务（Python 同步/流式透传）
 	chatSvc := service.NewChatService()
-	chatHandler := handlers.NewChatHandler(chatSvc)
+	// 同时注入 roleCoreService —— chat handler 在 sync/stream 成功路径会调用
+	// coreSvc.OnChatTurn 触发关系值累积(turn 事件),修复「聊天不积累关系值」bug
+	coreSvc := service.NewRoleCoreService()
+	chatHandler := handlers.NewChatHandler(chatSvc, coreSvc)
 
 	chat := api.Group("/chat", middleware.RequireSession())
 	{

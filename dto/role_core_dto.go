@@ -128,6 +128,38 @@ type CoreSnapshotResponse struct {
 	Beliefs      []BeliefItem          `json:"beliefs,omitempty"`
 }
 
+// TraitsListResponse OCEAN 五维列表响应（GET /api/role-core/traits）。
+//
+// 与早期直接返回 []TraitsResponse 不同,现在包成对象,带上当前生效的 preset:
+//   - List: 该 (user, role) 下所有已保存预设的 OCEAN 五维(每个 preset 一行)
+//   - ActivePresetType: 当前真正生效的预设 key(决定 chat 回复时读的 OCEAN)
+//
+// 演进历史:曾直接返回 []TraitsResponse,新增「当前使用」跟踪后改为对象形式以
+// 承载 active 状态。前端按此结构解析。
+type TraitsListResponse struct {
+	List             []TraitsResponse `json:"list"`
+	ActivePresetType string           `json:"activePresetType"`
+}
+
+// SetActivePresetRequest 切换当前使用的 OCEAN 预设（POST /api/role-core/active-preset）。
+//
+// 与 SaveTraitsRequest 的职责拆分:
+//   - SaveTraitsRequest:写入某预设的 OCEAN 五维值(可能改得很细)
+//   - SetActivePresetRequest:仅切换 chat 回复时读哪个 preset,不写 OCEAN
+//
+// 前端对应「保存五维性格配置」+「使用性格」两个独立按钮。
+type SetActivePresetRequest struct {
+	RoleID     uint   `json:"roleId" binding:"required"`
+	PresetType string `json:"presetType" binding:"required,min=1,max=64"`
+}
+
+// SetActivePresetResponse 切换当前使用的 OCEAN 预设响应。
+//
+// 只回写新 activePresetType,前端无需再 GET /traits 来刷新。
+type SetActivePresetResponse struct {
+	ActivePresetType string `json:"activePresetType"`
+}
+
 // ===== Mood(M2 用,M0 先建好类型) =====
 
 // MoodSnapshot 心情快照。

@@ -25,6 +25,12 @@ func main() {
 	// 2.5 personas 主键迁移（M0 历史教训 842d7c5）
 	scripts.RunPersonasMigration()
 
+	// 2.6 role_traits 主键迁移（OCEAN 切换预设互窜 bug 修复）
+	scripts.RunRoleTraitsMigration()
+
+	// 2.7 role_active_preset 表创建（OCEAN 当前使用性格跟踪）
+	scripts.RunRoleActivePresetMigration()
+
 	// 3. 显式初始化 SessionStore 单例 + 优雅关停
 	utils.InitSessionStore(0)
 	defer utils.StopSessionStore()
