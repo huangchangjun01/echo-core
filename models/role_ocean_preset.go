@@ -5,15 +5,20 @@ import "time"
 // RoleOceanPreset OCEAN 五维性格预设字典（role_ocean_preset）
 //
 // 设计要点：
-//   - 按 (user_id, key) 唯一：每个用户维护自己的预设库，与其他用户隔离。
+//   - 复合主键 (user_id, role_id, key) —— **预设字典按角色隔离**：
+//     每个 (user, role) 维护独立的预设库，删除/新增/修改只影响本角色，
+//     不污染其它角色。这与 role_traits / role_active_preset 一起保证
+//     「性格数据按角色完全隔离」。
 //   - is_protected=true 表示「标准陪伴」等系统级预设，仅允许修改，不允许删除。
+//     默认种子会带 is_protected=true 复制到每个角色。
 //   - 5 维 ∈ [-1, 1]，service 层在写入前拦截越界。
 //   - key 用稳定字符串（不用自增 id），原因：role_traits.presetType 仍是字符串列，
 //     预设的 key 即是写入时的"标识符"，重命名 label 不会破坏历史数据。
 type RoleOceanPreset struct {
 	ID                uint      `json:"id" gorm:"column:id;primaryKey;autoIncrement;comment:主键"`
-	UserID            uint      `json:"userId" gorm:"column:user_id;not null;uniqueIndex:idx_user_key,priority:1;comment:所属用户ID"`
-	Key               string    `json:"key" gorm:"column:key;size:64;not null;uniqueIndex:idx_user_key,priority:2;comment:预设key(用户内唯一)"`
+	UserID            uint      `json:"userId" gorm:"column:user_id;not null;uniqueIndex:idx_user_role_key,priority:1;comment:所属用户ID"`
+	RoleID            uint      `json:"roleId" gorm:"column:role_id;not null;uniqueIndex:idx_user_role_key,priority:2;comment:所属角色ID(预设字典按角色隔离)"`
+	Key               string    `json:"key" gorm:"column:key;size:64;not null;uniqueIndex:idx_user_role_key,priority:3;comment:预设key(用户+角色内唯一)"`
 	Label             string    `json:"label" gorm:"column:label;size:64;not null;comment:显示名"`
 	Description       string    `json:"description" gorm:"column:description;type:text;comment:描述"`
 	Openness          float64   `json:"openness" gorm:"column:openness;type:decimal(5,3);comment:开放性 [-1,1]"`

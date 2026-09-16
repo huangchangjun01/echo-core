@@ -569,26 +569,33 @@ func (h *RoleCoreHandler) requireInternalToken(c *gin.Context) bool {
 
 // ===== OCEAN 预设字典 CRUD =====
 
-// ListPresets 列出当前用户的预设(GET /api/role-core/presets)
+// ListPresets 列出某 (user, role) 的所有预设 (GET /api/role-core/presets?roleId=N)
 //
-// 首次访问时自动种子默认 6 个(标准陪伴等)。companion_default 标记 is_protected,
-// 前端据此禁用"删除"按钮。
+// 角色隔离后必须传 roleId,首次访问时自动种子默认 6 个(标准陪伴等)。
+// companion_default 标记 is_protected,前端据此禁用"删除"按钮。
 func (h *RoleCoreHandler) ListPresets(c *gin.Context) {
 	ctx := c.Request.Context()
 	userId, ok := h.requireUser(c)
 	if !ok {
 		return
 	}
-	list, err := h.svc.ListPresets(ctx, userId)
+	roleId, err := strconv.ParseUint(c.Query("roleId"), 10, 64)
+	if err != nil || roleId == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "message": "roleId 必填"})
+		return
+	}
+	list, err := h.svc.ListPresets(ctx, userId, uint(roleId))
 	if err != nil {
 		mapRoleCoreErr(c, err, "获取预设列表失败")
 		return
 	}
-	utils.LogWith(c, "RoleCore", "ListPresets 成功 | count=%d", len(list))
+	utils.LogWith(c, "RoleCore", "ListPresets 成功 | roleId=%d count=%d", roleId, len(list))
 	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok", "data": list})
 }
 
 // CreatePreset 新增预设 (POST /api/role-core/presets)
+//
+// 角色隔离后,RoleID 从 body 里取(binding:"required")。
 func (h *RoleCoreHandler) CreatePreset(c *gin.Context) {
 	ctx := c.Request.Context()
 	userId, ok := h.requireUser(c)
@@ -600,12 +607,12 @@ func (h *RoleCoreHandler) CreatePreset(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "message": "参数错误: " + err.Error()})
 		return
 	}
-	resp, err := h.svc.CreatePreset(ctx, userId, &req)
+	resp, err := h.svc.CreatePreset(ctx, userId, req.RoleID, &req)
 	if err != nil {
 		mapRoleCoreErr(c, err, "")
 		return
 	}
-	utils.LogWith(c, "RoleCore", "CreatePreset 成功 | key=%s", req.Key)
+	utils.LogWith(c, "RoleCore", "CreatePreset 成功 | roleId=%d key=%s", req.RoleID, req.Key)
 	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok", "data": resp})
 }
 
@@ -613,6 +620,7 @@ func (h *RoleCoreHandler) CreatePreset(c *gin.Context) {
 //
 // 不允许修改 key / isProtected(由前端隐藏对应输入)。
 // companion_default 允许修改(用户诉求:"标准陪伴不允许删除只能修改")。
+// RoleID 由 body 提供(binding:"required"),与 DB 行的 roleId 比对防越权。
 func (h *RoleCoreHandler) UpdatePreset(c *gin.Context) {
 	ctx := c.Request.Context()
 	userId, ok := h.requireUser(c)
@@ -629,18 +637,21 @@ func (h *RoleCoreHandler) UpdatePreset(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "message": "参数错误: " + err.Error()})
 		return
 	}
-	resp, err := h.svc.UpdatePreset(ctx, userId, uint(id), &req)
+	resp, err := h.svc.UpdatePreset(ctx, userId, req.RoleID, uint(id), &req)
 	if err != nil {
 		mapRoleCoreErr(c, err, "")
 		return
 	}
-	utils.LogWith(c, "RoleCore", "UpdatePreset 成功 | id=%d", id)
+	utils.LogWith(c, "RoleCore", "UpdatePreset 成功 | roleId=%d id=%d", req.RoleID, id)
 	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok", "data": resp})
 }
 
-// DeletePreset 删除预设 (DELETE /api/role-core/presets/:id)
+// DeletePreset 删除预设 (DELETE /api/role-core/presets/:id?roleId=N)
 //
 // is_protected=true 拒绝(service 返回 ErrPresetProtected → 400)。
+// roleId 必填 —— 角色隔离后,删预设时必须明确「删的是哪个角色的」,
+//
+//	保证不会因为 path 里的 id 撞到其它角色而被误删。
 func (h *RoleCoreHandler) DeletePreset(c *gin.Context) {
 	ctx := c.Request.Context()
 	userId, ok := h.requireUser(c)
@@ -652,10 +663,15 @@ func (h *RoleCoreHandler) DeletePreset(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "message": "id 必填"})
 		return
 	}
-	if err := h.svc.DeletePreset(ctx, userId, uint(id)); err != nil {
+	roleId, err := strconv.ParseUint(c.Query("roleId"), 10, 64)
+	if err != nil || roleId == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "message": "roleId 必填"})
+		return
+	}
+	if err := h.svc.DeletePreset(ctx, userId, uint(roleId), uint(id)); err != nil {
 		mapRoleCoreErr(c, err, "")
 		return
 	}
-	utils.LogWith(c, "RoleCore", "DeletePreset 成功 | id=%d", id)
+	utils.LogWith(c, "RoleCore", "DeletePreset 成功 | roleId=%d id=%d", roleId, id)
 	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok"})
 }

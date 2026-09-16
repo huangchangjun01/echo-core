@@ -55,9 +55,14 @@ type SaveTraitsRequest struct {
 }
 
 // OceanPresetResponse OCEAN 预设条目。
+//
+// 预设字典按 (user, role) 隔离 —— Response 带上 RoleID 便于前端区分
+// 「同一个 key 但属于不同角色」的情况(尽管同名 key 不应该出现,但 RoleID
+// 能帮助前端做 active 标记、调试面板追踪等)。
 type OceanPresetResponse struct {
 	ID                uint    `json:"id"`
 	UserID            uint    `json:"userId"`
+	RoleID            uint    `json:"roleId"`
 	Key               string  `json:"key"`
 	Label             string  `json:"label"`
 	Description       string  `json:"description"`
@@ -73,30 +78,41 @@ type OceanPresetResponse struct {
 
 // CreatePresetRequest 新增预设(POST /api/role-core/presets)。
 //
-// Key 由前端生成,长度 1~64,字符集 [a-z0-9_-]。
-// 允许的 5 维 ∈ [-1,1] 由 binding 校验;key 唯一性由 DB 唯一索引保证。
+// RoleID 必填 —— 预设按角色隔离,新增时必须明确归属哪个角色。
+// Key 在 (user, role) 内唯一(允许用户在不同角色用相同 key)。
+// 5 维 ∈ [-2,2] 由 binding 校验 —— 与 SaveTraitsRequest / TraitSlider 前端
+// 范围保持一致(后者 min=-2 max=2)。历史上曾限 [-1,1],但用户拖动 slider 到
+// [-2,-1) 或 (1,2] 时后端拒收,导致「保存功能报错」;放宽到 [-2,2] 与 trait
+// 保存端对齐,前端实际 PRD「五维连续值 ∈ [-1,1]」的软约束由 slider 拖动手感
+// 自然保证(超出 ±1 的极端值很少被用户主动设置)。
+// key 唯一性由 DB 唯一索引保证。
 type CreatePresetRequest struct {
+	RoleID            uint    `json:"roleId" binding:"required"`
 	Key               string  `json:"key" binding:"required,min=1,max=64"`
 	Label             string  `json:"label" binding:"required,min=1,max=64"`
 	Description       string  `json:"description" binding:"omitempty,max=500"`
-	Openness          float64 `json:"openness" binding:"min=-1,max=1"`
-	Conscientiousness float64 `json:"conscientiousness" binding:"min=-1,max=1"`
-	Extraversion      float64 `json:"extraversion" binding:"min=-1,max=1"`
-	Agreeableness     float64 `json:"agreeableness" binding:"min=-1,max=1"`
-	Neuroticism       float64 `json:"neuroticism" binding:"min=-1,max=1"`
+	Openness          float64 `json:"openness" binding:"min=-2,max=2"`
+	Conscientiousness float64 `json:"conscientiousness" binding:"min=-2,max=2"`
+	Extraversion      float64 `json:"extraversion" binding:"min=-2,max=2"`
+	Agreeableness     float64 `json:"agreeableness" binding:"min=-2,max=2"`
+	Neuroticism       float64 `json:"neuroticism" binding:"min=-2,max=2"`
 }
 
-// UpdatePresetRequest 修改预设(PUT /api/role-core/presets/:id)。
+// UpdatePresetRequest 修改预设(PUT /api/role-core/presets/:id?roleId=N)。
 //
 // 不允许改 key(改了会让历史 traits 关联不上)。isProtected 也由后端控制,不允许前端改。
+// RoleID 必填 —— 预设按角色隔离,改预设时必须明确「改的是哪个角色的」,
+// 防止越权改其它角色的 preset。
+// 5 维 ∈ [-2,2] —— 与 CreatePresetRequest / SaveTraitsRequest / TraitSlider 一致。
 type UpdatePresetRequest struct {
+	RoleID            uint    `json:"roleId" binding:"required"`
 	Label             string  `json:"label" binding:"required,min=1,max=64"`
 	Description       string  `json:"description" binding:"omitempty,max=500"`
-	Openness          float64 `json:"openness" binding:"min=-1,max=1"`
-	Conscientiousness float64 `json:"conscientiousness" binding:"min=-1,max=1"`
-	Extraversion      float64 `json:"extraversion" binding:"min=-1,max=1"`
-	Agreeableness     float64 `json:"agreeableness" binding:"min=-1,max=1"`
-	Neuroticism       float64 `json:"neuroticism" binding:"min=-1,max=1"`
+	Openness          float64 `json:"openness" binding:"min=-2,max=2"`
+	Conscientiousness float64 `json:"conscientiousness" binding:"min=-2,max=2"`
+	Extraversion      float64 `json:"extraversion" binding:"min=-2,max=2"`
+	Agreeableness     float64 `json:"agreeableness" binding:"min=-2,max=2"`
+	Neuroticism       float64 `json:"neuroticism" binding:"min=-2,max=2"`
 }
 
 // TraitsResponse OCEAN 五维响应（GET /api/role-core/traits）。
@@ -133,12 +149,18 @@ type CoreSnapshotResponse struct {
 // 与早期直接返回 []TraitsResponse 不同,现在包成对象,带上当前生效的 preset:
 //   - List: 该 (user, role) 下所有已保存预设的 OCEAN 五维(每个 preset 一行)
 //   - ActivePresetType: 当前真正生效的预设 key(决定 chat 回复时读的 OCEAN)
+//   - Presets: 该用户下的 OCEAN 预设字典(用户级,与 roleId 无关,但性格页一次拉完
+//     就不用再单独 GET /presets 了 —— 详见 PR 重构注释)
 //
-// 演进历史:曾直接返回 []TraitsResponse,新增「当前使用」跟踪后改为对象形式以
-// 承载 active 状态。前端按此结构解析。
+// 演进历史:
+//   - v1:直接返回 []TraitsResponse → 切换预设时值互窜的 bug
+//   - v2:返回对象 + activePresetType → 引入「当前使用」跟踪
+//   - v3(v3):加上 Presets → 性格页一次 GET 拿全 OCEAN + 预设字典 + active,
+//     前端不再单独调 /presets
 type TraitsListResponse struct {
-	List             []TraitsResponse `json:"list"`
-	ActivePresetType string           `json:"activePresetType"`
+	List             []TraitsResponse      `json:"list"`
+	ActivePresetType string                `json:"activePresetType"`
+	Presets          []OceanPresetResponse `json:"presets"`
 }
 
 // SetActivePresetRequest 切换当前使用的 OCEAN 预设（POST /api/role-core/active-preset）。

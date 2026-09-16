@@ -20,24 +20,26 @@ func NewRoleOceanPresetRepository() *RoleOceanPresetRepository {
 	return &RoleOceanPresetRepository{db: config.GetDB()}
 }
 
-// ListByUser 列出某用户的所有预设,按 id 升序(种子在前面,自建在后)。
-func (r *RoleOceanPresetRepository) ListByUser(ctx context.Context, userId uint) ([]models.RoleOceanPreset, error) {
+// ListByUserRole 列出某 (user, role) 下的所有预设,按 id 升序(种子在前面,自建在后)。
+//
+// 性格页重构后预设字典按角色隔离,每个 (user, role) 独立一份。
+func (r *RoleOceanPresetRepository) ListByUserRole(ctx context.Context, userId, roleId uint) ([]models.RoleOceanPreset, error) {
 	start := time.Now()
 	var list []models.RoleOceanPreset
 	err := r.db.WithContext(ctx).
-		Where("user_id = ?", userId).
+		Where("user_id = ? AND role_id = ?", userId, roleId).
 		Order("id ASC").
 		Find(&list).Error
-	repoLog(ctx, "RoleOceanPresetRepository.ListByUser", start, err,
-		"userId="+uintToStr(userId)+" count="+intToStr(len(list)))
+	repoLog(ctx, "RoleOceanPresetRepository.ListByUserRole", start, err,
+		"userId="+uintToStr(userId)+" roleId="+uintToStr(roleId)+" count="+intToStr(len(list)))
 	return list, err
 }
 
-// CountByUser 统计某用户已存在的预设数量(用于"首次访问时种入默认")。
-func (r *RoleOceanPresetRepository) CountByUser(ctx context.Context, userId uint) (int64, error) {
+// CountByUserRole 统计某 (user, role) 下已存在的预设数量(用于"首次访问时种入默认")。
+func (r *RoleOceanPresetRepository) CountByUserRole(ctx context.Context, userId, roleId uint) (int64, error) {
 	var n int64
 	err := r.db.WithContext(ctx).Model(&models.RoleOceanPreset{}).
-		Where("user_id = ?", userId).Count(&n).Error
+		Where("user_id = ? AND role_id = ?", userId, roleId).Count(&n).Error
 	return n, err
 }
 
@@ -46,7 +48,7 @@ func (r *RoleOceanPresetRepository) Create(ctx context.Context, p *models.RoleOc
 	start := time.Now()
 	err := r.db.WithContext(ctx).Create(p).Error
 	repoLog(ctx, "RoleOceanPresetRepository.Create", start, err,
-		"userId="+uintToStr(p.UserID)+" key="+p.Key)
+		"userId="+uintToStr(p.UserID)+" roleId="+uintToStr(p.RoleID)+" key="+p.Key)
 	return err
 }
 
@@ -81,23 +83,23 @@ func (r *RoleOceanPresetRepository) GetByID(ctx context.Context, id uint) (*mode
 	return &p, nil
 }
 
-// GetByUserAndKey 按 (user_id, key) 查找
-func (r *RoleOceanPresetRepository) GetByUserAndKey(ctx context.Context, userId uint, key string) (*models.RoleOceanPreset, error) {
+// GetByUserRoleKey 按 (user_id, role_id, key) 查找 —— 角色级预设查询。
+func (r *RoleOceanPresetRepository) GetByUserRoleKey(ctx context.Context, userId, roleId uint, key string) (*models.RoleOceanPreset, error) {
 	start := time.Now()
 	var p models.RoleOceanPreset
 	err := r.db.WithContext(ctx).
-		Where("user_id = ? AND `key` = ?", userId, key).
+		Where("user_id = ? AND role_id = ? AND `key` = ?", userId, roleId, key).
 		First(&p).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
-		repoLog(ctx, "RoleOceanPresetRepository.GetByUserAndKey", start, err,
-			"userId="+uintToStr(userId)+" key="+key)
+		repoLog(ctx, "RoleOceanPresetRepository.GetByUserRoleKey", start, err,
+			"userId="+uintToStr(userId)+" roleId="+uintToStr(roleId)+" key="+key)
 		return nil, err
 	}
-	repoLog(ctx, "RoleOceanPresetRepository.GetByUserAndKey", start, nil,
-		"userId="+uintToStr(userId)+" key="+key)
+	repoLog(ctx, "RoleOceanPresetRepository.GetByUserRoleKey", start, nil,
+		"userId="+uintToStr(userId)+" roleId="+uintToStr(roleId)+" key="+key)
 	return &p, nil
 }
 

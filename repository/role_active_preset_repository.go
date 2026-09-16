@@ -105,3 +105,22 @@ func (r *RoleActivePresetRepository) DeleteByUserAndKey(ctx context.Context, use
 		"userId="+uintToStr(userId)+" preset="+presetType)
 	return err
 }
+
+// DeleteByUserRoleKey 删除某 (user, role, presetType) 的 active 记录 —— 角色级精确清理。
+//
+// 设计要点:预设字典按角色隔离后,DeletePreset 只应该清理「被删 preset 所属的
+// (user, role)」的 active 记录,不能误伤其它角色(同名 preset 在不同角色
+// 可以有各自的 active 状态)。
+//
+// 与 DeleteByUserAndKey 的区别:DeleteByUserAndKey 按 user_id 全局清理(适用
+// 于「preset 真的被删了」语义模糊的场景);本方法按 (user, role) 精确清理
+// (适用于 preset 按角色隔离后的删除语义)。
+func (r *RoleActivePresetRepository) DeleteByUserRoleKey(ctx context.Context, userId, roleId uint, presetType string) error {
+	start := time.Now()
+	err := r.db.WithContext(ctx).
+		Where("user_id = ? AND role_id = ? AND preset_type = ?", userId, roleId, presetType).
+		Delete(&models.RoleActivePreset{}).Error
+	repoLog(ctx, "RoleActivePresetRepository.DeleteByUserRoleKey", start, err,
+		"userId="+uintToStr(userId)+" roleId="+uintToStr(roleId)+" preset="+presetType)
+	return err
+}

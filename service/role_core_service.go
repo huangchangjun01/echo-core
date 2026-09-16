@@ -205,10 +205,13 @@ func (s *RoleCoreService) SaveTraits(ctx context.Context, userId uint, req *dto.
 		return nil, err
 	}
 	// 2. 预设存在性校验(同时确保预设字典已 seed)
-	if _, err := s.ListPresets(ctx, userId); err != nil {
+	//
+	// 预设字典按 (user, role) 隔离 —— 校验时必须传 roleId,否则会读到
+	// 其它角色的同名预设(被误判为存在)。
+	if _, err := s.ListPresets(ctx, userId, req.RoleID); err != nil {
 		return nil, err
 	}
-	preset, err := s.presetRepo.GetByUserAndKey(ctx, userId, req.PresetType)
+	preset, err := s.presetRepo.GetByUserRoleKey(ctx, userId, req.RoleID, req.PresetType)
 	if err != nil {
 		return nil, err
 	}
@@ -317,10 +320,12 @@ func (s *RoleCoreService) SetActivePreset(ctx context.Context, userId, roleId ui
 		return "", errors.New("presetType required")
 	}
 	// 校验 preset 存在 + 同时确保预设字典已 seed
-	if _, err := s.ListPresets(ctx, userId); err != nil {
+	//
+	// 预设字典按 (user, role) 隔离 —— 校验时必须传 roleId。
+	if _, err := s.ListPresets(ctx, userId, roleId); err != nil {
 		return "", err
 	}
-	preset, err := s.presetRepo.GetByUserAndKey(ctx, userId, presetType)
+	preset, err := s.presetRepo.GetByUserRoleKey(ctx, userId, roleId, presetType)
 	if err != nil {
 		return "", err
 	}
@@ -369,9 +374,23 @@ func (s *RoleCoreService) GetTraits(ctx context.Context, userId, roleId uint) (*
 		utils.LogWithCtx(ctx, "RoleCoreService.GetTraits", "resolveActivePresetType 失败 | err=%v", err)
 		active = models.PresetCompanionDefault
 	}
+	// 性格页重构:把预设字典塞进同一个响应,前端一次 GET 拿全 OCEAN + 预设字典 + active,
+	// 不用再单独调 /role-core/presets。
+	//
+	// 设计决策:ListPresets 内部已处理「首次访问自动种子」,多次调用安全。
+	// 性格页在切角色时会反复触发 GetTraits,每次都重新拉 presets(10ms 内)。
+	// 未来若要进一步省 IO,可在 service 层加预设字典缓存(按 userId),此版本先保留直查。
+	presets, err := s.ListPresets(ctx, userId, roleId)
+	if err != nil {
+		// 预设字典拉取失败时回退到空切片,不阻断 list 返回 —— 性格页缺预设时
+		// 会显示空 chip 行,UI 不会崩
+		utils.LogWithCtx(ctx, "RoleCoreService.GetTraits", "ListPresets 失败 | err=%v", err)
+		presets = []dto.OceanPresetResponse{}
+	}
 	return &dto.TraitsListResponse{
 		List:             out,
 		ActivePresetType: active,
+		Presets:          presets,
 	}, nil
 }
 
@@ -460,18 +479,25 @@ var defaultPresets = []models.RoleOceanPreset{
 	},
 }
 
-// ListPresets 列出用户的所有预设。首次访问时自动种子默认 6 个。
-func (s *RoleCoreService) ListPresets(ctx context.Context, userId uint) ([]dto.OceanPresetResponse, error) {
-	n, err := s.presetRepo.CountByUser(ctx, userId)
+// ListPresets 列出某 (user, role) 的所有预设。首次访问该角色时自动种子默认 6 个。
+//
+// 性格页重构后预设字典按角色隔离 —— 每个 (user, role) 独立维护一套预设库,
+// 切换角色看到的预设可能完全不同(role A 自建 / 删除的预设不影响 role B)。
+func (s *RoleCoreService) ListPresets(ctx context.Context, userId, roleId uint) ([]dto.OceanPresetResponse, error) {
+	if roleId == 0 {
+		return nil, errors.New("roleId required")
+	}
+	n, err := s.presetRepo.CountByUserRole(ctx, userId, roleId)
 	if err != nil {
 		return nil, err
 	}
 	if n == 0 {
-		// 首次访问,种子默认 6 个
+		// 首次访问该角色,种子默认 6 个
 		seeds := make([]models.RoleOceanPreset, 0, len(defaultPresets))
 		for _, p := range defaultPresets {
 			seeds = append(seeds, models.RoleOceanPreset{
 				UserID:            userId,
+				RoleID:            roleId,
 				Key:               p.Key,
 				Label:             p.Label,
 				Description:       p.Description,
@@ -487,7 +513,7 @@ func (s *RoleCoreService) ListPresets(ctx context.Context, userId uint) ([]dto.O
 			return nil, err
 		}
 	}
-	list, err := s.presetRepo.ListByUser(ctx, userId)
+	list, err := s.presetRepo.ListByUserRole(ctx, userId, roleId)
 	if err != nil {
 		return nil, err
 	}
@@ -498,13 +524,16 @@ func (s *RoleCoreService) ListPresets(ctx context.Context, userId uint) ([]dto.O
 	return out, nil
 }
 
-// CreatePreset 新增一个用户自定义预设。Key 必须唯一(用户范围内)。
-func (s *RoleCoreService) CreatePreset(ctx context.Context, userId uint, req *dto.CreatePresetRequest) (*dto.OceanPresetResponse, error) {
+// CreatePreset 新增一个用户自定义预设。Key 在 (user, role) 范围内唯一。
+func (s *RoleCoreService) CreatePreset(ctx context.Context, userId, roleId uint, req *dto.CreatePresetRequest) (*dto.OceanPresetResponse, error) {
 	if !isValidPresetKey(req.Key) {
 		return nil, ErrPresetInvalidKey
 	}
-	// 先确认无同名 key
-	existing, err := s.presetRepo.GetByUserAndKey(ctx, userId, req.Key)
+	if roleId == 0 {
+		return nil, errors.New("roleId required")
+	}
+	// 先确认该 (user, role) 下无同名 key
+	existing, err := s.presetRepo.GetByUserRoleKey(ctx, userId, roleId, req.Key)
 	if err != nil {
 		return nil, err
 	}
@@ -513,6 +542,7 @@ func (s *RoleCoreService) CreatePreset(ctx context.Context, userId uint, req *dt
 	}
 	p := &models.RoleOceanPreset{
 		UserID:            userId,
+		RoleID:            roleId,
 		Key:               req.Key,
 		Label:             req.Label,
 		Description:       req.Description,
@@ -534,7 +564,7 @@ func (s *RoleCoreService) CreatePreset(ctx context.Context, userId uint, req *dt
 //
 // 注意:is_protected=true 的预设(如标准陪伴)允许修改数值/label,
 // 只是不允许删除。这与用户的"标准陪伴不允许删除只能修改"诉求相符。
-func (s *RoleCoreService) UpdatePreset(ctx context.Context, userId, id uint, req *dto.UpdatePresetRequest) (*dto.OceanPresetResponse, error) {
+func (s *RoleCoreService) UpdatePreset(ctx context.Context, userId, roleId, id uint, req *dto.UpdatePresetRequest) (*dto.OceanPresetResponse, error) {
 	p, err := s.presetRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -542,7 +572,7 @@ func (s *RoleCoreService) UpdatePreset(ctx context.Context, userId, id uint, req
 	if p == nil {
 		return nil, ErrPresetNotFound
 	}
-	if p.UserID != userId {
+	if p.UserID != userId || p.RoleID != roleId {
 		// 越权 → 一律返回 not found,不暴露存在性
 		return nil, ErrPresetNotFound
 	}
@@ -562,9 +592,10 @@ func (s *RoleCoreService) UpdatePreset(ctx context.Context, userId, id uint, req
 
 // DeletePreset 删除预设。is_protected=true 拒绝。
 //
-// 顺带清理：如果该 preset 被设为某个角色的 active preset,清理对应 role_active_preset
-// 记录(避免悬空引用)。下一次访问该角色时会自动回退到 companion_default。
-func (s *RoleCoreService) DeletePreset(ctx context.Context, userId, id uint) error {
+// 顺带清理：如果该 preset 被设为 (user, role) 的 active preset,
+// 清理对应 role_active_preset 记录(避免悬空引用)。
+// 下一次访问该角色时会自动回退到 companion_default。
+func (s *RoleCoreService) DeletePreset(ctx context.Context, userId, roleId, id uint) error {
 	p, err := s.presetRepo.GetByID(ctx, id)
 	if err != nil {
 		return err
@@ -572,7 +603,7 @@ func (s *RoleCoreService) DeletePreset(ctx context.Context, userId, id uint) err
 	if p == nil {
 		return ErrPresetNotFound
 	}
-	if p.UserID != userId {
+	if p.UserID != userId || p.RoleID != roleId {
 		return ErrPresetNotFound
 	}
 	if p.IsProtected {
@@ -582,11 +613,9 @@ func (s *RoleCoreService) DeletePreset(ctx context.Context, userId, id uint) err
 	if err := s.presetRepo.Delete(ctx, id); err != nil {
 		return err
 	}
-	// 这里不查 role 表(避免引入额外依赖);用 preset_key 模糊匹配所有
-	// (user_id, role_id) 中 preset_type 等于该 key 的 active 记录。
-	// 用户级 — 但通常一个用户的 preset key 唯一,所以只会匹配到该用户自己的记录。
-	// 用 application 层校验 userId 即可。
-	if perr := s.activePresetRepo.DeleteByUserAndKey(ctx, userId, p.Key); perr != nil {
+	// 仅清理该 (user, role) 的 active 记录 —— 预设字典按角色隔离,
+	// 删 role A 的 preset 不影响 role B 的 active 状态。
+	if perr := s.activePresetRepo.DeleteByUserRoleKey(ctx, userId, roleId, p.Key); perr != nil {
 		utils.LogWithCtx(ctx, "RoleCoreService.DeletePreset",
 			"清理 active preset 失败(非致命) | key=%s err=%v", p.Key, perr)
 	}
@@ -598,6 +627,7 @@ func presetToResponse(p *models.RoleOceanPreset) dto.OceanPresetResponse {
 	return dto.OceanPresetResponse{
 		ID:                p.ID,
 		UserID:            p.UserID,
+		RoleID:            p.RoleID,
 		Key:               p.Key,
 		Label:             p.Label,
 		Description:       p.Description,

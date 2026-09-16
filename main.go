@@ -31,6 +31,9 @@ func main() {
 	// 2.7 role_active_preset 表创建（OCEAN 当前使用性格跟踪）
 	scripts.RunRoleActivePresetMigration()
 
+	// 2.8 role_ocean_preset 从用户级迁移到角色级（预设字典按角色隔离）
+	scripts.RunRoleOceanPresetPerRoleMigration()
+
 	// 3. 显式初始化 SessionStore 单例 + 优雅关停
 	utils.InitSessionStore(0)
 	defer utils.StopSessionStore()
