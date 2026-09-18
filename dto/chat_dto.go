@@ -11,7 +11,7 @@ type ChatRequest struct {
 	Stream    bool   `json:"stream"`
 }
 
-// ChatEvent 9 类事件的统一结构
+// ChatEvent 12 类事件的统一结构
 // 透传给 Python 时各字段按需填充；omitempty 保证未知字段不会污染最终 JSON。
 //
 // 事件类型与字段映射（参考 Python 接口文档）：
@@ -103,7 +103,7 @@ type RelationChange struct {
 	IntimacyDelta     float64 `json:"intimacy_delta,omitempty"`     // 亲密度变化
 	TrustDelta        float64 `json:"trust_delta,omitempty"`        // 信任度变化
 	SatisfactionDelta float64 `json:"satisfaction_delta,omitempty"` // 满意度变化
-	Source            string  `json:"source,omitempty"`             // 触发来源：stage:answer / recall:hit ...
+	Source            string  `json:"source"`                       // 触发来源：stage:answer / recall:hit ...
 }
 
 // RecallHitItem 单条回忆命中（memory_recall 事件 hits 数组元素）。

@@ -135,3 +135,24 @@ func TestChatEvent_OmitEmptyNewFields(t *testing.T) {
 		}
 	}
 }
+
+func TestChatEvent_ThinkingUsesThinkStage(t *testing.T) {
+	ev := ChatEvent{
+		Type:       "thinking",
+		ThinkStage: "intent",
+	}
+	data, err := json.Marshal(ev)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	var got map[string]any
+	if err := json.Unmarshal(data, &got); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if got["think_stage"] != "intent" {
+		t.Errorf("think_stage = %v, want \"intent\"", got["think_stage"])
+	}
+	if _, ok := got["stage"]; ok {
+		t.Errorf("legacy top-level stage key should not appear: %s", string(data))
+	}
+}
