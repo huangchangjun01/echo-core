@@ -56,6 +56,10 @@ func NewPythonChatClient() *PythonChatClient {
 
 // ChatSync 同步调用 Python /chat（stream=false）
 // 返回完整的 ChatSyncResponse（含 reply、events 数组、latencyMs）。
+//
+// ctx 用于控制 HTTP 请求的生命周期:调用方(通常是 gin c.Request.Context())
+// 取消时,正在进行的请求会被立刻中止,远端 echo-ai 也会通过 r.Context() 收到
+// 断开信号,避免 SSE/同步请求在客户端已经断开后还在空跑。
 func (c *PythonChatClient) ChatSync(ctx context.Context, req PythonChatRequest) (*dto.ChatSyncResponse, error) {
 	utils.LogWithCtx(ctx, "PythonChatClient.ChatSync", "发送请求 | url=%s/chat stream=false userId=%s sessionId=%s msgLen=%d",
 		c.baseURL, req.UserID, req.SessionID, len(req.Message))
@@ -65,7 +69,9 @@ func (c *PythonChatClient) ChatSync(ctx context.Context, req PythonChatRequest) 
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatSync", "序列化请求失败 | err=%v", err)
 		return nil, fmt.Errorf("marshal python chat request failed: %w", err)
 	}
-	httpReq, err := http.NewRequest("POST", c.baseURL+"/chat", bytes.NewBuffer(body))
+	// 必须用 NewRequestWithContext 把 ctx 绑到 HTTP 请求上,
+	// 否则客户端断开(gin cancel)时 Python 端还要跑满 120s 超时。
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/chat", bytes.NewBuffer(body))
 	if err != nil {
 		return nil, fmt.Errorf("create python chat request failed: %w", err)
 	}
@@ -101,6 +107,12 @@ func (c *PythonChatClient) ChatSync(ctx context.Context, req PythonChatRequest) 
 
 // ChatStreamEvents 流式调用 Python /chat（stream=true）
 // handler 收到每条 ChatEvent（type 已在结构体中）。流结束或出错时返回。
+//
+// ctx 用于控制 HTTP 请求的生命周期:调用方(通常是 gin c.Request.Context(),
+// 即浏览器 EventSource 客户端连接断开时会自动 cancel)取消时,正在进行的
+// HTTP 请求会被立刻中止,远端 echo-ai 也会通过 r.Context() 感知到客户端断开,
+// 停止生成后续 delta 事件 — 避免 echo-ai 在客户端已经断开后还在空跑
+// 直到 http.Client.Timeout(120s) 触发。这是任务 2.3 的核心修复点。
 func (c *PythonChatClient) ChatStreamEvents(ctx context.Context, req PythonChatRequest, handler func(dto.ChatEvent) error) error {
 	utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents", "发送请求 | url=%s/chat stream=true userId=%s sessionId=%s msgLen=%d",
 		c.baseURL, req.UserID, req.SessionID, len(req.Message))
@@ -113,7 +125,11 @@ func (c *PythonChatClient) ChatStreamEvents(ctx context.Context, req PythonChatR
 	// 打印请求体预览，便于核对实际下发的 userId/sessionId/message
 	utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents", "请求体预览 | body=%s", truncateForLog(string(body), 1024))
 
-	httpReq, err := http.NewRequest("POST", c.baseURL+"/chat", bytes.NewBuffer(body))
+	// 必须用 NewRequestWithContext 把 ctx 绑到 HTTP 请求上。
+	// 否则即便调用方已经 cancel(浏览器断开 EventSource),
+	// 这个 POST 还会一直挂着,直到 http.Client.Timeout(120s) 兜底,
+	// 远端 echo-ai 也无从感知客户端已断开。
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/chat", bytes.NewBuffer(body))
 	if err != nil {
 		return fmt.Errorf("create python chat request failed: %w", err)
 	}
@@ -124,6 +140,10 @@ func (c *PythonChatClient) ChatStreamEvents(ctx context.Context, req PythonChatR
 	resp, err := c.client.Do(httpReq)
 	if err != nil {
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents", "HTTP 请求失败 | err=%v latency=%dms", err, time.Since(start).Milliseconds())
+		// ctx 取消导致的网络错误,直接返回 ctx.Err() 让上游(handler)能用 ctx.Err() 判断
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			return ctxErr
+		}
 		return fmt.Errorf("python chat request failed: %w", err)
 	}
 	defer resp.Body.Close()
@@ -192,8 +212,23 @@ func (c *PythonChatClient) ChatStreamEvents(ctx context.Context, req PythonChatR
 		}
 	}
 	if err := scanner.Err(); err != nil {
+		// ctx 取消 → resp.Body 被关闭 → scanner 拿到 io.ErrClosedPipe / 类似错误,
+		// 这种情况下真正的根因是 ctx 取消,把它透传给上游(handler)
+		// 以便上层直接判断「客户端断开」,不要再写一条 error SSE 帧给前端。
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents", "SSE 流被调用方取消 | events=%d ctxErr=%v scannerErr=%v",
+				eventCount, ctxErr, err)
+			return ctxErr
+		}
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents", "读取 SSE 流失败 | err=%v events=%d", err, eventCount)
 		return fmt.Errorf("read SSE stream failed: %w", err)
+	}
+	// scanner 正常 EOF 后,如果 ctx 已经被外部取消(例如客户端断开),
+	// 也按 ctx 取消处理,避免下游误以为是「正常结束」。
+	if ctxErr := ctx.Err(); ctxErr != nil {
+		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents", "SSE 流结束但 ctx 已取消 | events=%d ctxErr=%v",
+			eventCount, ctxErr)
+		return ctxErr
 	}
 	utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents", "SSE 流结束 | totalEvents=%d totalBytes=%d latency=%dms typeCounts=%v deltaTextAccLen=%d",
 		eventCount, totalBytes, time.Since(start).Milliseconds(), typeCounts, deltaTotalLen)
