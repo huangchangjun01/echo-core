@@ -16,7 +16,8 @@ type ChatRequest struct {
 //
 // 事件类型与字段映射（参考 Python 接口文档）：
 //
-//	"context"          -> PersonaLen, Persona, L0Count, L0Items, L1Count, L1Items
+//	"context"          -> PersonaLen, Persona, L0Count, L0Items, L1Count, L1Items,
+//	                      Intent, IntentSource, IntentMs
 //	"resource"         -> URL, Name, DisplayName, FileID, Modality, MimeType,
 //	                      ChunkIndex, TotalChunks, SizeBytes, Similarity, Source, Iter
 //	"tool"             -> Name, Iter, OK, Summary
@@ -78,6 +79,14 @@ type ChatEvent struct {
 	Stage    *StageEvent     `json:"stage,omitempty"`    // stage 事件：name/state/ts_ms
 	Emotion  *EmotionChange  `json:"emotion,omitempty"`  // emotion_change 事件：from/to/intensity/reason
 	Relation *RelationChange `json:"relation,omitempty"` // relation_change 事件：intimacy_delta/trust_delta/.../source
+	// --- context 事件意图元数据（Python biz/chat.py 透传,旧字段不冲突） ---
+	// Python emits these as top-level fields on the context frame:
+	//   {"type":"context","intent":"chat","intent_source":"rule_greeting",
+	//    "intent_ms":0.0,"persona_len":...,"l0_count":...,"l1_count":...}
+	// 它们只是诊断 / 埋点信息,旧客户端即使读不到也不会出错。
+	Intent       string  `json:"intent,omitempty"`        // 意图分类：chat/recall/image_search/...
+	IntentSource string  `json:"intent_source,omitempty"` // 意图来源：rule_greeting/model_intent/...
+	IntentMs     float64 `json:"intent_ms,omitempty"`     // 意图识别耗时(毫秒)
 }
 
 // StageEvent stage 事件载荷。标识一次流式响应的阶段进展。

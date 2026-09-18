@@ -95,14 +95,105 @@ func (c *PythonChatClient) ChatSync(ctx context.Context, req PythonChatRequest) 
 
 	// 读 body 并统计字节数
 	rawBody, _ := io.ReadAll(resp.Body)
+	// Python 同步响应里 events[] 也可能是扁平 stage 帧,先整体规范化。
 	var out dto.ChatSyncResponse
-	if err := json.Unmarshal(rawBody, &out); err != nil {
+	if err := json.Unmarshal(normalizePythonSyncBody(rawBody), &out); err != nil {
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatSync", "响应反序列化失败 | err=%v bodyBytes=%d", err, len(rawBody))
 		return nil, fmt.Errorf("decode python chat response failed: %w", err)
 	}
 	utils.LogWithCtx(ctx, "PythonChatClient.ChatSync", "Python 响应完成 | status=200 latency=%dms bodyBytes=%d events=%d replyLen=%d",
 		time.Since(start).Milliseconds(), len(rawBody), len(out.Events), len(out.Reply))
 	return &out, nil
+}
+
+// normalizePythonFrame 把 Python 实际产出的 SSE 帧重写成 v2 wire-spec 期望的形状。
+//
+// 目前只处理一类：stage 事件。Python biz/chat.py 的 `_stage()` 构造器输出扁平形
+// `{type, name, state, ts_ms, ...extras}`，而前端 spec 要求嵌套形
+// `{type, stage: {name, state, ts_ms, ...extras}}`。直接把扁平 JSON 塞进
+// ChatEvent 会发生两个问题：
+//   1. ChatEvent.Name（tool 事件使用）会被误赋值为阶段名，导致 tool 帧后续解析错乱。
+//   2. ChatEvent.Stage *StageEvent 永远为 nil，前端 parseStageEvent 拿到 null。
+//
+// 处理策略：检测到 `{type:"stage"}` 且顶层无 `stage` 字段时，把 name/state/ts_ms
+// 移到一个嵌套 `stage` 对象里；其它顶层字段（如 tool_dispatch 的 iter/tool）保留
+// 在顶层（前端不消费也不污染 schema）。其它事件类型原样返回。
+//
+// 入参失败 / 类型不匹配 / 形状异常均原样返回 raw，避免在解析失败时把帧彻底吞掉。
+func normalizePythonFrame(raw []byte) []byte {
+	var probe struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(raw, &probe); err != nil || probe.Type != "stage" {
+		return raw
+	}
+	var generic map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &generic); err != nil {
+		return raw
+	}
+	// 已经嵌套 → 原样返回,防止误把 stage 字段再次覆盖。
+	if _, hasNested := generic["stage"]; hasNested {
+		return raw
+	}
+	stage := make(map[string]json.RawMessage, 3)
+	for _, key := range []string{"name", "state", "ts_ms"} {
+		if v, ok := generic[key]; ok {
+			stage[key] = v
+			delete(generic, key)
+		}
+	}
+	if len(stage) == 0 {
+		return raw
+	}
+	stageJSON, err := json.Marshal(stage)
+	if err != nil {
+		return raw
+	}
+	generic["stage"] = stageJSON
+	out, err := json.Marshal(generic)
+	if err != nil {
+		return raw
+	}
+	return out
+}
+
+// normalizePythonSyncBody 对 Python 同步响应整段 JSON 应用 normalizePythonFrame:
+// 解析顶层 `events` 数组,逐个规范化,再回写。这样 ChatSync 路径
+// (json.Unmarshal → ChatSyncResponse.Events)也能拿到正确嵌套的 stage 帧。
+func normalizePythonSyncBody(raw []byte) []byte {
+	var m map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &m); err != nil {
+		return raw
+	}
+	eventsRaw, ok := m["events"]
+	if !ok {
+		return raw
+	}
+	var events []json.RawMessage
+	if err := json.Unmarshal(eventsRaw, &events); err != nil {
+		return raw
+	}
+	changed := false
+	for i, ev := range events {
+		normalized := normalizePythonFrame(ev)
+		if string(normalized) != string(ev) {
+			events[i] = normalized
+			changed = true
+		}
+	}
+	if !changed {
+		return raw
+	}
+	normalizedEvents, err := json.Marshal(events)
+	if err != nil {
+		return raw
+	}
+	m["events"] = normalizedEvents
+	out, err := json.Marshal(m)
+	if err != nil {
+		return raw
+	}
+	return out
 }
 
 // ChatStreamEvents 流式调用 Python /chat（stream=true）
@@ -186,7 +277,9 @@ func (c *PythonChatClient) ChatStreamEvents(ctx context.Context, req PythonChatR
 		}
 
 		var event dto.ChatEvent
-		if err := json.Unmarshal([]byte(raw), &event); err != nil {
+		// 把 Python 实际产出的扁平 stage 帧转成 wire-spec 嵌套形,
+		// 避免 ChatEvent.Name 与 ChatEvent.Stage *StageEvent 字段冲突。
+		if err := json.Unmarshal(normalizePythonFrame([]byte(raw)), &event); err != nil {
 			utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents", "SSE帧解析失败 | error=%v raw=%s", err, truncateForLog(raw, 256))
 			continue
 		}
@@ -271,8 +364,9 @@ func logStreamEvent(ctx context.Context, seq int, e *dto.ChatEvent, deltaSeq, de
 	switch e.Type {
 	case "context":
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
-			"SSE 帧 #%d type=context | personaLen=%v l0Count=%v l1Count=%v",
-			seq, derefInt(e.PersonaLen), derefInt(e.L0Count), derefInt(e.L1Count))
+			"SSE 帧 #%d type=context | intent=%s intentSource=%s intentMs=%.2f personaLen=%v l0Count=%v l1Count=%v",
+			seq, e.Intent, e.IntentSource, e.IntentMs,
+			derefInt(e.PersonaLen), derefInt(e.L0Count), derefInt(e.L1Count))
 	case "tool":
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
 			"SSE 帧 #%d type=tool | name=%s iter=%v ok=%v summary=%s",
@@ -306,6 +400,14 @@ func logStreamEvent(ctx context.Context, seq int, e *dto.ChatEvent, deltaSeq, de
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
 			"SSE 帧 #%d type=memory_recall | count=%d hits=%s",
 			seq, e.RecallCount, truncateForLog(serializeHits(e.Hits), 512))
+	case "stage":
+		stageName, stageState, stageTs := "<nil>", "<nil>", int64(0)
+		if e.Stage != nil {
+			stageName, stageState, stageTs = e.Stage.Name, e.Stage.State, e.Stage.TsMs
+		}
+		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
+			"SSE 帧 #%d type=stage | name=%s state=%s ts_ms=%d flatName=%q",
+			seq, stageName, stageState, stageTs, e.Name)
 	default:
 		// 未知 type：整帧 JSON 兜底打印
 		if raw, err := json.Marshal(e); err == nil {
