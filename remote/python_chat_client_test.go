@@ -2,6 +2,7 @@ package remote
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"sync/atomic"
@@ -87,11 +88,8 @@ func TestPythonChatClient_StreamEvents_CancelOnContextDone(t *testing.T) {
 	// 否则就是 http.Client.Timeout 在拖时间(默认 120s)。
 	select {
 	case err := <-errCh:
-		if err == nil {
-			// 流自然 EOF 也算可接受,但通常 cancel 场景下会拿到 ctx.Canceled。
-			t.Logf("ChatStreamEvents returned nil after ctx cancel (handler called %d times)", handlerCalled.Load())
-		} else {
-			t.Logf("ChatStreamEvents returned after ctx cancel | err=%v handlerCalled=%d", err, handlerCalled.Load())
+		if !errors.Is(err, context.Canceled) {
+			t.Errorf("expected ctx.Canceled after ctx cancel, got %v (handler called %d times)", err, handlerCalled.Load())
 		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("ChatStreamEvents did not return within 2s after ctx cancel — HTTP request likely not bound to ctx")
