@@ -265,8 +265,8 @@ func logStreamEvent(ctx context.Context, seq int, e *dto.ChatEvent, deltaSeq, de
 			seq, derefBool(e.OK), e.Error)
 	case "thinking":
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
-			"SSE 帧 #%d type=thinking | stage=%s text=%s",
-			seq, e.Stage, truncateForLog(e.Text, 256))
+			"SSE 帧 #%d type=thinking | think_stage=%s text=%s",
+			seq, e.ThinkStage, truncateForLog(e.Text, 256))
 	case "memory_recall":
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
 			"SSE 帧 #%d type=memory_recall | count=%d hits=%s",

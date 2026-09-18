@@ -24,8 +24,15 @@ type ChatRequest struct {
 //	"delta"            -> Text
 //	"done"             -> Full
 //	"memory_extracted" -> OK, Error
-//	"thinking"         -> Stage, Text（新增：流式输出思考过程）
-//	"memory_recall"    -> RecallCount, Hits（新增：回忆检索结果详情）
+//	"thinking"         -> ThinkStage, Text（流式输出思考过程）
+//	"memory_recall"    -> RecallCount, Hits（回忆检索结果详情）
+//	"stage"            -> Stage（M3：阶段事件，含 name/state/ts_ms）
+//	"emotion_change"   -> Emotion（M3：情绪迁移，含 from/to/intensity/reason）
+//	"relation_change"  -> Relation（M3：关系更新，含 intimacy_delta/trust_delta/.../source）
+//
+// 关于 Stage 字段名冲突：原 thinking 事件的 stage 字符串字段已重命名为 ThinkStage
+// （JSON tag "think_stage"），新 stage 事件的 *StageEvent 占用 "stage" tag。
+// 这是 Phase 2 streaming UX 重构的一部分（设计文档 §3.2 / §5.3）。
 type ChatEvent struct {
 	Type       string `json:"type"`
 	PersonaLen *int   `json:"persona_len,omitempty"`
@@ -39,7 +46,8 @@ type ChatEvent struct {
 	Full       string `json:"full,omitempty"`
 	Error      string `json:"error,omitempty"`
 	// --- thinking 事件：流式输出思考过程 ---
-	Stage string `json:"stage,omitempty"` // thinking 子阶段：start / intent / context_build / recall_search / react_decision / cascade / model_reasoning
+	// 原 "stage" tag 已让给 M3 新增的 Stage *StageEvent 字段；本字段改用 think_stage。
+	ThinkStage string `json:"think_stage,omitempty"` // thinking 子阶段：start / intent / context_build / recall_search / react_decision / cascade / model_reasoning
 	// --- context 事件扩展：真实注入内容 ---
 	Persona string   `json:"persona,omitempty"`  // 人格原文
 	L0Items []string `json:"l0_items,omitempty"` // L0 核心记忆条目（最多 20 条）
@@ -66,6 +74,36 @@ type ChatEvent struct {
 	BaselineVal      float64 `json:"baselineVal,omitempty"`
 	Expression       string  `json:"expression,omitempty"` // smile/happy/excited/sad/cry/angry/concern/thinking
 	Valence          float64 `json:"valence,omitempty"`
+	// --- M3 streaming UX 新增三事件（指针 + omitempty：旧客户端不会看到空 payload） ---
+	Stage    *StageEvent     `json:"stage,omitempty"`    // stage 事件：name/state/ts_ms
+	Emotion  *EmotionChange  `json:"emotion,omitempty"`  // emotion_change 事件：from/to/intensity/reason
+	Relation *RelationChange `json:"relation,omitempty"` // relation_change 事件：intimacy_delta/trust_delta/.../source
+}
+
+// StageEvent stage 事件载荷。标识一次流式响应的阶段进展。
+// 前端可按 name 渲染进度条 / 高亮当前阶段，state 用于触发 transition。
+type StageEvent struct {
+	Name  string `json:"name"`            // 阶段名：answer / intent / recall_search / react_decision ...
+	State string `json:"state"`           // 阶段状态：start / end
+	TsMs  int64  `json:"ts_ms,omitempty"` // 阶段时间戳（毫秒），用于排序与去抖
+}
+
+// EmotionChange emotion_change 事件载荷。标识一次情绪迁移。
+// From/To 为旧/新主导情绪；Intensity ∈ [0,1]；Reason 可选，用于解释来源（如 "model_reasoning"）。
+type EmotionChange struct {
+	From      string  `json:"from"`             // 旧情绪
+	To        string  `json:"to"`               // 新情绪
+	Intensity float64 `json:"intensity"`        // 新情绪强度
+	Reason    string  `json:"reason,omitempty"` // 来源说明，可选
+}
+
+// RelationChange relation_change 事件载荷。标识一次关系数值变化。
+// Delta 字段为有符号浮点，单位与 Python 端 EmotionEngine 一致。
+type RelationChange struct {
+	IntimacyDelta     float64 `json:"intimacy_delta,omitempty"`     // 亲密度变化
+	TrustDelta        float64 `json:"trust_delta,omitempty"`        // 信任度变化
+	SatisfactionDelta float64 `json:"satisfaction_delta,omitempty"` // 满意度变化
+	Source            string  `json:"source,omitempty"`             // 触发来源：stage:answer / recall:hit ...
 }
 
 // RecallHitItem 单条回忆命中（memory_recall 事件 hits 数组元素）。
