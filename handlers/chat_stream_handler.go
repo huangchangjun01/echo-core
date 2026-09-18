@@ -7,12 +7,19 @@ import (
 	"echo-core/utils"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
+
+// heartbeatInterval 应用层 SSE 心跳周期：每 15s 写一条注释帧,
+//
+// 防止反向代理 / CDN / 网关因空闲超时关闭长连接。
+const heartbeatInterval = 15 * time.Second
 
 // ChatHandler 聊天处理器
 // 同一端点 /api/chat 依据请求体中的 stream 字段走两种形态：
@@ -125,6 +132,37 @@ func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
 	progressTicker := time.NewTicker(2 * time.Second)
 	defer progressTicker.Stop()
 
+	// 15s 应用层心跳：单独 goroutine 在 idle 期间持续打注释帧,避免被
+	// 反向代理空闲超时切断。事件写入与心跳共用同一把互斥锁,保证对
+	// c.Writer 的写串行化(否则 SSE 帧会被两个 goroutine 交错污染)。
+	heartbeatTicker := time.NewTicker(heartbeatInterval)
+	heartbeatStop := make(chan struct{})
+	heartbeatDone := make(chan struct{})
+	var writeMu sync.Mutex
+	go func() {
+		defer close(heartbeatDone)
+		for {
+			select {
+			case <-heartbeatStop:
+				return
+			case <-heartbeatTicker.C:
+				writeMu.Lock()
+				hbErr := writeSSEHeartbeat(c.Writer, flusher, time.Now().UnixMilli())
+				writeMu.Unlock()
+				if hbErr != nil {
+					utils.LogWith(c, "Chat", "心跳写入失败 | userId=%s err=%v", req.UserID, hbErr)
+					return
+				}
+			}
+		}
+	}()
+	// defers 在 streamResponse 返回前按 LIFO 顺序执行:先发停止信号、等待
+	// 心跳 goroutine 退出,再停 ticker,保证不会有 goroutine 在响应关闭后
+	// 还往 c.Writer 写数据。
+	defer close(heartbeatStop)
+	defer func() { <-heartbeatDone }()
+	defer heartbeatTicker.Stop()
+
 	start := time.Now()
 	eventSeq := 0
 	typeCounts := make(map[string]int)
@@ -144,7 +182,7 @@ func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
 		if ev.Type == "done" {
 			turnCompleted = true
 		}
-		writeErr := writeSSEEvent(c, flusher, eventSeq, ev)
+		writeErr := writeSSEEvent(c, flusher, eventSeq, ev, &writeMu)
 		// 每 N 条事件打一次进度
 		if eventSeq%progressEvery == 0 {
 			emitProgress(false)
@@ -155,7 +193,7 @@ func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
 	_ = progressTicker
 	if err != nil {
 		utils.LogWith(c, "Chat", "流式错误 | userId=%s err=%v typeCounts=%v", req.UserID, err, typeCounts)
-		_ = writeSSEEvent(c, flusher, eventSeq+1, dto.ChatEvent{Type: "error", Error: err.Error()})
+		_ = writeSSEEvent(c, flusher, eventSeq+1, dto.ChatEvent{Type: "error", Error: err.Error()}, &writeMu)
 		utils.LogWith(c, "Chat", "SSE 流结束(含 error) | userId=%s events=%d elapsed=%dms",
 			req.UserID, eventSeq+1, time.Since(start).Milliseconds())
 		return
@@ -178,12 +216,17 @@ func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
 //	id: <seq>         ← 序号，便于 last-event-id 跟踪
 //	data: <json>      ← ChatEvent 完整 JSON
 //	（空行）
-func writeSSEEvent(c *gin.Context, flusher http.Flusher, seq int, ev dto.ChatEvent) error {
+//
+// mu 用于与 15s 心跳 goroutine 串行化对 c.Writer 的写入,防止两个
+// goroutine 写出的帧在网络层交错、破坏 SSE 帧边界。
+func writeSSEEvent(c *gin.Context, flusher http.Flusher, seq int, ev dto.ChatEvent, mu *sync.Mutex) error {
 	data, err := json.Marshal(ev)
 	if err != nil {
 		utils.LogWith(c, "Chat", "事件序列化失败 | seq=%d type=%s err=%v", seq, ev.Type, err)
 		return err
 	}
+	mu.Lock()
+	defer mu.Unlock()
 	if _, err := fmt.Fprintf(c.Writer, "event: %s\nid: %d\ndata: %s\n\n", ev.Type, seq, data); err != nil {
 		utils.LogWith(c, "Chat", "事件写入失败 | seq=%d type=%s err=%v", seq, ev.Type, err)
 		return err
@@ -191,5 +234,19 @@ func writeSSEEvent(c *gin.Context, flusher http.Flusher, seq int, ev dto.ChatEve
 	flusher.Flush()
 	utils.LogWith(c, "Chat", "SSE 已发送 | seq=%d type=%s bytes=%d replySoFar=%d",
 		seq, ev.Type, len(data), len(ev.Full)+len(ev.Text))
+	return nil
+}
+
+// writeSSEHeartbeat 写入一条 SSE 注释心跳帧:": ping <ts_ms>\n\n"。
+//
+// SSE 协议约定以 ':' 开头的行为注释,会被 EventSource 解析器忽略;
+// 但写一帧空字节能让 TCP/proxy/CDN/网关知道连接没有僵死,避免被
+// 反向代理空闲超时切断。tsMs 用毫秒时间戳便于排查连接时间。
+// 写完必须 Flush,否则字节仍留在 net/http 缓冲区,起不到 keepalive 作用。
+func writeSSEHeartbeat(w io.Writer, f http.Flusher, tsMs int64) error {
+	if _, err := fmt.Fprintf(w, ": ping %d\n\n", tsMs); err != nil {
+		return err
+	}
+	f.Flush()
 	return nil
 }
