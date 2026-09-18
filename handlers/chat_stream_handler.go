@@ -127,10 +127,8 @@ func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
 	utils.LogWith(c, "Chat", "开始流式输出 | userId=%s sessionId=%s msgLen=%d",
 		req.UserID, req.SessionID, len(req.Message))
 
-	// SSE 事件节流：每 N 条或每 2 秒打一条进度汇总，避免 delta 风暴刷屏
+	// SSE 事件节流：每 N 条打一条进度汇总，避免 delta 风暴刷屏
 	const progressEvery = 5
-	progressTicker := time.NewTicker(2 * time.Second)
-	defer progressTicker.Stop()
 
 	// 15s 应用层心跳：单独 goroutine 在 idle 期间持续打注释帧,避免被
 	// 反向代理空闲超时切断。事件写入与心跳共用同一把互斥锁,保证对
@@ -189,8 +187,6 @@ func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
 		}
 		return writeErr
 	})
-	// ticker 不直接驱动日志（goroutine 风险），仅在错误/成功时汇总
-	_ = progressTicker
 	if err != nil {
 		utils.LogWith(c, "Chat", "流式错误 | userId=%s err=%v typeCounts=%v", req.UserID, err, typeCounts)
 		_ = writeSSEEvent(c, flusher, eventSeq+1, dto.ChatEvent{Type: "error", Error: err.Error()}, &writeMu)
