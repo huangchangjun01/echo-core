@@ -136,6 +136,55 @@ func TestChatEvent_OmitEmptyNewFields(t *testing.T) {
 	}
 }
 
+func TestChatEvent_ContextRoundTripPreservesL2(t *testing.T) {
+	// context 帧 l2_count / l2_items（echo-ai 新下发）必须经 ChatEvent 原样透传，
+	// 否则 echo-core 会把这两个键丢掉，前端意图胶囊收不到 L2 会话摘要。
+	l2c := 7
+	ev := ChatEvent{
+		Type:       "context",
+		PersonaLen: intPtr(106),
+		L0Count:    intPtr(3),
+		L1Count:    intPtr(12),
+		L2Count:    &l2c,
+		Persona:    "人格原文",
+		L0Items:    []string{"L0-1"},
+		L1Items:    []string{"[L1] a"},
+		L2Items:    []string{"[L2] 父摘要A", "[L2] 父摘要B"},
+	}
+	data, err := json.Marshal(ev)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	var got map[string]any
+	if err := json.Unmarshal(data, &got); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if v, ok := got["l2_count"].(float64); !ok || int(v) != 7 {
+		t.Errorf("l2_count = %v, want 7", got["l2_count"])
+	}
+	items, ok := got["l2_items"].([]any)
+	if !ok || len(items) != 2 {
+		t.Fatalf("l2_items = %v, want 2 items", got["l2_items"])
+	}
+	if items[0] != "[L2] 父摘要A" {
+		t.Errorf("l2_items[0] = %v", items[0])
+	}
+	// 反向：模拟 Python context 帧 JSON 反序列化，确认字段不丢
+	py := []byte(`{"type":"context","l2_count":2,"l2_items":["[L2] X"],"l1_count":1,"l1_items":["[L1] Y"]}`)
+	var back ChatEvent
+	if err := json.Unmarshal(py, &back); err != nil {
+		t.Fatalf("unmarshal py: %v", err)
+	}
+	if back.L2Count == nil || *back.L2Count != 2 {
+		t.Errorf("back.L2Count = %v, want 2", back.L2Count)
+	}
+	if len(back.L2Items) != 1 || back.L2Items[0] != "[L2] X" {
+		t.Errorf("back.L2Items = %v", back.L2Items)
+	}
+}
+
+func intPtr(v int) *int { return &v }
+
 func TestChatEvent_ThinkingUsesThinkStage(t *testing.T) {
 	ev := ChatEvent{
 		Type:       "thinking",

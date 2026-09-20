@@ -112,8 +112,8 @@ func (c *PythonChatClient) ChatSync(ctx context.Context, req PythonChatRequest) 
 // `{type, name, state, ts_ms, ...extras}`，而前端 spec 要求嵌套形
 // `{type, stage: {name, state, ts_ms, ...extras}}`。直接把扁平 JSON 塞进
 // ChatEvent 会发生两个问题：
-//   1. ChatEvent.Name（tool 事件使用）会被误赋值为阶段名，导致 tool 帧后续解析错乱。
-//   2. ChatEvent.Stage *StageEvent 永远为 nil，前端 parseStageEvent 拿到 null。
+//  1. ChatEvent.Name（tool 事件使用）会被误赋值为阶段名，导致 tool 帧后续解析错乱。
+//  2. ChatEvent.Stage *StageEvent 永远为 nil，前端 parseStageEvent 拿到 null。
 //
 // 处理策略：检测到 `{type:"stage"}` 且顶层无 `stage` 字段时，把 name/state/ts_ms
 // 移到一个嵌套 `stage` 对象里；其它顶层字段（如 tool_dispatch 的 iter/tool）保留
@@ -364,9 +364,9 @@ func logStreamEvent(ctx context.Context, seq int, e *dto.ChatEvent, deltaSeq, de
 	switch e.Type {
 	case "context":
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
-			"SSE 帧 #%d type=context | intent=%s intentSource=%s intentMs=%.2f personaLen=%v l0Count=%v l1Count=%v",
+			"SSE 帧 #%d type=context | intent=%s intentSource=%s intentMs=%.2f personaLen=%v l0Count=%v l1Count=%v l2Count=%v",
 			seq, e.Intent, e.IntentSource, e.IntentMs,
-			derefInt(e.PersonaLen), derefInt(e.L0Count), derefInt(e.L1Count))
+			derefInt(e.PersonaLen), derefInt(e.L0Count), derefInt(e.L1Count), derefInt(e.L2Count))
 	case "tool":
 		utils.LogWithCtx(ctx, "PythonChatClient.ChatStreamEvents",
 			"SSE 帧 #%d type=tool | name=%s iter=%v ok=%v summary=%s",

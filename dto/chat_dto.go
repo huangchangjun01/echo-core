@@ -17,7 +17,7 @@ type ChatRequest struct {
 // 事件类型与字段映射（参考 Python 接口文档）：
 //
 //	"context"          -> PersonaLen, Persona, L0Count, L0Items, L1Count, L1Items,
-//	                      Intent, IntentSource, IntentMs
+//	                      L2Count, L2Items, Intent, IntentSource, IntentMs
 //	"resource"         -> URL, Name, DisplayName, FileID, Modality, MimeType,
 //	                      ChunkIndex, TotalChunks, SizeBytes, Similarity, Source, Iter
 //	"tool"             -> Name, Iter, OK, Summary
@@ -51,8 +51,10 @@ type ChatEvent struct {
 	ThinkStage string `json:"think_stage,omitempty"` // thinking 子阶段：start / intent / context_build / recall_search / react_decision / cascade / model_reasoning
 	// --- context 事件扩展：真实注入内容 ---
 	Persona string   `json:"persona,omitempty"`  // 人格原文
-	L0Items []string `json:"l0_items,omitempty"` // L0 核心记忆条目（最多 20 条）
-	L1Items []string `json:"l1_items,omitempty"` // L1 近期摘要条目（最多 10 条）
+	L0Items []string `json:"l0_items,omitempty"` // L0 核心记忆条目（最多 50 条）
+	L1Items []string `json:"l1_items,omitempty"` // L1 近期摘要条目（最多 100 条，仅 L1）
+	L2Count *int     `json:"l2_count,omitempty"` // L2 会话摘要条数（父摘要）
+	L2Items []string `json:"l2_items,omitempty"` // L2 会话摘要条目（最多 100 条）
 	// --- resource 事件：附件资源 ---
 	URL         string  `json:"url,omitempty"`
 	DisplayName string  `json:"display_name,omitempty"`
