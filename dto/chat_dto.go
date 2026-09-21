@@ -1,14 +1,24 @@
 package dto
 
+// ChatMessage 单条对话消息（业界 messages[] 协议，与 Python ChatMessage 对齐）。
+type ChatMessage struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
 // ChatRequest 聊天请求（对齐 Python /chat）
-// 设计原则：Go 服务只透传 userId / sessionId / message / roleId 四个语义字段。
+// 设计原则：Go 服务只透传 userId / sessionId / message(messages) / roleId 四个语义字段。
 // stream 控制返回形态：false 走同步 JSON 响应，true 走 SSE 流。
+// message 与 messages 二选一（多轮上下文由 echo-ai 按 session 从 DB 加载）：
+//   - 旧协议：message 携带当前输入（历史由前端拼串）
+//   - messages[] 协议：前端只发当前输入，历史由后端接管
 type ChatRequest struct {
-	UserID    string `json:"userId" binding:"required"`
-	SessionID string `json:"sessionId"`
-	RoleID    string `json:"roleId" binding:"omitempty,max=128"`
-	Message   string `json:"message" binding:"required,min=1,max=4096"`
-	Stream    bool   `json:"stream"`
+	UserID    string        `json:"userId" binding:"required"`
+	SessionID string        `json:"sessionId"`
+	RoleID    string        `json:"roleId" binding:"omitempty,max=128"`
+	Message   string        `json:"message"`
+	Messages  []ChatMessage `json:"messages"`
+	Stream    bool          `json:"stream"`
 }
 
 // ChatEvent 12 类事件的统一结构

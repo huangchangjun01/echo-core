@@ -19,11 +19,12 @@ import (
 
 // PythonChatRequest 调用 Python /chat 的请求体
 type PythonChatRequest struct {
-	UserID    string `json:"userId"`
-	SessionID string `json:"sessionId"`
-	RoleID    string `json:"roleId,omitempty"`
-	Message   string `json:"message"`
-	Stream    bool   `json:"stream"`
+	UserID    string            `json:"userId"`
+	SessionID string            `json:"sessionId"`
+	RoleID    string            `json:"roleId,omitempty"`
+	Message   string            `json:"message"`
+	Messages  []dto.ChatMessage `json:"messages"`
+	Stream    bool              `json:"stream"`
 }
 
 // PythonChatClient 负责把对话请求以同步 / 流式两种形态透传到 Python 服务。

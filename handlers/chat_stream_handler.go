@@ -60,13 +60,30 @@ func (h *ChatHandler) Chat(c *gin.Context) {
 	if uid, ok := middleware.MustUserID(c); ok && uid != "" {
 		req.UserID = uid
 	}
-	if req.UserID == "" || strings.TrimSpace(req.Message) == "" {
-		utils.LogWith(c, "Chat", "参数缺失 | userId=%q messageLen=%d", req.UserID, len(req.Message))
-		c.JSON(http.StatusBadRequest, gin.H{"error": "userId and message are required"})
+	if req.UserID == "" {
+		utils.LogWith(c, "Chat", "参数缺失 | userId=%q", req.UserID)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userId is required"})
 		return
 	}
-	utils.LogWith(c, "Chat", "参数解析完成 | userId=%s sessionId=%s stream=%v msgLen=%d",
-		req.UserID, req.SessionID, req.Stream, len(req.Message))
+	// message 与 messages[] 二选一（业界多轮协议）
+	hasMsg := strings.TrimSpace(req.Message) != ""
+	hasMsgs := len(req.Messages) > 0
+	if hasMsgs {
+		for i, m := range req.Messages {
+			if strings.TrimSpace(m.Content) == "" || len(m.Content) > 4096 {
+				utils.LogWith(c, "Chat", "参数缺失 | messages[%d] 内容为空或超长 len=%d", i, len(m.Content))
+				c.JSON(http.StatusBadRequest, gin.H{"error": "messages[%d].content must be 1..4096 chars"})
+				return
+			}
+		}
+	}
+	if !hasMsg && !hasMsgs {
+		utils.LogWith(c, "Chat", "参数缺失 | userId=%q message 与 messages 均为空", req.UserID)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "message or messages is required"})
+		return
+	}
+	utils.LogWith(c, "Chat", "参数解析完成 | userId=%s sessionId=%s stream=%v msgLen=%d msgs=%d",
+		req.UserID, req.SessionID, req.Stream, len(req.Message), len(req.Messages))
 
 	if req.Stream {
 		h.streamResponse(c, req)
@@ -154,12 +171,13 @@ func (h *ChatHandler) streamResponse(c *gin.Context, req dto.ChatRequest) {
 			}
 		}
 	}()
-	// defers 在 streamResponse 返回前按 LIFO 顺序执行:先发停止信号、等待
-	// 心跳 goroutine 退出,再停 ticker,保证不会有 goroutine 在响应关闭后
-	// 还往 c.Writer 写数据。
-	defer close(heartbeatStop)
+	// defers 在 streamResponse 返回前按 LIFO 顺序执行。顺序很关键：
+	// 必须先 close(heartbeatStop) 给心跳 goroutine 发停止信号，它退出后
+	// <-heartbeatDone 才会放行。若把等待放在停止信号之前会形成死锁——
+	// handler 永不返回、SSE 响应永不关闭（连接被泄漏，多轮后资源耗尽）。
 	defer func() { <-heartbeatDone }()
 	defer heartbeatTicker.Stop()
+	defer close(heartbeatStop)
 
 	start := time.Now()
 	eventSeq := 0

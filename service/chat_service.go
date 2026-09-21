@@ -6,6 +6,7 @@ import (
 	"echo-core/remote"
 	"echo-core/utils"
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -27,13 +28,18 @@ func NewChatService() *ChatService {
 	}
 }
 
-// validateRequest 通用入参校验
+// validateRequest 通用入参校验（message 与 messages[] 二选一）
 func validateRequest(req dto.ChatRequest) error {
 	if strings.TrimSpace(req.UserID) == "" {
 		return errors.New("userId is required")
 	}
-	if strings.TrimSpace(req.Message) == "" {
-		return errors.New("message is required")
+	if strings.TrimSpace(req.Message) == "" && len(req.Messages) == 0 {
+		return errors.New("message or messages is required")
+	}
+	for i, m := range req.Messages {
+		if strings.TrimSpace(m.Content) == "" || len(m.Content) > 4096 {
+			return fmt.Errorf("messages[%d].content must be 1..4096 chars", i)
+		}
 	}
 	return nil
 }
@@ -51,6 +57,7 @@ func (s *ChatService) ChatSync(ctx context.Context, req dto.ChatRequest) (*dto.C
 		SessionID: req.SessionID,
 		RoleID:    req.RoleID,
 		Message:   req.Message,
+		Messages:  req.Messages,
 		Stream:    false,
 	})
 }
@@ -70,6 +77,7 @@ func (s *ChatService) ChatStream(ctx context.Context, req dto.ChatRequest, handl
 			SessionID: req.SessionID,
 			RoleID:    req.RoleID,
 			Message:   req.Message,
+			Messages:  req.Messages,
 			Stream:    true,
 		},
 		handler,
