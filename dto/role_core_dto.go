@@ -228,6 +228,26 @@ type RelationshipEventRequest struct {
 	Source    string `json:"source" binding:"omitempty,max=64"`
 }
 
+// TraitsDeltaEvent OCEAN 五维单步增量上报(POST /api/role-core/traits/event,内部接口)。
+//
+// 用于 feedback 累积触发场景:echo-ai 收到一批用户反馈后,把 OCEAN 增量写到 echo-core。
+// 与 SaveTraitsRequest 的区别:
+//   - SaveTraitsRequest 写入绝对值(用户主动编辑 OCEAN 面板)
+//   - TraitsDeltaEvent 写入增量(系统自动累积,叠加到当前 active preset)
+//
+// 单步硬上限 0.02(由 service 层 clamp),超出范围会触发 ErrInvalidOceanDelta。
+// Source 字段用于审计日志:feedback_aggregate / user_edit / system_init 等。
+type TraitsDeltaEvent struct {
+	UserID                 uint    `json:"userId" binding:"required"`
+	RoleID                 uint    `json:"roleId" binding:"required"`
+	OpennessDelta          float64 `json:"opennessDelta" binding:"min=-1,max=1"`
+	ConscientiousnessDelta float64 `json:"conscientiousnessDelta" binding:"min=-1,max=1"`
+	ExtraversionDelta      float64 `json:"extraversionDelta" binding:"min=-1,max=1"`
+	AgreeablenessDelta     float64 `json:"agreeablenessDelta" binding:"min=-1,max=1"`
+	NeuroticismDelta       float64 `json:"neuroticismDelta" binding:"min=-1,max=1"`
+	Source                 string  `json:"source" binding:"omitempty,max=64"`
+}
+
 // ===== Belief(M3 用,M0 先建好类型) =====
 
 // BeliefItem 信念条目。

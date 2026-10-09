@@ -342,6 +342,97 @@ func (s *RoleCoreService) SetActivePreset(ctx context.Context, userId, roleId ui
 	return presetType, nil
 }
 
+// ApplyTraitsDelta OCEAN 五维单步增量上报(POST /api/role-core/traits/event,内部接口)。
+//
+// 与 SaveTraits 的职责拆分:
+//   - SaveTraits:用户主动编辑 OCEAN 面板,写入绝对值
+//   - ApplyTraitsDelta:系统自动累积(如 feedback 投票汇总),叠加到当前 active preset
+//
+// 设计要点:
+//   - 解析当前 active preset → 拿到现 OCEAN → 叠加 delta → clamp 到 [-1,1] → upsert
+//   - active preset 没值时直接种子预设基线 + delta(避免首次反馈拿不到 traits)
+//   - 单步增量超过 0.02 视为异常 → 走 ErrInvalidOceanDelta(防止上游 bug 把 traits 拉飞)
+//   - audit 写一条 update 记录,triggerEvent=source
+func (s *RoleCoreService) ApplyTraitsDelta(ctx context.Context, req *dto.TraitsDeltaEvent) (*dto.TraitsResponse, error) {
+	if req.UserID == 0 || req.RoleID == 0 {
+		return nil, errors.New("userId/roleId required")
+	}
+	// 1. 单步增量硬上限校验(feedback 场景约定 0.02;此处放宽到 0.05 与 SaveTraits 对齐,
+	//    真要更严可在调用方 clamp;硬上限仅防"上游 bug 把 delta 写成 1.0")
+	deltaMag := math.Max(
+		math.Max(math.Abs(req.OpennessDelta), math.Abs(req.ConscientiousnessDelta)),
+		math.Max(math.Max(math.Abs(req.ExtraversionDelta), math.Abs(req.AgreeablenessDelta)),
+			math.Abs(req.NeuroticismDelta)),
+	)
+	if deltaMag > oceanStepHardLimit {
+		return nil, fmt.Errorf("%w: max|delta|=%.3f", ErrInvalidOceanDelta, deltaMag)
+	}
+
+	// 2. 解析 active preset
+	traitsList, err := s.traitsRepo.ListByUserRole(ctx, req.UserID, req.RoleID)
+	if err != nil {
+		return nil, err
+	}
+	activePreset, _ := s.resolveActivePresetType(ctx, req.UserID, req.RoleID, traitsList)
+
+	// 3. 取旧值(无则种子预设基线)
+	old, _ := s.traitsRepo.GetByUserRolePreset(ctx, req.UserID, req.RoleID, activePreset)
+	if old == nil {
+		baseline, perr := s.presetRepo.GetByUserRoleKey(ctx, req.UserID, req.RoleID, activePreset)
+		if perr != nil || baseline == nil {
+			return nil, fmt.Errorf("active preset %s traits row missing and baseline lookup failed: %v", activePreset, perr)
+		}
+		old = &models.RoleTraits{
+			UserID:            req.UserID,
+			RoleID:            req.RoleID,
+			PresetType:        activePreset,
+			Openness:          baseline.Openness,
+			Conscientiousness: baseline.Conscientiousness,
+			Extraversion:      baseline.Extraversion,
+			Agreeableness:     baseline.Agreeableness,
+			Neuroticism:       baseline.Neuroticism,
+		}
+	}
+
+	// 4. 叠加 + clamp 到 [-1, 1]
+	newO := clampValue(old.Openness+req.OpennessDelta, -1, 1)
+	newC := clampValue(old.Conscientiousness+req.ConscientiousnessDelta, -1, 1)
+	newE := clampValue(old.Extraversion+req.ExtraversionDelta, -1, 1)
+	newA := clampValue(old.Agreeableness+req.AgreeablenessDelta, -1, 1)
+	newN := clampValue(old.Neuroticism+req.NeuroticismDelta, -1, 1)
+
+	// 5. upsert
+	t := &models.RoleTraits{
+		UserID:            req.UserID,
+		RoleID:            req.RoleID,
+		PresetType:        activePreset,
+		Openness:          newO,
+		Conscientiousness: newC,
+		Extraversion:      newE,
+		Agreeableness:     newA,
+		Neuroticism:       newN,
+	}
+	if uerr := s.traitsRepo.UpsertWithTx(ctx, nil, t); uerr != nil {
+		utils.LogWithCtx(ctx, "RoleCoreService.ApplyTraitsDelta", "upsert 失败 | err=%v", uerr)
+		return nil, uerr
+	}
+
+	// 6. audit
+	_ = s.auditRepo.Create(ctx, &models.RoleCoreAuditLog{
+		UserID:       req.UserID,
+		RoleID:       req.RoleID,
+		Action:       models.AuditActionUpdate,
+		TargetType:   models.AuditTargetTraits,
+		BeforeJSON:   mustMarshal(traitsToMap(old)),
+		AfterJSON:    mustMarshal(traitsToMap(t)),
+		DeltaSummary: fmt.Sprintf("preset=%s source=%s delta_mag=%.3f", activePreset, req.Source, deltaMag),
+		TriggerEvent: req.Source,
+	})
+	utils.LogWithCtx(ctx, "RoleCoreService.ApplyTraitsDelta",
+		"完成 | preset=%s delta_mag=%.3f source=%s", activePreset, deltaMag, req.Source)
+	return traitsToResponse(t), nil
+}
+
 // GetTraits 取某 (user, role) 下所有预设的 OCEAN 五维 + 当前生效预设
 //
 // 返回 dto.TraitsListResponse{List, ActivePresetType}:

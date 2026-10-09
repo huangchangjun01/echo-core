@@ -299,6 +299,31 @@ func (h *RoleCoreHandler) UpdateMood(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok", "data": resp})
 }
 
+// ApplyTraitsDelta OCEAN 五维单步增量上报 (POST /api/role-core/traits/event) — 内部接口
+//
+// 用途：feedback 累积触发 / LLM 自动抽取等场景,由 echo-ai 把 OCEAN 增量写到 echo-core。
+// 与外部接口 SaveTraits 区别:
+//   - SaveTraits:用户主动编辑,写入绝对值(走 RequireSession 中间件)
+//   - ApplyTraitsDelta:系统自动累积,叠加到当前 active preset(走 X-Internal-Token)
+func (h *RoleCoreHandler) ApplyTraitsDelta(c *gin.Context) {
+	ctx := c.Request.Context()
+	if h.requireInternalToken(c) == false {
+		return
+	}
+	var req dto.TraitsDeltaEvent
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "message": "参数错误: " + err.Error()})
+		return
+	}
+	resp, err := h.svc.ApplyTraitsDelta(ctx, &req)
+	if err != nil {
+		mapRoleCoreErr(c, err, "")
+		return
+	}
+	utils.LogWith(c, "RoleCore", "ApplyTraitsDelta 成功 | roleId=%d source=%s", req.RoleID, req.Source)
+	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "ok", "data": resp})
+}
+
 // ===== Relationship（M3 占位）=====
 
 // GetRelationship 取关系值 (GET /api/role-core/relationship?roleId=N)

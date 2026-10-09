@@ -41,6 +41,10 @@ func SetupRoutes(r *gin.Engine) error {
 	if err := chatRegisterRoutes(api); err != nil {
 		return err
 	}
+	// 鉴权路由：会话管理（CRUD + 消息列表 + 反馈）
+	if err := chatSessionRegisterRoutes(api); err != nil {
+		return err
+	}
 	// 鉴权路由：回忆记忆（文档即记忆）
 	if err := recallMemoryRegisterRoutes(api); err != nil {
 		return err
@@ -93,6 +97,7 @@ func roleCoreRegisterRoutes(api *gin.RouterGroup) error {
 		internal.POST("/mood/event", h.UpdateMood)
 		internal.POST("/relationship/event", h.AccumulateRelationship)
 		internal.POST("/suggestions", h.CreateSuggestion)
+		internal.POST("/traits/event", h.ApplyTraitsDelta)
 	}
 	return nil
 }
@@ -144,6 +149,27 @@ func chatRegisterRoutes(api *gin.RouterGroup) error {
 		//   stream=false（默认）：同步返回 JSON
 		//   stream=true        ：SSE 流式逐帧推送 ChatEvent
 		chat.POST("", chatHandler.Chat)
+	}
+	return nil
+}
+
+// 会话相关路由（鉴权）：messages + feedback
+//
+// 单角色单会话产品模型下，list/create/update/delete 四个路由全部下线。
+// (user, role) 永远对应唯一一行 chat_sessions，前后端都不再有
+// 「会话列表 / 切换 / 新建 / 删除」概念。本路由只保留：
+//   - POST /chat/sessions/messages —— 拉取历史消息（支持 before 游标分页）
+//   - POST /chat/sessions/dates    —— 列出有消息的日期（历史日历绿点用）
+//   - POST /chat/feedback          —— 点赞/踩
+func chatSessionRegisterRoutes(api *gin.RouterGroup) error {
+	h := handlers.NewChatSessionHandler()
+	cs := api.Group("/chat", middleware.RequireSession())
+	{
+		cs.POST("/sessions/messages", h.ListMessages)
+		// 历史日历：当前会话有消息的日期 + 条数，倒序
+		cs.POST("/sessions/dates", h.ListDates)
+		// 反馈：影响 mood + traits
+		cs.POST("/feedback", h.SubmitFeedback)
 	}
 	return nil
 }

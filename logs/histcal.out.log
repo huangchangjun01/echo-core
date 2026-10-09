@@ -1,0 +1,1260 @@
+
+2026/10/02 16:15:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[74.142ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[151.168ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[145.549ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'file' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:16 [32m
+[0m[33m[74.011ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[139.905ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[138.310ms] [34;1m[rows:-][0m SELECT * FROM `file` LIMIT 1
+
+2026/10/02 16:15:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[149.898ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'file' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[71.319ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[133.666ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[138.752ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'file' AND index_name = 'idx_file_role_id'
+
+2026/10/02 16:15:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[79.725ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[135.429ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[134.318ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:17 [32m
+[0m[33m[74.365ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[135.400ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[146.552ms] [34;1m[rows:-][0m SELECT * FROM `user` LIMIT 1
+
+2026/10/02 16:15:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[149.188ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'user' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:18 [32m
+[0m[33m[74.915ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:18 [32m
+[0m[33m[135.719ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:18 [32m
+[0m[33m[137.635ms] [34;1m[rows:3][0m 
+SELECT
+	TABLE_NAME,
+	COLUMN_NAME,
+	INDEX_NAME,
+	NON_UNIQUE 
+FROM
+	information_schema.STATISTICS 
+WHERE
+	TABLE_SCHEMA = 'huangchangjun' 
+	AND TABLE_NAME = 'user' 
+ORDER BY
+	INDEX_NAME,
+	SEQ_IN_INDEX
+
+2026/10/02 16:15:18 [32m
+[0m[33m[68.742ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:18 [32m
+[0m[33m[139.113ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:18 [32m
+[0m[33m[136.690ms] [34;1m[rows:-][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE constraint_schema = 'huangchangjun' AND table_name = 'user' AND constraint_name = 'uni_user_username'
+
+2026/10/02 16:15:19 [32m
+[0m[33m[76.631ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:19 [32m
+[0m[33m[140.504ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:19 [32m
+[0m[33m[132.456ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_username'
+
+2026/10/02 16:15:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[75.984ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[136.141ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[142.964ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_username'
+
+2026/10/02 16:15:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[74.982ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[134.626ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[137.839ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_email'
+
+2026/10/02 16:15:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[74.461ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[135.251ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[136.323ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:20 [32m
+[0m[33m[75.138ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[137.851ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[137.624ms] [34;1m[rows:-][0m SELECT * FROM `role` LIMIT 1
+
+2026/10/02 16:15:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[145.536ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[74.939ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[133.288ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[137.153ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role' AND index_name = 'idx_role_user_id'
+
+2026/10/02 16:15:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[72.508ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[138.376ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[226.004ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:22 [32m
+[0m[33m[188.300ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[723.549ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[399.757ms] [34;1m[rows:-][0m SELECT * FROM `recall_memory` LIMIT 1
+
+2026/10/02 16:15:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[726.053ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:24 [32m
+[0m[33m[345.008ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:25 [32m
+[0m[33m[708.100ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:25 [32m
+[0m[33m[170.589ms] [34;1m[rows:4][0m 
+SELECT
+	TABLE_NAME,
+	COLUMN_NAME,
+	INDEX_NAME,
+	NON_UNIQUE 
+FROM
+	information_schema.STATISTICS 
+WHERE
+	TABLE_SCHEMA = 'huangchangjun' 
+	AND TABLE_NAME = 'recall_memory' 
+ORDER BY
+	INDEX_NAME,
+	SEQ_IN_INDEX
+
+2026/10/02 16:15:25 [32m
+[0m[33m[71.819ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:25 [32m
+[0m[33m[133.542ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:25 [32m
+[0m[33m[142.184ms] [34;1m[rows:-][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE constraint_schema = 'huangchangjun' AND table_name = 'recall_memory' AND constraint_name = 'uni_recall_memory_memory_id'
+
+2026/10/02 16:15:25 [32m
+[0m[33m[76.571ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:26 [32m
+[0m[33m[141.947ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:26 [32m
+[0m[33m[139.816ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_memory_memory_id'
+
+2026/10/02 16:15:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[95.345ms] [34;1m[rows:0][0m ALTER TABLE `recall_memory` MODIFY COLUMN `subjective_desc` text COMMENT '记忆主观描述(<=1000)'
+
+2026/10/02 16:15:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[68.258ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[135.561ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[163.776ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_memory_memory_id'
+
+2026/10/02 16:15:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[75.796ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[134.801ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[151.385ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_user_role'
+
+2026/10/02 16:15:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[82.135ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[246.352ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[459.152ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:28 [32m
+[0m[33m[340.646ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:29 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[846.868ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:30 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[699.105ms] [34;1m[rows:-][0m SELECT * FROM `recall_source_file` LIMIT 1
+
+2026/10/02 16:15:30 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[738.770ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:30 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[142.427ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:31 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[135.668ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:31 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[139.939ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' AND index_name = 'idx_recall_source_file_memory_id'
+
+2026/10/02 16:15:31 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[91.318ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:31 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[148.513ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:31 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[139.543ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:31 [32m
+[0m[33m[71.903ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:31 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[135.643ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:32 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[143.182ms] [34;1m[rows:-][0m SELECT * FROM `audit_log` LIMIT 1
+
+2026/10/02 16:15:32 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[149.228ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:32 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[73.688ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:32 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[133.520ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:32 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[159.596ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_user_id'
+
+2026/10/02 16:15:32 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[96.946ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:33 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[342.826ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:33 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[557.314ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_action'
+
+2026/10/02 16:15:34 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[289.246ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:34 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[595.338ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:35 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[527.010ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_target_type'
+
+2026/10/02 16:15:35 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[276.867ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:36 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[560.519ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:36 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[377.990ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_target_id'
+
+2026/10/02 16:15:36 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[71.191ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:36 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[134.083ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:36 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[137.512ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_ip'
+
+2026/10/02 16:15:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[70.519ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[134.492ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[135.078ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_status'
+
+2026/10/02 16:15:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[70.792ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[133.936ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[140.159ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_created_at'
+
+2026/10/02 16:15:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[75.112ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:38 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[137.282ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:38 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[139.333ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_persona' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:38 [32m
+[0m[33m[73.194ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:38 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[154.771ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:38 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[236.227ms] [34;1m[rows:-][0m SELECT * FROM `role_persona` LIMIT 1
+
+2026/10/02 16:15:38 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[150.198ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_persona' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:38 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[73.458ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[132.650ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[133.732ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:39 [32m
+[0m[33m[72.172ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[134.626ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[134.582ms] [34;1m[rows:-][0m SELECT * FROM `role_traits` LIMIT 1
+
+2026/10/02 16:15:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[145.372ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[72.003ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:40 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[134.079ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:40 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[142.067ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_mood' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:40 [32m
+[0m[33m[72.593ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:40 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[137.472ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:40 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[134.425ms] [34;1m[rows:-][0m SELECT * FROM `role_mood` LIMIT 1
+
+2026/10/02 16:15:40 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[168.258ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_mood' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:41 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[157.889ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:41 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[149.036ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:41 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[319.227ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:41 [32m
+[0m[33m[117.481ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:41 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[158.582ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[134.558ms] [34;1m[rows:-][0m SELECT * FROM `role_belief` LIMIT 1
+
+2026/10/02 16:15:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[171.388ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[106.015ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[147.770ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[139.896ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' AND index_name = 'idx_belief_user_role'
+
+2026/10/02 16:15:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[74.853ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[169.317ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:43 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[140.314ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' AND index_name = 'idx_role_belief_user_confirmed'
+
+2026/10/02 16:15:43 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[71.814ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:43 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[169.519ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:43 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[170.128ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_relationship' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:43 [32m
+[0m[33m[74.569ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:43 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[156.672ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[193.304ms] [34;1m[rows:-][0m SELECT * FROM `role_relationship` LIMIT 1
+
+2026/10/02 16:15:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[176.528ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_relationship' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[88.703ms] [34;1m[rows:0][0m ALTER TABLE `role_relationship` MODIFY COLUMN `intimacy` decimal(4,3) DEFAULT 0 COMMENT '亲密度 [0,1]'
+
+2026/10/02 16:15:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[80.455ms] [34;1m[rows:0][0m ALTER TABLE `role_relationship` MODIFY COLUMN `trust` decimal(4,3) DEFAULT 0 COMMENT '信任度 [0,1]'
+
+2026/10/02 16:15:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[121.962ms] [34;1m[rows:0][0m ALTER TABLE `role_relationship` MODIFY COLUMN `satisfaction` decimal(4,3) DEFAULT 0 COMMENT '满意度 [0,1]'
+
+2026/10/02 16:15:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[67.354ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[134.282ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[141.117ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:45 [32m
+[0m[33m[365.177ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:45 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[161.597ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:45 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[145.313ms] [34;1m[rows:-][0m SELECT * FROM `role_core_audit_log` LIMIT 1
+
+2026/10/02 16:15:45 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[163.976ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:45 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[72.396ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:46 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[155.474ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:46 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[137.325ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND index_name = 'idx_audit_user_role_time'
+
+2026/10/02 16:15:46 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[100.838ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:46 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[140.399ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:46 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[133.496ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND index_name = 'idx_role_core_audit_log_action'
+
+2026/10/02 16:15:46 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[72.079ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:47 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[156.200ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:47 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[143.009ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND index_name = 'idx_role_core_audit_log_target_type'
+
+2026/10/02 16:15:47 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[76.484ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:47 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[132.753ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:47 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[156.506ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:47 [32m
+[0m[33m[76.811ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:47 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[137.154ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:48 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[135.246ms] [34;1m[rows:-][0m SELECT * FROM `role_feedback` LIMIT 1
+
+2026/10/02 16:15:48 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[159.147ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:48 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[74.797ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:48 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[135.079ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:48 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[139.179ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' AND index_name = 'idx_feedback_user_role_time'
+
+2026/10/02 16:15:48 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[89.048ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:49 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[212.879ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:49 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[133.120ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' AND index_name = 'idx_role_feedback_message_id'
+
+2026/10/02 16:15:49 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[72.909ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:49 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[186.677ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:49 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[144.046ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_evolution_suggestion' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:49 [32m
+[0m[33m[89.219ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:49 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[140.405ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:50 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[163.660ms] [34;1m[rows:-][0m SELECT * FROM `role_evolution_suggestion` LIMIT 1
+
+2026/10/02 16:15:50 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[154.552ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_evolution_suggestion' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:50 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[133.145ms] [34;1m[rows:0][0m ALTER TABLE `role_evolution_suggestion` MODIFY COLUMN `confidence` decimal(4,3) DEFAULT 0 COMMENT 'LLM 置信度 [0,1]'
+
+2026/10/02 16:15:50 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[66.194ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:50 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[168.715ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:50 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[160.769ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_evolution_suggestion' AND index_name = 'idx_sug_user_role_status_time'
+
+2026/10/02 16:15:50 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[78.520ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:51 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[161.038ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:51 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[509.273ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:52 [32m
+[0m[33m[489.366ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:52 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[580.918ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:53 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[641.985ms] [34;1m[rows:-][0m SELECT * FROM `role_ocean_preset` LIMIT 1
+
+2026/10/02 16:15:54 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[691.781ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' ORDER BY ORDINAL_POSITION
+
+2026/10/02 16:15:55 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109 [33mSLOW SQL >= 1s
+[0m[31;1m[1069.219ms] [33m[rows:-][35m SELECT DATABASE()[0m
+
+2026/10/02 16:15:55 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[132.491ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:55 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[144.974ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND index_name = 'idx_user_role_key'
+
+2026/10/02 16:15:55 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:37
+[0m[33m[71.277ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:55 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:37
+[0m[33m[156.711ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:37
+[0m[33m[135.400ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'personas' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:43
+[0m[33m[74.261ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:43
+[0m[33m[134.971ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:43
+[0m[33m[156.365ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'personas_backup_202608' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:41
+[0m[33m[73.488ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:41
+[0m[33m[133.010ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:41
+[0m[33m[134.283ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:47
+[0m[33m[78.101ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:57 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:47
+[0m[33m[145.770ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:57 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:47
+[0m[33m[136.404ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits_backup_202609' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:57 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_active_preset.go:38
+[0m[33m[70.339ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:57 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_active_preset.go:38
+[0m[33m[160.516ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:57 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_active_preset.go:38
+[0m[33m[137.273ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_active_preset' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:57 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:76
+[0m[33m[72.145ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:57 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:76
+[0m[33m[158.286ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:58 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:76
+[0m[33m[194.740ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND table_type = 'BASE TABLE'
+
+2026/10/02 16:15:58 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:87
+[0m[33m[80.252ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:58 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:87
+[0m[33m[134.066ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:58 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:87
+[0m[33m[139.583ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND index_name = 'idx_user_key'
+
+2026/10/02 16:15:58 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:88
+[0m[33m[71.661ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:58 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:88
+[0m[33m[133.560ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:58 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:88
+[0m[33m[138.951ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND index_name = 'idx_user_role_key'
+
+2026/10/02 16:15:58 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:89
+[0m[33m[73.146ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/10/02 16:15:59 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:89
+[0m[33m[134.379ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/10/02 16:15:59 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:89
+[0m[33m[140.583ms] [34;1m[rows:-][0m SELECT count(*) FROM INFORMATION_SCHEMA.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND column_name = 'role_id'
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /health                   --> echo-core/handlers.(*HealthHandler).Health-fm (5 handlers)
+[GIN-debug] POST   /api/auth/login           --> echo-core/handlers.(*UserHandler).Login-fm (5 handlers)
+[GIN-debug] POST   /api/auth/register        --> echo-core/handlers.(*UserHandler).Register-fm (5 handlers)
+[GIN-debug] POST   /api/auth/checkAccount    --> echo-core/handlers.(*UserHandler).CheckAccount-fm (5 handlers)
+[GIN-debug] POST   /api/auth/check           --> echo-core/handlers.(*UserHandler).Check-fm (5 handlers)
+[GIN-debug] POST   /api/auth/logout          --> echo-core/handlers.(*UserHandler).Logout-fm (5 handlers)
+[GIN-debug] POST   /api/file/token           --> echo-core/handlers.(*FileHandler).GetUploadTokenHandler-fm (6 handlers)
+[GIN-debug] POST   /api/file/register        --> echo-core/handlers.(*FileHandler).RegisterFileHandler-fm (6 handlers)
+[GIN-debug] GET    /api/file/list            --> echo-core/handlers.(*FileHandler).ListMemoryFilesHandler-fm (6 handlers)
+[GIN-debug] PUT    /api/file/:id/desc        --> echo-core/handlers.(*FileHandler).UpdateFileDescHandler-fm (6 handlers)
+[GIN-debug] POST   /api/file/text            --> echo-core/handlers.(*FileHandler).CreateTextMemoryHandler-fm (6 handlers)
+[GIN-debug] POST   /api/file/authorize       --> echo-core/handlers.(*FileHandler).AuthorizeDownloadHandler-fm (6 handlers)
+[GIN-debug] GET    /api/file/:id/download    --> echo-core/handlers.(*FileHandler).DownloadFileHandler-fm (6 handlers)
+[GIN-debug] POST   /api/role                 --> echo-core/handlers.(*RoleHandler).Create-fm (6 handlers)
+[GIN-debug] GET    /api/role                 --> echo-core/handlers.(*RoleHandler).List-fm (6 handlers)
+[GIN-debug] PUT    /api/role/:id             --> echo-core/handlers.(*RoleHandler).Update-fm (6 handlers)
+[GIN-debug] DELETE /api/role/:id             --> echo-core/handlers.(*RoleHandler).Delete-fm (6 handlers)
+[GIN-debug] POST   /api/chat                 --> echo-core/handlers.(*ChatHandler).Chat-fm (6 handlers)
+[GIN-debug] POST   /api/chat/sessions/messages --> echo-core/handlers.(*ChatSessionHandler).ListMessages-fm (6 handlers)
+[GIN-debug] POST   /api/chat/sessions/dates  --> echo-core/handlers.(*ChatSessionHandler).ListDates-fm (6 handlers)
+[GIN-debug] POST   /api/chat/feedback        --> echo-core/handlers.(*ChatSessionHandler).SubmitFeedback-fm (6 handlers)
+[GIN-debug] POST   /api/memory/apply         --> echo-core/handlers.(*RecallMemoryHandler).Apply-fm (6 handlers)
+[GIN-debug] POST   /api/memory/check-topic   --> echo-core/handlers.(*RecallMemoryHandler).CheckTopic-fm (6 handlers)
+[GIN-debug] POST   /api/memory/upload-token  --> echo-core/handlers.(*RecallMemoryHandler).UploadToken-fm (6 handlers)
+[GIN-debug] POST   /api/memory/save          --> echo-core/handlers.(*RecallMemoryHandler).Save-fm (6 handlers)
+[GIN-debug] POST   /api/memory/update        --> echo-core/handlers.(*RecallMemoryHandler).Update-fm (6 handlers)
+[GIN-debug] GET    /api/memory/list          --> echo-core/handlers.(*RecallMemoryHandler).List-fm (6 handlers)
+[GIN-debug] GET    /api/memory/detail        --> echo-core/handlers.(*RecallMemoryHandler).Detail-fm (6 handlers)
+[GIN-debug] DELETE /api/memory/file          --> echo-core/handlers.(*RecallMemoryHandler).DeleteFile-fm (6 handlers)
+[GIN-debug] DELETE /api/memory/theme         --> echo-core/handlers.(*RecallMemoryHandler).DeleteTheme-fm (6 handlers)
+[GIN-debug] GET    /api/memory/:memoryId/md-file --> echo-core/handlers.(*RecallMemoryHandler).MemoryMdFileHandler-fm (5 handlers)
+[GIN-debug] POST   /api/memory/md-url        --> echo-core/handlers.(*RecallMemoryHandler).MdUrl-fm (5 handlers)
+[GIN-debug] POST   /api/memory/md-content    --> echo-core/handlers.(*RecallMemoryHandler).MdContent-fm (5 handlers)
+[GIN-debug] POST   /api/memory/md-content/save --> echo-core/handlers.(*RecallMemoryHandler).UpdateMdContent-fm (5 handlers)
+[GIN-debug] POST   /api/memory/internal/parse-status --> echo-core/handlers.(*RecallMemoryHandler).UpdateParseStatus-fm (5 handlers)
+[GIN-debug] POST   /api/role-core/persona    --> echo-core/handlers.(*RoleCoreHandler).SavePersona-fm (6 handlers)
+[GIN-debug] GET    /api/role-core/persona    --> echo-core/handlers.(*RoleCoreHandler).GetPersona-fm (6 handlers)
+[GIN-debug] POST   /api/role-core/traits     --> echo-core/handlers.(*RoleCoreHandler).SaveTraits-fm (6 handlers)
+[GIN-debug] GET    /api/role-core/traits     --> echo-core/handlers.(*RoleCoreHandler).GetTraits-fm (6 handlers)
+[GIN-debug] POST   /api/role-core/active-preset --> echo-core/handlers.(*RoleCoreHandler).SetActivePreset-fm (6 handlers)
+[GIN-debug] GET    /api/role-core/mood       --> echo-core/handlers.(*RoleCoreHandler).GetMood-fm (6 handlers)
+[GIN-debug] GET    /api/role-core/presets    --> echo-core/handlers.(*RoleCoreHandler).ListPresets-fm (6 handlers)
+[GIN-debug] POST   /api/role-core/presets    --> echo-core/handlers.(*RoleCoreHandler).CreatePreset-fm (6 handlers)
+[GIN-debug] PUT    /api/role-core/presets/:id --> echo-core/handlers.(*RoleCoreHandler).UpdatePreset-fm (6 handlers)
+[GIN-debug] DELETE /api/role-core/presets/:id --> echo-core/handlers.(*RoleCoreHandler).DeletePreset-fm (6 handlers)
+[GIN-debug] GET    /api/role-core/relationship --> echo-core/handlers.(*RoleCoreHandler).GetRelationship-fm (6 handlers)
+[GIN-debug] GET    /api/role-core/beliefs    --> echo-core/handlers.(*RoleCoreHandler).ListBeliefs-fm (6 handlers)
+[GIN-debug] POST   /api/role-core/beliefs    --> echo-core/handlers.(*RoleCoreHandler).CreateBelief-fm (6 handlers)
+[GIN-debug] PUT    /api/role-core/beliefs/:id --> echo-core/handlers.(*RoleCoreHandler).UpdateBelief-fm (6 handlers)
+[GIN-debug] DELETE /api/role-core/beliefs/:id --> echo-core/handlers.(*RoleCoreHandler).DeleteBelief-fm (6 handlers)
+[GIN-debug] POST   /api/role-core/feedback   --> echo-core/handlers.(*RoleCoreHandler).SubmitFeedback-fm (6 handlers)
+[GIN-debug] GET    /api/role-core/suggestions --> echo-core/handlers.(*RoleCoreHandler).ListPendingSuggestions-fm (6 handlers)
+[GIN-debug] POST   /api/role-core/suggestions/:id/:action --> echo-core/handlers.(*RoleCoreHandler).ResolveSuggestion-fm (6 handlers)
+[GIN-debug] GET    /api/role-core/core       --> echo-core/handlers.(*RoleCoreHandler).GetCoreSnapshot-fm (6 handlers)
+[GIN-debug] POST   /api/role-core/mood/event --> echo-core/handlers.(*RoleCoreHandler).UpdateMood-fm (5 handlers)
+[GIN-debug] POST   /api/role-core/relationship/event --> echo-core/handlers.(*RoleCoreHandler).AccumulateRelationship-fm (5 handlers)
+[GIN-debug] POST   /api/role-core/suggestions --> echo-core/handlers.(*RoleCoreHandler).CreateSuggestion-fm (5 handlers)
+[GIN-debug] POST   /api/role-core/traits/event --> echo-core/handlers.(*RoleCoreHandler).ApplyTraitsDelta-fm (5 handlers)
+[GIN-debug] GET    /                         --> main.main.func1 (5 handlers)
+[GIN-debug] Listening and serving HTTP on :8080
+
+2026/10/02 16:19:47 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:66
+[0m[33m[147.871ms] [34;1m[rows:1][0m SELECT count(*) FROM `user` WHERE username = 'caltest161835'
+
+2026/10/02 16:19:47 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:80
+[0m[33m[277.527ms] [34;1m[rows:1][0m INSERT INTO `user` (`username`,`password_hash`,`salt`,`nickname`,`email`,`status`,`last_login_at`,`last_login_ip`,`created_at`,`updated_at`) VALUES ('caltest161835','$2a$10$KtOHmjS6np2InDIS8oiEUulxRevpWQVpe2TMmvVoP3vexV6JvRM8W','86ad7687cdbab54c2bdab1066f0b613b','','',1,NULL,'','2026-10-02 16:19:47.314','2026-10-02 16:19:47.314')
+
+2026/10/02 16:19:47 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[134.528ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'caltest161835' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/02 16:19:48 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[278.977ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-02 16:19:47.917',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-02 16:19:47.985' WHERE id = 65
+
+2026/10/02 16:19:48 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[138.419ms] [34;1m[rows:0][0m SELECT * FROM `role` WHERE user_id = '65' AND status = 1 ORDER BY created_at ASC
+
+2026/10/02 16:19:48 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:70
+[0m[33m[288.426ms] [34;1m[rows:1][0m INSERT INTO `role` (`user_id`,`name`,`desc`,`status`,`created_at`,`updated_at`) VALUES ('65','默认角色','系统自动创建，用于老数据与首次进入时无缝使用',1,'2026-10-02 16:19:48.511','2026-10-02 16:19:48.511')
+
+2026/10/02 23:16:42 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[450.122ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'caltest161835' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/02 23:16:43 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[295.671ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-02 23:16:43.051',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-02 23:16:43.122' WHERE id = 65
+
+2026/10/02 23:16:43 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[141.083ms] [34;1m[rows:1][0m SELECT * FROM `role` WHERE user_id = '65' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 19:52:51 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[695.330ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'caltest161835' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 19:52:51 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[518.236ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 19:52:51.442',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 19:52:51.627' WHERE id = 65
+
+2026/10/03 19:54:58 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[155.442ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'caltest161835' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 19:54:59 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[284.324ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 19:54:59.019',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 19:54:59.089' WHERE id = 65
+
+2026/10/03 19:55:54 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[151.672ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'caltest161835' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 19:55:54 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[299.653ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 19:55:54.557',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 19:55:54.641' WHERE id = 65
+
+2026/10/03 19:55:55 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[142.353ms] [34;1m[rows:1][0m SELECT * FROM `role` WHERE user_id = '65' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 19:59:26 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[141.032ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'caltest161835' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 19:59:26 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[284.587ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 19:59:26.634',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 19:59:26.704' WHERE id = 65
+
+2026/10/03 19:59:27 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[148.302ms] [34;1m[rows:1][0m SELECT * FROM `role` WHERE user_id = '65' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:01:03 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28 [35;1mrecord not found
+[0m[33m[138.177ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:01:03 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:59 [35;1mrecord not found
+[0m[33m[139.594ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:01:03 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:72
+[0m[33m[294.887ms] [34;1m[rows:1][0m INSERT INTO `role_relationship` (`user_id`,`role_id`,`intimacy`,`trust`,`satisfaction`,`co_days`,`updated_at`) VALUES (65,56,0.01,0,0,0,'2026-10-03 20:01:03.554')
+
+2026/10/03 20:01:04 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[297.880ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (65,56,'update','relationship','{"userId":65,"roleId":56,"intimacy":0,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"0001-01-01T00:00:00Z"}','{"userId":65,"roleId":56,"intimacy":0.01,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"2026-10-03T20:01:03.554+08:00"}','event=turn ΔI=0.010 ΔT=0.000 ΔS=0.000','user_edit','2026-10-03 20:01:03.883')
+
+2026/10/03 20:01:04 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [35;1mrecord not found
+[0m[33m[169.383ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 20:01:04 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
+[0m[33m[254.845ms] [34;1m[rows:0][0m SELECT * FROM `role_traits` WHERE user_id = 65 AND role_id = 56 ORDER BY preset_type ASC
+
+2026/10/03 20:01:05 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[153.463ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:01:05 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:52 [35;1mrecord not found
+[0m[33m[145.754ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 20:01:05 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:69
+[0m[33m[293.898ms] [34;1m[rows:1][0m INSERT INTO `role_mood` (`user_id`,`role_id`,`instant_val`,`instant_intensity`,`instant_emotion`,`short_val`,`short_intensity`,`short_emotion`,`baseline_val`,`baseline_intensity`,`baseline_emotion`,`last_event_at`,`created_at`,`updated_at`) VALUES (65,56,0.0005,0.3,'neutral',0,0.3,'neutral',0,0.4,'neutral','2026-10-03 20:01:05.114','2026-10-03 20:01:05.355','2026-10-03 20:01:05.355')
+
+2026/10/03 20:01:05 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[289.525ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (65,56,'update','mood','{"instantEmotion":"neutral","instantVal":0}','{"instantEmotion":"neutral","instantVal":0.0005}','instant=0.001 emotion=neutral','dialogue','2026-10-03 20:01:05.676')
+
+2026/10/03 20:02:06 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[428.999ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'caltest161835' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 20:02:06 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[292.431ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 20:02:06.26',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 20:02:06.328' WHERE id = 65
+
+2026/10/03 20:03:56 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[140.972ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:03:57 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:59
+[0m[33m[141.749ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:03:57 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:64
+[0m[33m[289.013ms] [34;1m[rows:1][0m UPDATE `role_relationship` SET `co_days`=0,`intimacy`=0.02,`satisfaction`=0,`trust`=0,`updated_at`='2026-10-03 20:03:57.144' WHERE user_id = 65 AND role_id = 56
+
+2026/10/03 20:03:57 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[284.434ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (65,56,'update','relationship','{"userId":65,"roleId":56,"intimacy":0.01,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"2026-10-03T20:01:03.554+08:00"}','{"userId":65,"roleId":56,"intimacy":0.02,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"0001-01-01T00:00:00Z"}','event=turn ΔI=0.010 ΔT=0.000 ΔS=0.000','user_edit','2026-10-03 20:03:57.435')
+
+2026/10/03 20:03:58 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27
+[0m[33m[145.503ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 20:03:58 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
+[0m[33m[146.567ms] [34;1m[rows:0][0m SELECT * FROM `role_traits` WHERE user_id = 65 AND role_id = 56 ORDER BY preset_type ASC
+
+2026/10/03 20:03:58 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[139.311ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:03:58 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:52
+[0m[33m[141.871ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 20:03:58 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:56
+[0m[33m[279.065ms] [34;1m[rows:1][0m UPDATE `role_mood` SET `baseline_emotion`='neutral',`baseline_intensity`=0.4,`baseline_val`=0,`instant_emotion`='neutral',`instant_intensity`=0.3,`instant_val`=0.001,`last_event_at`='2026-10-03 20:03:58.438',`short_emotion`='neutral',`short_intensity`=0.3,`short_val`=0,`updated_at`='2026-10-03 20:03:58.676' WHERE user_id = 65 AND role_id = 56
+
+2026/10/03 20:03:59 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[283.282ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (65,56,'update','mood','{"instantEmotion":"neutral","instantVal":0.001}','{"instantEmotion":"neutral","instantVal":0.001}','instant=0.001 emotion=neutral','dialogue','2026-10-03 20:03:58.956')
+
+2026/10/03 20:08:32 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[150.341ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'huangchangjun' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 20:08:32 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[283.063ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 20:08:32.171',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 20:08:32.238' WHERE id = 2
+
+2026/10/03 20:08:43 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[139.901ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'huangchangjun' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 20:08:43 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[294.790ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 20:08:43.681',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 20:08:43.751' WHERE id = 2
+
+2026/10/03 20:15:33 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[146.982ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'huangchangjun' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 20:15:34 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[283.225ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 20:15:33.92',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 20:15:33.993' WHERE id = 2
+
+2026/10/03 20:16:41 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[148.244ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'huangchangjun' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 20:16:41 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[297.309ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 20:16:41.392',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 20:16:41.468' WHERE id = 2
+
+2026/10/03 20:17:24 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[141.641ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'huangchangjun' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 20:17:25 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[291.327ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 20:17:24.723',`last_login_ip`='::1',`updated_at`='2026-10-03 20:17:24.793' WHERE id = 2
+
+2026/10/03 20:17:25 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[148.654ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:17:35 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[141.094ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'huangchangjun' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 20:17:35 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[288.772ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 20:17:35.278',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 20:17:35.351' WHERE id = 2
+
+2026/10/03 20:17:53 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28 [35;1mrecord not found
+[0m[33m[139.513ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:17:53 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:59 [35;1mrecord not found
+[0m[33m[140.452ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:17:54 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:72
+[0m[33m[287.854ms] [34;1m[rows:1][0m INSERT INTO `role_relationship` (`user_id`,`role_id`,`intimacy`,`trust`,`satisfaction`,`co_days`,`updated_at`) VALUES (2,56,0.01,0,0,0,'2026-10-03 20:17:53.963')
+
+2026/10/03 20:17:54 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[306.325ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,56,'update','relationship','{"userId":2,"roleId":56,"intimacy":0,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"0001-01-01T00:00:00Z"}','{"userId":2,"roleId":56,"intimacy":0.01,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"2026-10-03T20:17:53.963+08:00"}','event=turn ΔI=0.010 ΔT=0.000 ΔS=0.000','user_edit','2026-10-03 20:17:54.275')
+
+2026/10/03 20:17:54 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [35;1mrecord not found
+[0m[33m[154.874ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 56 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 20:17:54 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
+[0m[33m[139.101ms] [34;1m[rows:0][0m SELECT * FROM `role_traits` WHERE user_id = 2 AND role_id = 56 ORDER BY preset_type ASC
+
+2026/10/03 20:17:55 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[138.084ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:17:55 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:52 [35;1mrecord not found
+[0m[33m[133.879ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 56 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 20:17:55 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:69
+[0m[33m[281.617ms] [34;1m[rows:1][0m INSERT INTO `role_mood` (`user_id`,`role_id`,`instant_val`,`instant_intensity`,`instant_emotion`,`short_val`,`short_intensity`,`short_emotion`,`baseline_val`,`baseline_intensity`,`baseline_emotion`,`last_event_at`,`created_at`,`updated_at`) VALUES (2,56,0.0005,0.3,'neutral',0,0.3,'neutral',0,0.4,'neutral','2026-10-03 20:17:55.115','2026-10-03 20:17:55.345','2026-10-03 20:17:55.345')
+
+2026/10/03 20:17:55 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[290.409ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,56,'update','mood','{"instantEmotion":"neutral","instantVal":0}','{"instantEmotion":"neutral","instantVal":0.0005}','instant=0.001 emotion=neutral','dialogue','2026-10-03 20:17:55.653')
+
+2026/10/03 20:38:35 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[429.940ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:38:35 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[133.163ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:38:36 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[145.111ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:38:42 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[135.240ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'huangchangjun' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 20:38:43 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[276.965ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 20:38:42.991',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 20:38:43.055' WHERE id = 2
+
+2026/10/03 20:41:32 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[133.913ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:41:33 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[134.089ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:41:35 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[138.521ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:41:35 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[137.133ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:41:35 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[133.100ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:41:36 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[133.770ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:41:36 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[146.598ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:41:36 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[139.268ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:41:50 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[134.937ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:41:50 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:59
+[0m[33m[132.773ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:41:50 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:64
+[0m[33m[273.997ms] [34;1m[rows:1][0m UPDATE `role_relationship` SET `co_days`=0,`intimacy`=1,`satisfaction`=0,`trust`=0,`updated_at`='2026-10-03 20:41:50.753' WHERE user_id = 2 AND role_id = 3
+
+2026/10/03 20:41:51 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[277.436ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,3,'update','relationship','{"userId":2,"roleId":3,"intimacy":1,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"2026-10-02T12:06:14.061+08:00"}','{"userId":2,"roleId":3,"intimacy":1,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"0001-01-01T00:00:00Z"}','event=turn ΔI=0.010 ΔT=0.000 ΔS=0.000','user_edit','2026-10-03 20:41:51.037')
+
+2026/10/03 20:41:51 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27
+[0m[33m[148.703ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 20:41:51 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
+[0m[33m[138.175ms] [34;1m[rows:3][0m SELECT * FROM `role_traits` WHERE user_id = 2 AND role_id = 3 ORDER BY preset_type ASC
+
+2026/10/03 20:41:51 [32mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36
+[0m[33m[137.539ms] [34;1m[rows:1][0m SELECT * FROM `role_active_preset` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_active_preset`.`user_id` LIMIT 1
+
+2026/10/03 20:41:52 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[129.448ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:41:52 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:52
+[0m[33m[131.281ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 20:41:52 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:56
+[0m[33m[289.706ms] [34;1m[rows:1][0m UPDATE `role_mood` SET `baseline_emotion`='neutral',`baseline_intensity`=0.4,`baseline_val`=0,`instant_emotion`='neutral',`instant_intensity`=1,`instant_val`=0.11000000000000007,`last_event_at`='2026-10-03 20:41:52.151',`short_emotion`='neutral',`short_intensity`=0.3,`short_val`=0,`updated_at`='2026-10-03 20:41:52.36' WHERE user_id = 2 AND role_id = 3
+
+2026/10/03 20:41:52 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[278.699ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,3,'update','mood','{"instantEmotion":"neutral","instantVal":0.05}','{"instantEmotion":"neutral","instantVal":0.11000000000000007}','instant=0.110 emotion=neutral','dialogue','2026-10-03 20:41:52.673')
+
+2026/10/03 20:42:55 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[136.593ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:53:47 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[172.890ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'caltest161835' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 20:53:47 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[298.193ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 20:53:47.561',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 20:53:47.642' WHERE id = 65
+
+2026/10/03 20:53:48 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[142.203ms] [34;1m[rows:1][0m SELECT * FROM `role` WHERE user_id = '65' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 20:55:06 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[667.545ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:55:06 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:59
+[0m[33m[500.895ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:55:07 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:64 [33mSLOW SQL >= 1s
+[0m[31;1m[1275.012ms] [33m[rows:1][35m UPDATE `role_relationship` SET `co_days`=0,`intimacy`=0.03,`satisfaction`=0,`trust`=0,`updated_at`='2026-10-03 20:55:06.898' WHERE user_id = 65 AND role_id = 56[0m
+
+2026/10/03 20:55:08 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [33mSLOW SQL >= 1s
+[0m[31;1m[1629.994ms] [33m[rows:1][35m SELECT * FROM `role_mood` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_mood`.`user_id` LIMIT 1[0m
+
+2026/10/03 20:55:08 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
+[0m[33m[558.301ms] [34;1m[rows:0][0m SELECT * FROM `role_traits` WHERE user_id = 65 AND role_id = 56 ORDER BY preset_type ASC
+
+2026/10/03 20:55:08 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24 [33mSLOW SQL >= 1s
+[0m[31;1m[1098.025ms] [33m[rows:1][35m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (65,56,'update','relationship','{"userId":65,"roleId":56,"intimacy":0.02,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"2026-10-03T20:03:57.144+08:00"}','{"userId":65,"roleId":56,"intimacy":0.03,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"0001-01-01T00:00:00Z"}','event=turn ΔI=0.010 ΔT=0.000 ΔS=0.000','user_edit','2026-10-03 20:55:08.133')[0m
+
+2026/10/03 20:55:09 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[556.628ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 20:55:09 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:52
+[0m[33m[678.849ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 65 AND role_id = 56 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 20:55:11 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:56 [33mSLOW SQL >= 1s
+[0m[31;1m[1254.330ms] [33m[rows:1][35m UPDATE `role_mood` SET `baseline_emotion`='neutral',`baseline_intensity`=0.4,`baseline_val`=0,`instant_emotion`='neutral',`instant_intensity`=0.3,`instant_val`=0.0015,`last_event_at`='2026-10-03 20:55:09.299',`short_emotion`='neutral',`short_intensity`=0.3,`short_val`=0,`updated_at`='2026-10-03 20:55:10.271' WHERE user_id = 65 AND role_id = 56[0m
+
+2026/10/03 20:55:11 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[585.820ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (65,56,'update','mood','{"instantEmotion":"neutral","instantVal":0.001}','{"instantEmotion":"neutral","instantVal":0.0015}','instant=0.002 emotion=neutral','dialogue','2026-10-03 20:55:11.589')
+
+2026/10/03 21:10:04 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[401.235ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'caltest161835' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 21:10:04 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[276.922ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 21:10:04.413',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 21:10:04.476' WHERE id = 65
+
+2026/10/03 21:10:16 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[665.939ms] [34;1m[rows:1][0m SELECT * FROM `role` WHERE user_id = '65' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 21:17:42 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[148.206ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'caltest161835' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 21:17:43 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[292.977ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 21:17:42.935',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 21:17:43.018' WHERE id = 65
+
+2026/10/03 21:18:41 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[303.344ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'caltest161835' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 21:18:42 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[278.586ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 21:18:42.055',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 21:18:42.124' WHERE id = 65
+
+2026/10/03 21:31:20 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[471.157ms] [34;1m[rows:1][0m SELECT * FROM `role` WHERE user_id = '65' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 21:57:35 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[514.507ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'huangchangjun' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 21:57:35 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[322.182ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 21:57:35.586',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 21:57:35.662' WHERE id = 2
+
+2026/10/03 21:57:36 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[153.263ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 21:58:28 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[156.873ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 21:58:28 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:59
+[0m[33m[151.951ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 21:58:29 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:64
+[0m[33m[318.974ms] [34;1m[rows:1][0m UPDATE `role_relationship` SET `co_days`=0,`intimacy`=1,`satisfaction`=0,`trust`=0,`updated_at`='2026-10-03 21:58:28.792' WHERE user_id = 2 AND role_id = 3
+
+2026/10/03 21:58:29 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[327.883ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,3,'update','relationship','{"userId":2,"roleId":3,"intimacy":1,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"2026-10-03T20:41:50.753+08:00"}','{"userId":2,"roleId":3,"intimacy":1,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"0001-01-01T00:00:00Z"}','event=turn ΔI=0.010 ΔT=0.000 ΔS=0.000','user_edit','2026-10-03 21:58:29.138')
+
+2026/10/03 21:58:29 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27
+[0m[33m[170.546ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 21:58:29 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
+[0m[33m[169.815ms] [34;1m[rows:3][0m SELECT * FROM `role_traits` WHERE user_id = 2 AND role_id = 3 ORDER BY preset_type ASC
+
+2026/10/03 21:58:30 [32mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36
+[0m[33m[166.106ms] [34;1m[rows:1][0m SELECT * FROM `role_active_preset` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_active_preset`.`user_id` LIMIT 1
+
+2026/10/03 21:58:30 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[165.559ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 21:58:30 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:52
+[0m[33m[160.962ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 21:58:30 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:56
+[0m[33m[317.094ms] [34;1m[rows:1][0m UPDATE `role_mood` SET `baseline_emotion`='neutral',`baseline_intensity`=0.4,`baseline_val`=0,`instant_emotion`='neutral',`instant_intensity`=1,`instant_val`=0.11000000000000007,`last_event_at`='2026-10-03 21:58:30.299',`short_emotion`='neutral',`short_intensity`=0.3,`short_val`=0,`updated_at`='2026-10-03 21:58:30.561' WHERE user_id = 2 AND role_id = 3
+
+2026/10/03 21:58:31 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[318.820ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,3,'update','mood','{"instantEmotion":"neutral","instantVal":0.11}','{"instantEmotion":"neutral","instantVal":0.11000000000000007}','instant=0.110 emotion=neutral','dialogue','2026-10-03 21:58:30.905')
+
+2026/10/03 21:59:15 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[158.964ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 21:59:15 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:59
+[0m[33m[163.505ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 21:59:15 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:64
+[0m[33m[332.665ms] [34;1m[rows:1][0m UPDATE `role_relationship` SET `co_days`=0,`intimacy`=1,`satisfaction`=0,`trust`=0,`updated_at`='2026-10-03 21:59:15.447' WHERE user_id = 2 AND role_id = 3
+
+2026/10/03 21:59:16 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[314.481ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,3,'update','relationship','{"userId":2,"roleId":3,"intimacy":1,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"2026-10-03T21:58:28.792+08:00"}','{"userId":2,"roleId":3,"intimacy":1,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"0001-01-01T00:00:00Z"}','event=turn ΔI=0.010 ΔT=0.000 ΔS=0.000','user_edit','2026-10-03 21:59:15.781')
+
+2026/10/03 21:59:16 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27
+[0m[33m[160.524ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 21:59:16 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
+[0m[33m[159.046ms] [34;1m[rows:3][0m SELECT * FROM `role_traits` WHERE user_id = 2 AND role_id = 3 ORDER BY preset_type ASC
+
+2026/10/03 21:59:16 [32mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36
+[0m[33m[160.769ms] [34;1m[rows:1][0m SELECT * FROM `role_active_preset` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_active_preset`.`user_id` LIMIT 1
+
+2026/10/03 21:59:16 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[154.046ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 21:59:17 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:52
+[0m[33m[152.926ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 21:59:17 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:56
+[0m[33m[327.532ms] [34;1m[rows:1][0m UPDATE `role_mood` SET `baseline_emotion`='neutral',`baseline_intensity`=0.4,`baseline_val`=0,`instant_emotion`='neutral',`instant_intensity`=1,`instant_val`=0.05000000000000006,`last_event_at`='2026-10-03 21:59:16.931',`short_emotion`='neutral',`short_intensity`=0.3,`short_val`=0,`updated_at`='2026-10-03 21:59:17.193' WHERE user_id = 2 AND role_id = 3
+
+2026/10/03 21:59:17 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[309.972ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,3,'update','mood','{"instantEmotion":"neutral","instantVal":0.11}','{"instantEmotion":"neutral","instantVal":0.05000000000000006}','instant=0.050 emotion=neutral','dialogue','2026-10-03 21:59:17.532')
+
+2026/10/03 22:01:09 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[167.959ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'huangchangjun' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 22:01:09 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[334.204ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 22:01:09.342',`last_login_ip`='::1',`updated_at`='2026-10-03 22:01:09.419' WHERE id = 2
+
+2026/10/03 22:01:10 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[399.462ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 22:03:48 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[155.749ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'huangchangjun' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 22:03:48 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[324.194ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 22:03:48.213',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 22:03:48.295' WHERE id = 2
+
+2026/10/03 22:03:48 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[164.436ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 22:04:33 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[166.185ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 22:04:33 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:59
+[0m[33m[162.966ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 22:04:34 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:64
+[0m[33m[311.429ms] [34;1m[rows:1][0m UPDATE `role_relationship` SET `co_days`=0,`intimacy`=1,`satisfaction`=0,`trust`=0,`updated_at`='2026-10-03 22:04:33.953' WHERE user_id = 2 AND role_id = 3
+
+2026/10/03 22:04:34 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[324.372ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,3,'update','relationship','{"userId":2,"roleId":3,"intimacy":1,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"2026-10-03T21:59:15.447+08:00"}','{"userId":2,"roleId":3,"intimacy":1,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"0001-01-01T00:00:00Z"}','event=turn ΔI=0.010 ΔT=0.000 ΔS=0.000','user_edit','2026-10-03 22:04:34.299')
+
+2026/10/03 22:04:34 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27
+[0m[33m[167.608ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 22:04:34 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
+[0m[33m[168.927ms] [34;1m[rows:3][0m SELECT * FROM `role_traits` WHERE user_id = 2 AND role_id = 3 ORDER BY preset_type ASC
+
+2026/10/03 22:04:35 [32mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36
+[0m[33m[155.315ms] [34;1m[rows:1][0m SELECT * FROM `role_active_preset` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_active_preset`.`user_id` LIMIT 1
+
+2026/10/03 22:04:35 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[160.100ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 22:04:35 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:52
+[0m[33m[180.034ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 22:04:35 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:56
+[0m[33m[320.629ms] [34;1m[rows:1][0m UPDATE `role_mood` SET `baseline_emotion`='neutral',`baseline_intensity`=0.4,`baseline_val`=0,`instant_emotion`='neutral',`instant_intensity`=1,`instant_val`=0.11000000000000007,`last_event_at`='2026-10-03 22:04:35.357',`short_emotion`='neutral',`short_intensity`=0.3,`short_val`=0,`updated_at`='2026-10-03 22:04:35.64' WHERE user_id = 2 AND role_id = 3
+
+2026/10/03 22:04:36 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[336.169ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,3,'update','mood','{"instantEmotion":"neutral","instantVal":0.05}','{"instantEmotion":"neutral","instantVal":0.11000000000000007}','instant=0.110 emotion=neutral','dialogue','2026-10-03 22:04:35.976')
+
+2026/10/03 22:07:40 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
+[0m[33m[164.146ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'huangchangjun' ORDER BY `user`.`id` LIMIT 1
+
+2026/10/03 22:07:40 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
+[0m[33m[315.984ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-10-03 22:07:40.453',`last_login_ip`='127.0.0.1',`updated_at`='2026-10-03 22:07:40.534' WHERE id = 2
+
+2026/10/03 22:07:41 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
+[0m[33m[166.716ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '2' AND status = 1 ORDER BY created_at ASC
+
+2026/10/03 22:09:38 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[189.514ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 22:09:39 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:59
+[0m[33m[188.496ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 22:09:39 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:64
+[0m[33m[333.287ms] [34;1m[rows:1][0m UPDATE `role_relationship` SET `co_days`=0,`intimacy`=1,`satisfaction`=0,`trust`=0,`updated_at`='2026-10-03 22:09:39.187' WHERE user_id = 2 AND role_id = 3
+
+2026/10/03 22:09:39 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[361.929ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,3,'update','relationship','{"userId":2,"roleId":3,"intimacy":1,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"2026-10-03T22:04:33.953+08:00"}','{"userId":2,"roleId":3,"intimacy":1,"trust":0,"satisfaction":0,"coDays":0,"updatedAt":"0001-01-01T00:00:00Z"}','event=turn ΔI=0.010 ΔT=0.000 ΔS=0.000','user_edit','2026-10-03 22:09:39.516')
+
+2026/10/03 22:09:40 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27
+[0m[33m[532.306ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 22:09:40 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
+[0m[33m[157.406ms] [34;1m[rows:3][0m SELECT * FROM `role_traits` WHERE user_id = 2 AND role_id = 3 ORDER BY preset_type ASC
+
+2026/10/03 22:09:40 [32mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36
+[0m[33m[159.186ms] [34;1m[rows:1][0m SELECT * FROM `role_active_preset` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_active_preset`.`user_id` LIMIT 1
+
+2026/10/03 22:09:40 [32mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28
+[0m[33m[183.886ms] [34;1m[rows:1][0m SELECT * FROM `role_relationship` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_relationship`.`user_id` LIMIT 1
+
+2026/10/03 22:09:41 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:52
+[0m[33m[164.328ms] [34;1m[rows:1][0m SELECT * FROM `role_mood` WHERE user_id = 2 AND role_id = 3 ORDER BY `role_mood`.`user_id` LIMIT 1
+
+2026/10/03 22:09:41 [32mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:56
+[0m[33m[333.005ms] [34;1m[rows:1][0m UPDATE `role_mood` SET `baseline_emotion`='neutral',`baseline_intensity`=0.4,`baseline_val`=0,`instant_emotion`='neutral',`instant_intensity`=1,`instant_val`=0.11000000000000007,`last_event_at`='2026-10-03 22:09:40.86',`short_emotion`='neutral',`short_intensity`=0.3,`short_val`=0,`updated_at`='2026-10-03 22:09:41.107' WHERE user_id = 2 AND role_id = 3
+
+2026/10/03 22:09:41 [32mE:/Go/work-self/workspace/echo-core/repository/role_core_audit_log_repository.go:24
+[0m[33m[340.526ms] [34;1m[rows:1][0m INSERT INTO `role_core_audit_log` (`user_id`,`role_id`,`action`,`target_type`,`before_json`,`after_json`,`delta_summary`,`trigger_event`,`created_at`) VALUES (2,3,'update','mood','{"instantEmotion":"neutral","instantVal":0.11}','{"instantEmotion":"neutral","instantVal":0.11000000000000007}','instant=0.110 emotion=neutral','dialogue','2026-10-03 22:09:41.475')

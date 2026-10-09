@@ -1,65 +1,65 @@
-2026/09/16 09:13:10 ==== [db] host=8.130.81.41 port=3306 name=huangchangjun user=root slowThreshold=1s logLevel=info ====
-2026/09/16 09:13:10 ==== [db] event=connected latency=397ms ====
+2026/09/25 08:36:01 ==== [db] host=8.130.81.41 port=3306 name=huangchangjun user=root slowThreshold=1s logLevel=info ====
+2026/09/25 08:36:02 ==== [db] event=connected latency=900ms ====
 
-2026/09/16 09:13:10 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[53.190ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:02 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[217.376ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:10 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[124.800ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:02 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[517.782ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:10 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[138.830ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'file' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:03 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[370.060ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'file' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:10 [32m
-[0m[33m[28.551ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:03 [32m
+[0m[33m[90.782ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[144.938ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:03 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[307.223ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[389.693ms] [34;1m[rows:-][0m SELECT * FROM `file` LIMIT 1
+2026/09/25 08:36:03 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[229.596ms] [34;1m[rows:-][0m SELECT * FROM `file` LIMIT 1
 
-2026/09/16 09:13:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[105.548ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'file' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:04 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[270.155ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'file' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[79.780ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:04 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[161.387ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[282.405ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:04 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[374.125ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:12 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[109.889ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'file' AND index_name = 'idx_file_role_id'
+2026/09/25 08:36:05 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[320.988ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'file' AND index_name = 'idx_file_role_id'
 
-2026/09/16 09:13:12 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[90.337ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:05 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[150.102ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:12 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[61.712ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:05 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[347.285ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:12 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[141.132ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:06 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[485.546ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:12 [32m
-[0m[33m[51.113ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:06 [32m
+[0m[33m[377.321ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:12 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[353.209ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:06 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[469.071ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:12 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[92.415ms] [34;1m[rows:-][0m SELECT * FROM `user` LIMIT 1
+2026/09/25 08:36:07 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[240.949ms] [34;1m[rows:-][0m SELECT * FROM `user` LIMIT 1
 
-2026/09/16 09:13:12 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[95.461ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'user' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:07 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[259.224ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'user' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:13 [32m
-[0m[33m[47.168ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:07 [32m
+[0m[33m[236.839ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:13 [32m
-[0m[33m[121.071ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:08 [32m
+[0m[33m[361.356ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:13 [32m
-[0m[33m[95.412ms] [34;1m[rows:3][0m 
+2026/09/25 08:36:08 [32m
+[0m[33m[338.048ms] [34;1m[rows:3][0m 
 SELECT
 	TABLE_NAME,
 	COLUMN_NAME,
@@ -74,101 +74,101 @@ ORDER BY
 	INDEX_NAME,
 	SEQ_IN_INDEX
 
-2026/09/16 09:13:13 [32m
-[0m[33m[123.595ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:08 [32m
+[0m[33m[225.115ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:13 [32m
-[0m[33m[168.844ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:08 [32m
+[0m[33m[385.104ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:13 [32m
-[0m[33m[77.400ms] [34;1m[rows:-][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE constraint_schema = 'huangchangjun' AND table_name = 'user' AND constraint_name = 'uni_user_username'
+2026/09/25 08:36:09 [32m
+[0m[33m[226.104ms] [34;1m[rows:-][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE constraint_schema = 'huangchangjun' AND table_name = 'user' AND constraint_name = 'uni_user_username'
 
-2026/09/16 09:13:13 [32m
-[0m[33m[34.976ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:09 [32m
+[0m[33m[416.960ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:13 [32m
-[0m[33m[62.707ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:09 [32m
+[0m[33m[302.156ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:13 [32m
-[0m[33m[87.893ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_username'
+2026/09/25 08:36:10 [32m
+[0m[33m[497.650ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_username'
 
-2026/09/16 09:13:13 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[47.379ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:10 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[171.351ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:13 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[78.747ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:10 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[202.034ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[167.699ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_username'
+2026/09/25 08:36:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[231.258ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_username'
 
-2026/09/16 09:13:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[160.572ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[144.623ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[96.335ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[261.808ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[100.080ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_email'
+2026/09/25 08:36:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[222.522ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'user' AND index_name = 'idx_user_email'
 
-2026/09/16 09:13:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[47.769ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:11 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[175.401ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[59.399ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:12 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[203.102ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[108.032ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:12 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[249.854ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:14 [32m
-[0m[33m[30.169ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:12 [32m
+[0m[33m[124.817ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[416.911ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:12 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[281.053ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[87.540ms] [34;1m[rows:-][0m SELECT * FROM `role` LIMIT 1
+2026/09/25 08:36:13 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[406.759ms] [34;1m[rows:-][0m SELECT * FROM `role` LIMIT 1
 
-2026/09/16 09:13:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[94.974ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:13 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[217.331ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[30.855ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:13 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[171.749ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[61.342ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:13 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[174.481ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[92.827ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role' AND index_name = 'idx_role_user_id'
+2026/09/25 08:36:13 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[246.110ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role' AND index_name = 'idx_role_user_id'
 
-2026/09/16 09:13:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[187.638ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[191.323ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[155.960ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:14 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[663.591ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[69.375ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[286.159ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:15 [32m
-[0m[33m[29.437ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:15 [32m
+[0m[33m[128.012ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[77.421ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[174.259ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[98.675ms] [34;1m[rows:-][0m SELECT * FROM `recall_memory` LIMIT 1
+2026/09/25 08:36:15 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[285.761ms] [34;1m[rows:-][0m SELECT * FROM `recall_memory` LIMIT 1
 
-2026/09/16 09:13:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[69.536ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:16 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[776.946ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:16 [32m
-[0m[33m[213.121ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:16 [32m
+[0m[33m[123.835ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:16 [32m
-[0m[33m[88.739ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:16 [32m
+[0m[33m[320.924ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:16 [32m
-[0m[33m[118.975ms] [34;1m[rows:4][0m 
+2026/09/25 08:36:17 [32m
+[0m[33m[331.343ms] [34;1m[rows:4][0m 
 SELECT
 	TABLE_NAME,
 	COLUMN_NAME,
@@ -183,503 +183,540 @@ ORDER BY
 	INDEX_NAME,
 	SEQ_IN_INDEX
 
-2026/09/16 09:13:16 [32m
-[0m[33m[37.540ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:17 [32m
+[0m[33m[149.119ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:16 [32m
-[0m[33m[75.219ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:17 [32m
+[0m[33m[168.748ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:16 [32m
-[0m[33m[85.464ms] [34;1m[rows:-][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE constraint_schema = 'huangchangjun' AND table_name = 'recall_memory' AND constraint_name = 'uni_recall_memory_memory_id'
+2026/09/25 08:36:17 [32m
+[0m[33m[237.722ms] [34;1m[rows:-][0m SELECT count(*) FROM INFORMATION_SCHEMA.table_constraints WHERE constraint_schema = 'huangchangjun' AND table_name = 'recall_memory' AND constraint_name = 'uni_recall_memory_memory_id'
 
-2026/09/16 09:13:16 [32m
-[0m[33m[43.969ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:17 [32m
+[0m[33m[95.016ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:17 [32m
-[0m[33m[151.655ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:18 [32m
+[0m[33m[246.516ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:17 [32m
-[0m[33m[72.990ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_memory_memory_id'
+2026/09/25 08:36:18 [32m
+[0m[33m[203.322ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_memory_memory_id'
 
-2026/09/16 09:13:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[64.522ms] [34;1m[rows:0][0m ALTER TABLE `recall_memory` MODIFY COLUMN `subjective_desc` text COMMENT '记忆主观描述(<=1000)'
+2026/09/25 08:36:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[227.583ms] [34;1m[rows:0][0m ALTER TABLE `recall_memory` MODIFY COLUMN `subjective_desc` text COMMENT '记忆主观描述(<=1000)'
 
-2026/09/16 09:13:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[30.632ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[253.278ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[83.585ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[278.507ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[88.396ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_memory_memory_id'
+2026/09/25 08:36:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[242.088ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_memory_memory_id'
 
-2026/09/16 09:13:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[48.274ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[210.387ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[86.897ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[292.999ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[92.699ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_user_role'
+2026/09/25 08:36:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[276.244ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_memory' AND index_name = 'idx_recall_user_role'
 
-2026/09/16 09:13:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[90.392ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[110.667ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[79.312ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[251.342ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[61.058ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[353.407ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:17 [32m
-[0m[33m[34.860ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:20 [32m
+[0m[33m[108.918ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:17 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[111.125ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[205.128ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[84.860ms] [34;1m[rows:-][0m SELECT * FROM `recall_source_file` LIMIT 1
+2026/09/25 08:36:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[214.680ms] [34;1m[rows:-][0m SELECT * FROM `recall_source_file` LIMIT 1
 
-2026/09/16 09:13:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[98.153ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[270.413ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[145.087ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[126.591ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[105.834ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[303.153ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[78.812ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' AND index_name = 'idx_recall_source_file_memory_id'
+2026/09/25 08:36:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[217.072ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'recall_source_file' AND index_name = 'idx_recall_source_file_memory_id'
 
-2026/09/16 09:13:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[43.691ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[101.489ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[79.967ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[376.923ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[87.270ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[283.379ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:18 [32m
-[0m[33m[40.378ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:23 [32m
+[0m[33m[95.255ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[63.808ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[502.087ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[81.664ms] [34;1m[rows:-][0m SELECT * FROM `audit_log` LIMIT 1
+2026/09/25 08:36:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[352.063ms] [34;1m[rows:-][0m SELECT * FROM `audit_log` LIMIT 1
 
-2026/09/16 09:13:18 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[129.852ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[402.029ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[52.826ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[198.063ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[59.980ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[407.353ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[76.449ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_user_id'
+2026/09/25 08:36:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[522.229ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_user_id'
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[39.047ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[189.952ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[67.930ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[630.780ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[76.487ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_action'
+2026/09/25 08:36:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[726.967ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_action'
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[40.077ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[192.897ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[63.534ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[419.209ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[167.792ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_target_type'
+2026/09/25 08:36:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[304.802ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_target_type'
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[39.199ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[81.121ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[78.793ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[300.133ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[78.276ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_target_id'
+2026/09/25 08:36:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[182.455ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_target_id'
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[32.142ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[110.455ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:19 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[84.029ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[278.388ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[97.868ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_ip'
+2026/09/25 08:36:29 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[203.395ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_ip'
 
-2026/09/16 09:13:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[53.294ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:29 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[106.941ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[84.671ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:29 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[195.706ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[147.674ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_status'
+2026/09/25 08:36:29 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[216.379ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_status'
 
-2026/09/16 09:13:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[41.822ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:29 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[103.276ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[90.378ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:30 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[209.334ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[74.140ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_created_at'
+2026/09/25 08:36:30 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[558.257ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'audit_log' AND index_name = 'idx_audit_log_created_at'
 
-2026/09/16 09:13:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[46.367ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:30 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[112.664ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[73.436ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:30 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[207.372ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:20 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[96.375ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_persona' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:31 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[209.802ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_persona' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:20 [32m
-[0m[33m[43.060ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:31 [32m
+[0m[33m[77.987ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[220.881ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:31 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[436.296ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[95.876ms] [34;1m[rows:-][0m SELECT * FROM `role_persona` LIMIT 1
+2026/09/25 08:36:31 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[184.722ms] [34;1m[rows:-][0m SELECT * FROM `role_persona` LIMIT 1
 
-2026/09/16 09:13:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[83.507ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_persona' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:32 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[316.239ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_persona' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[34.372ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:32 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[94.610ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[64.966ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:32 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[203.290ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[97.453ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:32 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[206.475ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:21 [32m
-[0m[33m[53.582ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:32 [32m
+[0m[33m[92.836ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[210.298ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:32 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[176.645ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[108.399ms] [34;1m[rows:-][0m SELECT * FROM `role_traits` LIMIT 1
+2026/09/25 08:36:33 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[184.483ms] [34;1m[rows:-][0m SELECT * FROM `role_traits` LIMIT 1
 
-2026/09/16 09:13:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[119.334ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:33 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[183.009ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:21 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[54.065ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:33 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[112.143ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[69.934ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:33 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[172.361ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[108.382ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_mood' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:33 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[352.763ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_mood' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:22 [32m
-[0m[33m[31.011ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:34 [32m
+[0m[33m[97.234ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[181.261ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:34 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[246.976ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[88.899ms] [34;1m[rows:-][0m SELECT * FROM `role_mood` LIMIT 1
+2026/09/25 08:36:34 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[200.018ms] [34;1m[rows:-][0m SELECT * FROM `role_mood` LIMIT 1
 
-2026/09/16 09:13:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[109.796ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_mood' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:34 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[339.403ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_mood' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[47.064ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:34 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[76.983ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[82.130ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:35 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[552.227ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[81.434ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:35 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[385.717ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:22 [32m
-[0m[33m[41.806ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:35 [32m
+[0m[33m[91.396ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:22 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[140.723ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:36 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[230.968ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[121.252ms] [34;1m[rows:-][0m SELECT * FROM `role_belief` LIMIT 1
+2026/09/25 08:36:36 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[221.416ms] [34;1m[rows:-][0m SELECT * FROM `role_belief` LIMIT 1
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[82.493ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:36 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[258.571ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[50.079ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:36 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[100.094ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[70.358ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:36 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[207.608ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[80.121ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' AND index_name = 'idx_belief_user_role'
+2026/09/25 08:36:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[202.615ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' AND index_name = 'idx_belief_user_role'
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[37.540ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[84.020ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[80.760ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[197.148ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[154.981ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' AND index_name = 'idx_role_belief_user_confirmed'
+2026/09/25 08:36:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[208.093ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_belief' AND index_name = 'idx_role_belief_user_confirmed'
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[71.756ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[107.362ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[92.372ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:37 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[261.540ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[82.736ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_relationship' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:38 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[192.283ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_relationship' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:23 [32m
-[0m[33m[46.907ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:38 [32m
+[0m[33m[102.881ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:23 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[89.118ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:38 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[273.186ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[72.895ms] [34;1m[rows:-][0m SELECT * FROM `role_relationship` LIMIT 1
+2026/09/25 08:36:38 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[245.591ms] [34;1m[rows:-][0m SELECT * FROM `role_relationship` LIMIT 1
 
-2026/09/16 09:13:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[240.263ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_relationship' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[214.155ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_relationship' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[53.961ms] [34;1m[rows:0][0m ALTER TABLE `role_relationship` MODIFY COLUMN `intimacy` decimal(4,3) DEFAULT 0 COMMENT '亲密度 [0,1]'
+2026/09/25 08:36:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[112.341ms] [34;1m[rows:0][0m ALTER TABLE `role_relationship` MODIFY COLUMN `intimacy` decimal(4,3) DEFAULT 0 COMMENT '亲密度 [0,1]'
 
-2026/09/16 09:13:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[55.971ms] [34;1m[rows:0][0m ALTER TABLE `role_relationship` MODIFY COLUMN `trust` decimal(4,3) DEFAULT 0 COMMENT '信任度 [0,1]'
+2026/09/25 08:36:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[115.335ms] [34;1m[rows:0][0m ALTER TABLE `role_relationship` MODIFY COLUMN `trust` decimal(4,3) DEFAULT 0 COMMENT '信任度 [0,1]'
 
-2026/09/16 09:13:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[71.657ms] [34;1m[rows:0][0m ALTER TABLE `role_relationship` MODIFY COLUMN `satisfaction` decimal(4,3) DEFAULT 0 COMMENT '满意度 [0,1]'
+2026/09/25 08:36:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[117.558ms] [34;1m[rows:0][0m ALTER TABLE `role_relationship` MODIFY COLUMN `satisfaction` decimal(4,3) DEFAULT 0 COMMENT '满意度 [0,1]'
 
-2026/09/16 09:13:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[53.592ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[105.328ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[85.006ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:39 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[228.034ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[86.892ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:40 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[351.218ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:24 [32m
-[0m[33m[44.107ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:40 [32m
+[0m[33m[104.238ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:24 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[183.524ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:40 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[291.744ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[88.364ms] [34;1m[rows:-][0m SELECT * FROM `role_core_audit_log` LIMIT 1
+2026/09/25 08:36:40 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[233.384ms] [34;1m[rows:-][0m SELECT * FROM `role_core_audit_log` LIMIT 1
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[79.174ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:40 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[253.462ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[34.077ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:41 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[105.101ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[73.570ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:41 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[237.376ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[85.111ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND index_name = 'idx_audit_user_role_time'
+2026/09/25 08:36:41 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[211.980ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND index_name = 'idx_audit_user_role_time'
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[52.703ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:41 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[126.115ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[106.030ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:41 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[230.299ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[140.996ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND index_name = 'idx_role_core_audit_log_action'
+2026/09/25 08:36:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[213.395ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND index_name = 'idx_role_core_audit_log_action'
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[33.106ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[140.686ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[70.512ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[213.115ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[82.119ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND index_name = 'idx_role_core_audit_log_target_type'
+2026/09/25 08:36:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[217.766ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_core_audit_log' AND index_name = 'idx_role_core_audit_log_target_type'
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[68.121ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:42 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[119.416ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:25 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[107.725ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:43 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[346.933ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[73.370ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:43 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[226.129ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:26 [32m
-[0m[33m[31.783ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:43 [32m
+[0m[33m[121.612ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[68.278ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:43 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[275.358ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[134.888ms] [34;1m[rows:-][0m SELECT * FROM `role_feedback` LIMIT 1
+2026/09/25 08:36:43 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[188.751ms] [34;1m[rows:-][0m SELECT * FROM `role_feedback` LIMIT 1
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[97.099ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[201.768ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[70.564ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[118.934ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[98.242ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[352.307ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[76.856ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' AND index_name = 'idx_feedback_user_role_time'
+2026/09/25 08:36:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[202.145ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' AND index_name = 'idx_feedback_user_role_time'
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[61.733ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:44 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[119.811ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[80.445ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:45 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[319.177ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[60.967ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' AND index_name = 'idx_role_feedback_message_id'
+2026/09/25 08:36:45 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[310.284ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_feedback' AND index_name = 'idx_role_feedback_message_id'
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[40.637ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:45 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[112.084ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:26 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[102.902ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:45 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[241.677ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[98.512ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_evolution_suggestion' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:46 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[185.213ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_evolution_suggestion' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:27 [32m
-[0m[33m[46.197ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:46 [32m
+[0m[33m[140.246ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[98.336ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:46 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[285.597ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[91.906ms] [34;1m[rows:-][0m SELECT * FROM `role_evolution_suggestion` LIMIT 1
+2026/09/25 08:36:46 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[412.410ms] [34;1m[rows:-][0m SELECT * FROM `role_evolution_suggestion` LIMIT 1
 
-2026/09/16 09:13:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[286.291ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_evolution_suggestion' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:47 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[218.698ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_evolution_suggestion' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[69.754ms] [34;1m[rows:0][0m ALTER TABLE `role_evolution_suggestion` MODIFY COLUMN `confidence` decimal(4,3) DEFAULT 0 COMMENT 'LLM 置信度 [0,1]'
+2026/09/25 08:36:47 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[140.089ms] [34;1m[rows:0][0m ALTER TABLE `role_evolution_suggestion` MODIFY COLUMN `confidence` decimal(4,3) DEFAULT 0 COMMENT 'LLM 置信度 [0,1]'
 
-2026/09/16 09:13:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[49.910ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:47 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[93.216ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[86.519ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:47 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[317.990ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[97.902ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_evolution_suggestion' AND index_name = 'idx_sug_user_role_status_time'
+2026/09/25 08:36:48 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[322.619ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_evolution_suggestion' AND index_name = 'idx_sug_user_role_status_time'
 
-2026/09/16 09:13:27 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[38.059ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:48 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[322.001ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[142.732ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:48 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[288.383ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[102.462ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:49 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[395.111ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:28 [32m
-[0m[33m[34.373ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:49 [32m
+[0m[33m[101.188ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[115.518ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:49 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[164.324ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[73.695ms] [34;1m[rows:-][0m SELECT * FROM `role_ocean_preset` LIMIT 1
+2026/09/25 08:36:49 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[541.214ms] [34;1m[rows:-][0m SELECT * FROM `role_ocean_preset` LIMIT 1
 
-2026/09/16 09:13:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[89.906ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' ORDER BY ORDINAL_POSITION
+2026/09/25 08:36:50 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[209.800ms] [34;1m[rows:-][0m SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' ORDER BY ORDINAL_POSITION
 
-2026/09/16 09:13:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[52.475ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:50 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[111.640ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[72.697ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:50 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[220.692ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:28 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
-[0m[33m[146.502ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND index_name = 'idx_user_key'
-2026/09/16 09:13:28 ==== [db] event=migrate:ok latency=18116ms ====
+2026/09/25 08:36:50 [32mE:/Go/work-self/workspace/echo-core/config/database.go:109
+[0m[33m[349.733ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND index_name = 'idx_user_role_key'
+2026/09/25 08:36:50 ==== [db] event=migrate:ok latency=48540ms ====
 
-2026/09/16 09:13:28 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:37
-[0m[33m[42.967ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:50 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:37
+[0m[33m[105.573ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:28 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:37
-[0m[33m[93.685ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:51 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:37
+[0m[33m[320.942ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:28 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:37
-[0m[33m[69.753ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'personas' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:51 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:37
+[0m[33m[279.426ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'personas' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:43
-[0m[33m[43.337ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:51 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:43
+[0m[33m[118.315ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:43
-[0m[33m[113.106ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:51 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:43
+[0m[33m[238.483ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:43
-[0m[33m[98.870ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'personas_backup_202608' AND table_type = 'BASE TABLE'
-2026/09/16 09:13:29 ==== [migrate.personas] status=skip reason=backup exists, migration already done ====
+2026/09/25 08:36:52 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_personas_pk.go:43
+[0m[33m[317.445ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'personas_backup_202608' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:52 ==== [migrate.personas] status=skip reason=backup exists, migration already done ====
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:41
-[0m[33m[30.551ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:52 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:41
+[0m[33m[228.808ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:41
-[0m[33m[76.679ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:53 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:41
+[0m[33m[785.292ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:41
-[0m[33m[138.222ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:53 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:41
+[0m[33m[355.340ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits' AND table_type = 'BASE TABLE'
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:47
-[0m[33m[50.603ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:53 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:47
+[0m[33m[188.956ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:47
-[0m[33m[73.284ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:53 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:47
+[0m[33m[279.820ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:47
-[0m[33m[82.601ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits_backup_202609' AND table_type = 'BASE TABLE'
-2026/09/16 09:13:29 ==== [migrate.role_traits] status=skip reason=backup exists, migration already done ====
+2026/09/25 08:36:54 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_traits_pk.go:47
+[0m[33m[235.449ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_traits_backup_202609' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:54 ==== [migrate.role_traits] status=skip reason=backup exists, migration already done ====
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_active_preset.go:38
-[0m[33m[37.284ms] [34;1m[rows:-][0m SELECT DATABASE()
+2026/09/25 08:36:54 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_active_preset.go:38
+[0m[33m[119.048ms] [34;1m[rows:-][0m SELECT DATABASE()
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_active_preset.go:38
-[0m[33m[111.013ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+2026/09/25 08:36:54 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_active_preset.go:38
+[0m[33m[170.864ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
 
-2026/09/16 09:13:29 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_active_preset.go:38
-[0m[33m[88.701ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_active_preset' AND table_type = 'BASE TABLE'
-2026/09/16 09:13:29 ==== [migrate.role_active_preset] status=skip reason=table exists ====
-2026/09/16 09:13:29 [SessionStore] 初始化全局 SessionStore | ttl: 0s
-2026/09/16 09:13:29 ==== [config] env=debug port=8080 db=root@tcp(8.130.81.41:3306)/huangchangjun pythonBase=http://localhost:8000 qiniu=see QINIU_* envs trustedProxies=127.0.0.1/32,::1/128 ====
+2026/09/25 08:36:54 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_active_preset.go:38
+[0m[33m[200.822ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_active_preset' AND table_type = 'BASE TABLE'
+2026/09/25 08:36:54 ==== [migrate.role_active_preset] status=skip reason=table exists ====
+
+2026/09/25 08:36:54 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:76
+[0m[33m[160.740ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/09/25 08:36:55 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:76
+[0m[33m[209.967ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/09/25 08:36:55 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:76
+[0m[33m[670.870ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND table_type = 'BASE TABLE'
+
+2026/09/25 08:36:55 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:87
+[0m[33m[187.376ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/09/25 08:36:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:87
+[0m[33m[275.538ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/09/25 08:36:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:87
+[0m[33m[317.796ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND index_name = 'idx_user_key'
+
+2026/09/25 08:36:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:88
+[0m[33m[112.620ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/09/25 08:36:56 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:88
+[0m[33m[284.486ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/09/25 08:36:57 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:88
+[0m[33m[409.778ms] [34;1m[rows:-][0m SELECT count(*) FROM information_schema.statistics WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND index_name = 'idx_user_role_key'
+
+2026/09/25 08:36:57 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:89
+[0m[33m[142.377ms] [34;1m[rows:-][0m SELECT DATABASE()
+
+2026/09/25 08:36:57 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:89
+[0m[33m[228.767ms] [34;1m[rows:1][0m SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'huangchangjun%' ORDER BY SCHEMA_NAME='huangchangjun' DESC,SCHEMA_NAME limit 1
+
+2026/09/25 08:36:57 [32mE:/Go/work-self/workspace/echo-core/scripts/migrate_role_ocean_preset_per_role.go:89
+[0m[33m[169.470ms] [34;1m[rows:-][0m SELECT count(*) FROM INFORMATION_SCHEMA.columns WHERE table_schema = 'huangchangjun' AND table_name = 'role_ocean_preset' AND column_name = 'role_id'
+2026/09/25 08:36:57 ==== [migrate.role_ocean_preset_per_role] status=skip reason=idx_user_role_key active and idx_user_key removed backupTable=role_ocean_preset_backup_202609 ====
+2026/09/25 08:36:57 [SessionStore] 初始化全局 SessionStore | ttl: 0s
+2026/09/25 08:36:57 ==== [config] env=debug port=8080 db=root@tcp(8.130.81.41:3306)/huangchangjun pythonBase=http://localhost:8000 qiniu=see QINIU_* envs trustedProxies=127.0.0.1/32,::1/128 ====
 [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
  - using env:	export GIN_MODE=release
  - using code:	gin.SetMode(gin.ReleaseMode)
 
-2026/09/16 09:13:29 [startup] TRUSTED_PROXIES 已配置: [127.0.0.1/32 ::1/128]
+2026/09/25 08:36:57 [startup] TRUSTED_PROXIES 已配置: [127.0.0.1/32 ::1/128]
 [GIN-debug] GET    /health                   --> echo-core/handlers.(*HealthHandler).Health-fm (5 handlers)
 [GIN-debug] POST   /api/auth/login           --> echo-core/handlers.(*UserHandler).Login-fm (5 handlers)
 [GIN-debug] POST   /api/auth/register        --> echo-core/handlers.(*UserHandler).Register-fm (5 handlers)
 [GIN-debug] POST   /api/auth/checkAccount    --> echo-core/handlers.(*UserHandler).CheckAccount-fm (5 handlers)
 [GIN-debug] POST   /api/auth/check           --> echo-core/handlers.(*UserHandler).Check-fm (5 handlers)
 [GIN-debug] POST   /api/auth/logout          --> echo-core/handlers.(*UserHandler).Logout-fm (5 handlers)
-2026/09/16 09:13:29 ==== [PythonIngestClient] 初始化 | baseURL=http://localhost:8000 timeout=30s ====
+2026/09/25 08:36:57 ==== [PythonIngestClient] 初始化 | baseURL=http://localhost:8000 timeout=30s ====
 [GIN-debug] POST   /api/file/token           --> echo-core/handlers.(*FileHandler).GetUploadTokenHandler-fm (6 handlers)
 [GIN-debug] POST   /api/file/register        --> echo-core/handlers.(*FileHandler).RegisterFileHandler-fm (6 handlers)
 [GIN-debug] GET    /api/file/list            --> echo-core/handlers.(*FileHandler).ListMemoryFilesHandler-fm (6 handlers)
@@ -691,11 +728,11 @@ ORDER BY
 [GIN-debug] GET    /api/role                 --> echo-core/handlers.(*RoleHandler).List-fm (6 handlers)
 [GIN-debug] PUT    /api/role/:id             --> echo-core/handlers.(*RoleHandler).Update-fm (6 handlers)
 [GIN-debug] DELETE /api/role/:id             --> echo-core/handlers.(*RoleHandler).Delete-fm (6 handlers)
-2026/09/16 09:13:29 [rid=empty uid=empty] [ChatService] 初始化（Python 透传模式）
-2026/09/16 09:13:29 ==== [PythonChatClient] 初始化 | baseURL=http://localhost:8000 timeout=120s ====
+2026/09/25 08:36:57 [rid=empty uid=empty] [ChatService] 初始化（Python 透传模式）
+2026/09/25 08:36:57 ==== [PythonChatClient] 初始化 | baseURL=http://localhost:8000 timeout=120s ====
 [GIN-debug] POST   /api/chat                 --> echo-core/handlers.(*ChatHandler).Chat-fm (6 handlers)
-2026/09/16 09:13:29 ==== [PythonIngestClient] 初始化 | baseURL=http://localhost:8000 timeout=30s ====
-2026/09/16 09:13:29 ==== [PythonMemoryClient] 初始化 | baseURL=http://localhost:8000 timeout=60s ====
+2026/09/25 08:36:57 ==== [PythonIngestClient] 初始化 | baseURL=http://localhost:8000 timeout=30s ====
+2026/09/25 08:36:57 ==== [PythonMemoryClient] 初始化 | baseURL=http://localhost:8000 timeout=60s ====
 [GIN-debug] POST   /api/memory/apply         --> echo-core/handlers.(*RecallMemoryHandler).Apply-fm (6 handlers)
 [GIN-debug] POST   /api/memory/check-topic   --> echo-core/handlers.(*RecallMemoryHandler).CheckTopic-fm (6 handlers)
 [GIN-debug] POST   /api/memory/upload-token  --> echo-core/handlers.(*RecallMemoryHandler).UploadToken-fm (6 handlers)
@@ -733,666 +770,11 @@ ORDER BY
 [GIN-debug] POST   /api/role-core/relationship/event --> echo-core/handlers.(*RoleCoreHandler).AccumulateRelationship-fm (5 handlers)
 [GIN-debug] POST   /api/role-core/suggestions --> echo-core/handlers.(*RoleCoreHandler).CreateSuggestion-fm (5 handlers)
 [GIN-debug] GET    /                         --> main.main.func1 (5 handlers)
-2026/09/16 09:13:29 ==== [server] listen=:8080 version=echo-core ====
+2026/09/25 08:36:57 ==== [server] listen=:8080 version=echo-core ====
 [GIN-debug] Listening and serving HTTP on :8080
-2026/09/16 09:13:43 [rid=8fdadefc-3cb1-4b46-855f-ca42eda3cfd6 uid=empty] [CORS] 跨域放行 | origin=http://localhost:5175 | POST /api/auth/login
-2026/09/16 09:13:43 [rid=8fdadefc-3cb1-4b46-855f-ca42eda3cfd6 uid=empty] [User] Login 入口 | method=POST path=/api/auth/login ip=::1 contentType=application/json
-2026/09/16 09:13:43 [rid=8fdadefc-3cb1-4b46-855f-ca42eda3cfd6 uid=empty] [User] Login 入参 | username=echo_e2e_1789454702 passwordLen=12 ip=::1
-2026/09/16 09:13:43 [rid=8fdadefc-3cb1-4b46-855f-ca42eda3cfd6 uid=empty] [UserService.Login] 入参 | username=echo_e2e_1789454702 passwordLen=12 ip=::1
-
-2026/09/16 09:13:43 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
-[0m[33m[74.593ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'echo_e2e_1789454702' ORDER BY `user`.`id` LIMIT 1
-2026/09/16 09:13:43 [rid=8fdadefc-3cb1-4b46-855f-ca42eda3cfd6 uid=empty] [Repo.UserRepository.GetByUsername] ok latency=74ms username=echo_e2e_1789454702
-2026/09/16 09:13:43 [SessionStore.Create] ok | userID=60 username=echo_e2e_1789454702 ttl=24h0m0s total=1
-
-2026/09/16 09:13:43 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
-[0m[33m[239.149ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-09-16 09:13:43.19',`last_login_ip`='::1',`updated_at`='2026-09-16 09:13:43.294' WHERE id = 60
-2026/09/16 09:13:43 [rid=8fdadefc-3cb1-4b46-855f-ca42eda3cfd6 uid=empty] [Repo.UserRepository.UpdateLastLogin] SLOW latency=240ms id=60 ip=::1
-2026/09/16 09:13:43 [rid=8fdadefc-3cb1-4b46-855f-ca42eda3cfd6 uid=empty] [UserService.Login] 登录成功 | id=60 username=echo_e2e_1789454702 sid=23467ad0... ip=::1
-2026/09/16 09:13:43 [rid=8fdadefc-3cb1-4b46-855f-ca42eda3cfd6 uid=empty] [User] Login 成功 | username=echo_e2e_1789454702 sid=23467ad0...... userId=60 latency=378ms
-2026/09/16 09:13:43 [rid=8fdadefc-3cb1-4b46-855f-ca42eda3cfd6 uid=empty] [Access] POST /api/auth/login status=200 latency=379ms size=328B ip=::1
-2026/09/16 09:13:45 [rid=e6e960cb-a083-4905-ba6e-78d5dea16502 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/traits
-2026/09/16 09:13:45 [SessionStore.Get] hit | sid=23467ad0...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m58.1139865s
-2026/09/16 09:13:45 [SessionStore.Touch] ok | sid=23467ad0...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:13:45 [rid=e6e960cb-a083-4905-ba6e-78d5dea16502 uid=60] [AuthMiddleware] 鉴权通过 | sid=23467ad07b94b6c9b54d60eb6a88e3e3 uid=60
-
-2026/09/16 09:13:45 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[89.534ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 51 ORDER BY preset_type ASC
-2026/09/16 09:13:45 [rid=e6e960cb-a083-4905-ba6e-78d5dea16502 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=89ms userId=60 roleId=51 count=1.000
-
-2026/09/16 09:13:45 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[69.510ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:13:45 [rid=e6e960cb-a083-4905-ba6e-78d5dea16502 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=69ms userId=60 roleId=51 status=not_set
-
-2026/09/16 09:13:45 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:40
-[0m[33m[190.445ms] [34;1m[rows:1][0m SELECT count(*) FROM `role_ocean_preset` WHERE user_id = 60
-
-2026/09/16 09:13:45 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:30
-[0m[33m[86.222ms] [34;1m[rows:6][0m SELECT * FROM `role_ocean_preset` WHERE user_id = 60 ORDER BY id ASC
-2026/09/16 09:13:45 [rid=e6e960cb-a083-4905-ba6e-78d5dea16502 uid=60] [Repo.RoleOceanPresetRepository.ListByUser] ok latency=86ms userId=60 count=6
-2026/09/16 09:13:45 [rid=e6e960cb-a083-4905-ba6e-78d5dea16502 uid=60] [RoleCore] GetTraits 成功 | roleId=51 count=1 active=companion_default
-2026/09/16 09:13:45 [rid=e6e960cb-a083-4905-ba6e-78d5dea16502 uid=60] [Access] GET /api/role-core/traits status=200 latency=436ms size=2166B ip=::1
-2026/09/16 09:13:51 [rid=9e6b850b-b14e-4b0e-825a-91d6481219de uid=empty] [CORS] 跨域放行 | origin=http://localhost:5175 | POST /api/auth/login
-2026/09/16 09:13:51 [rid=9e6b850b-b14e-4b0e-825a-91d6481219de uid=empty] [User] Login 入口 | method=POST path=/api/auth/login ip=::1 contentType=application/json
-2026/09/16 09:13:51 [rid=9e6b850b-b14e-4b0e-825a-91d6481219de uid=empty] [User] Login 入参 | username=echo_e2e_1789454702 passwordLen=12 ip=::1
-2026/09/16 09:13:51 [rid=9e6b850b-b14e-4b0e-825a-91d6481219de uid=empty] [UserService.Login] 入参 | username=echo_e2e_1789454702 passwordLen=12 ip=::1
-
-2026/09/16 09:13:51 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
-[0m[33m[133.305ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'echo_e2e_1789454702' ORDER BY `user`.`id` LIMIT 1
-2026/09/16 09:13:51 [rid=9e6b850b-b14e-4b0e-825a-91d6481219de uid=empty] [Repo.UserRepository.GetByUsername] ok latency=133ms username=echo_e2e_1789454702
-2026/09/16 09:13:51 [SessionStore.Create] ok | userID=60 username=echo_e2e_1789454702 ttl=24h0m0s total=2
-
-2026/09/16 09:13:52 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
-[0m[33m[374.361ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-09-16 09:13:51.765',`last_login_ip`='::1',`updated_at`='2026-09-16 09:13:51.906' WHERE id = 60
-2026/09/16 09:13:52 [rid=9e6b850b-b14e-4b0e-825a-91d6481219de uid=empty] [Repo.UserRepository.UpdateLastLogin] SLOW latency=374ms id=60 ip=::1
-2026/09/16 09:13:52 [rid=9e6b850b-b14e-4b0e-825a-91d6481219de uid=empty] [UserService.Login] 登录成功 | id=60 username=echo_e2e_1789454702 sid=0a4fa735... ip=::1
-2026/09/16 09:13:52 [rid=9e6b850b-b14e-4b0e-825a-91d6481219de uid=empty] [User] Login 成功 | username=echo_e2e_1789454702 sid=0a4fa735...... userId=60 latency=570ms
-2026/09/16 09:13:52 [rid=9e6b850b-b14e-4b0e-825a-91d6481219de uid=empty] [Access] POST /api/auth/login status=200 latency=570ms size=328B ip=::1
-2026/09/16 09:13:53 [rid=676ee12a-f410-47ca-b05f-2eacc31d7fd7 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/core
-2026/09/16 09:13:53 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m58.073484s
-2026/09/16 09:13:53 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:13:53 [rid=676ee12a-f410-47ca-b05f-2eacc31d7fd7 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:13:53 [rid=af78baab-0ed5-45f3-bad4-1531d6df3f83 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role
-2026/09/16 09:13:53 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=24h0m0s
-2026/09/16 09:13:53 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:13:53 [rid=af78baab-0ed5-45f3-bad4-1531d6df3f83 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:13:53 [rid=af78baab-0ed5-45f3-bad4-1531d6df3f83 uid=60] [Role] List 入口 | method=GET path=/api/role
-2026/09/16 09:13:53 [rid=af78baab-0ed5-45f3-bad4-1531d6df3f83 uid=60] [RoleService.List] 入参 | userId=60
-
-2026/09/16 09:13:53 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
-[0m[33m[168.332ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '60' AND status = 1 ORDER BY created_at ASC
-2026/09/16 09:13:53 [rid=af78baab-0ed5-45f3-bad4-1531d6df3f83 uid=60] [Repo.RoleRepository.GetList] ok latency=168ms userId=60 count=2
-2026/09/16 09:13:53 [rid=af78baab-0ed5-45f3-bad4-1531d6df3f83 uid=60] [RoleService.List] 完成 | userId=60 count=2
-2026/09/16 09:13:53 [rid=af78baab-0ed5-45f3-bad4-1531d6df3f83 uid=60] [Role] List 成功 | userId=60 count=2 latency=168ms
-2026/09/16 09:13:53 [rid=af78baab-0ed5-45f3-bad4-1531d6df3f83 uid=60] [Access] GET /api/role status=200 latency=168ms size=364B ip=::1
-2026/09/16 09:13:53 [rid=75e3ad02-7cf8-40f5-8549-a2d5aa617ce2 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role
-2026/09/16 09:13:53 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m59.8288315s
-2026/09/16 09:13:53 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:13:53 [rid=75e3ad02-7cf8-40f5-8549-a2d5aa617ce2 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:13:53 [rid=75e3ad02-7cf8-40f5-8549-a2d5aa617ce2 uid=60] [Role] List 入口 | method=GET path=/api/role
-2026/09/16 09:13:53 [rid=75e3ad02-7cf8-40f5-8549-a2d5aa617ce2 uid=60] [RoleService.List] 入参 | userId=60
-2026/09/16 09:13:53 [rid=9b950720-b8cb-4ce2-a6d9-5d19f4353070 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/persona
-2026/09/16 09:13:53 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m59.9823428s
-2026/09/16 09:13:53 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:13:53 [rid=9b950720-b8cb-4ce2-a6d9-5d19f4353070 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:13:53 [rid=465864ce-80c6-461e-ba16-3da7034a4e28 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/traits
-2026/09/16 09:13:53 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=24h0m0s
-2026/09/16 09:13:53 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:13:53 [rid=465864ce-80c6-461e-ba16-3da7034a4e28 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-
-2026/09/16 09:13:53 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
-[0m[33m[84.295ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '60' AND status = 1 ORDER BY created_at ASC
-2026/09/16 09:13:53 [rid=75e3ad02-7cf8-40f5-8549-a2d5aa617ce2 uid=60] [Repo.RoleRepository.GetList] ok latency=84ms userId=60 count=2
-2026/09/16 09:13:53 [rid=75e3ad02-7cf8-40f5-8549-a2d5aa617ce2 uid=60] [RoleService.List] 完成 | userId=60 count=2
-2026/09/16 09:13:53 [rid=75e3ad02-7cf8-40f5-8549-a2d5aa617ce2 uid=60] [Role] List 成功 | userId=60 count=2 latency=84ms
-2026/09/16 09:13:53 [rid=75e3ad02-7cf8-40f5-8549-a2d5aa617ce2 uid=60] [Access] GET /api/role status=200 latency=84ms size=364B ip=::1
-
-2026/09/16 09:13:54 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[335.955ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:13:54 [rid=676ee12a-f410-47ca-b05f-2eacc31d7fd7 uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=335ms userId=60 roleId=51
-
-2026/09/16 09:13:54 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[265.435ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:13:54 [rid=9b950720-b8cb-4ce2-a6d9-5d19f4353070 uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=265ms userId=60 roleId=51
-
-2026/09/16 09:13:54 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[118.305ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 51 ORDER BY preset_type ASC
-2026/09/16 09:13:54 [rid=9b950720-b8cb-4ce2-a6d9-5d19f4353070 uid=60] [RoleCore] GetPersona 未填写 | roleId=51
-2026/09/16 09:13:54 [rid=676ee12a-f410-47ca-b05f-2eacc31d7fd7 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=118ms userId=60 roleId=51 count=1.000
-
-2026/09/16 09:13:54 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[265.435ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 51 ORDER BY preset_type ASC
-2026/09/16 09:13:54 [rid=9b950720-b8cb-4ce2-a6d9-5d19f4353070 uid=60] [Access] GET /api/role-core/persona status=200 latency=265ms size=39B ip=::1
-2026/09/16 09:13:54 [rid=465864ce-80c6-461e-ba16-3da7034a4e28 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] SLOW latency=266ms userId=60 roleId=51 count=1.000
-
-2026/09/16 09:13:54 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[139.459ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:13:54 [rid=676ee12a-f410-47ca-b05f-2eacc31d7fd7 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=139ms userId=60 roleId=51 status=not_set
-
-2026/09/16 09:13:54 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[138.774ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:13:54 [rid=465864ce-80c6-461e-ba16-3da7034a4e28 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=138ms userId=60 roleId=51 status=not_set
-
-2026/09/16 09:13:54 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [35;1mrecord not found
-[0m[33m[86.018ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_mood`.`user_id` LIMIT 1
-
-2026/09/16 09:13:54 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:40
-[0m[33m[86.018ms] [34;1m[rows:1][0m SELECT count(*) FROM `role_ocean_preset` WHERE user_id = 60
-2026/09/16 09:13:54 [rid=676ee12a-f410-47ca-b05f-2eacc31d7fd7 uid=60] [Repo.RoleMoodRepository.GetByUserRole] err=record not found latency=86ms userId=60 roleId=51
-
-2026/09/16 09:13:54 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:30
-[0m[33m[189.715ms] [34;1m[rows:6][0m SELECT * FROM `role_ocean_preset` WHERE user_id = 60 ORDER BY id ASC
-2026/09/16 09:13:54 [rid=465864ce-80c6-461e-ba16-3da7034a4e28 uid=60] [Repo.RoleOceanPresetRepository.ListByUser] ok latency=189ms userId=60 count=6
-2026/09/16 09:13:54 [rid=465864ce-80c6-461e-ba16-3da7034a4e28 uid=60] [RoleCore] GetTraits 成功 | roleId=51 count=1 active=companion_default
-2026/09/16 09:13:54 [rid=465864ce-80c6-461e-ba16-3da7034a4e28 uid=60] [Access] GET /api/role-core/traits status=200 latency=680ms size=2166B ip=::1
-
-2026/09/16 09:13:54 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28 [35;1mrecord not found
-[0m[33m[209.392ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_relationship`.`user_id` LIMIT 1
-2026/09/16 09:13:54 [rid=676ee12a-f410-47ca-b05f-2eacc31d7fd7 uid=60] [Repo.RoleRelationshipRepository.GetByUserRole] SLOW latency=209ms userId=60 roleId=51 not_found
-
-2026/09/16 09:13:54 [32mE:/Go/work-self/workspace/echo-core/repository/role_belief_repository.go:72
-[0m[33m[81.341ms] [34;1m[rows:0][0m SELECT * FROM `role_belief` WHERE (user_id = 60 AND role_id = 51) AND user_confirmed = true ORDER BY created_at DESC
-2026/09/16 09:13:54 [rid=676ee12a-f410-47ca-b05f-2eacc31d7fd7 uid=60] [Repo.RoleBeliefRepository.ListByUserRole] ok latency=81ms userId=60 roleId=51 count=0
-2026/09/16 09:13:54 [rid=676ee12a-f410-47ca-b05f-2eacc31d7fd7 uid=60] [Access] GET /api/role-core/core status=200 latency=970ms size=509B ip=::1
-2026/09/16 09:13:57 [rid=ef1eb41c-6a82-4dc7-b0be-5a49fb82a41b uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/persona
-2026/09/16 09:13:57 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m56.4654171s
-2026/09/16 09:13:57 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:13:57 [rid=ef1eb41c-6a82-4dc7-b0be-5a49fb82a41b uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:13:57 [rid=69cc7278-fff9-4fc7-9286-bc1df04f5ca3 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/traits
-2026/09/16 09:13:57 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m59.9984675s
-2026/09/16 09:13:57 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:13:57 [rid=69cc7278-fff9-4fc7-9286-bc1df04f5ca3 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:13:57 [rid=54e0524e-e272-48c7-b117-4e5198024b2a uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/core
-2026/09/16 09:13:57 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=24h0m0s
-2026/09/16 09:13:57 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:13:57 [rid=54e0524e-e272-48c7-b117-4e5198024b2a uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-
-2026/09/16 09:13:57 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[92.025ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:13:57 [rid=ef1eb41c-6a82-4dc7-b0be-5a49fb82a41b uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=92ms userId=60 roleId=52
-2026/09/16 09:13:57 [rid=ef1eb41c-6a82-4dc7-b0be-5a49fb82a41b uid=60] [RoleCore] GetPersona 未填写 | roleId=52
-
-2026/09/16 09:13:57 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[89.985ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:13:57 [rid=54e0524e-e272-48c7-b117-4e5198024b2a uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=89ms userId=60 roleId=52
-
-2026/09/16 09:13:57 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[89.985ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 52 ORDER BY preset_type ASC
-2026/09/16 09:13:57 [rid=ef1eb41c-6a82-4dc7-b0be-5a49fb82a41b uid=60] [Access] GET /api/role-core/persona status=200 latency=92ms size=39B ip=::1
-2026/09/16 09:13:57 [rid=69cc7278-fff9-4fc7-9286-bc1df04f5ca3 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=89ms userId=60 roleId=52 count=1.000
-
-2026/09/16 09:13:57 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[104.872ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 52 ORDER BY preset_type ASC
-2026/09/16 09:13:57 [rid=54e0524e-e272-48c7-b117-4e5198024b2a uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=104ms userId=60 roleId=52 count=1.000
-
-2026/09/16 09:13:57 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[104.872ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:13:57 [rid=69cc7278-fff9-4fc7-9286-bc1df04f5ca3 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=104ms userId=60 roleId=52 status=not_set
-
-2026/09/16 09:13:57 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:40
-[0m[33m[81.496ms] [34;1m[rows:1][0m SELECT count(*) FROM `role_ocean_preset` WHERE user_id = 60
-
-2026/09/16 09:13:57 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[81.496ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:13:57 [rid=54e0524e-e272-48c7-b117-4e5198024b2a uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=81ms userId=60 roleId=52 status=not_set
-
-2026/09/16 09:13:57 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [35;1mrecord not found
-[0m[33m[84.945ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_mood`.`user_id` LIMIT 1
-2026/09/16 09:13:57 [rid=54e0524e-e272-48c7-b117-4e5198024b2a uid=60] [Repo.RoleMoodRepository.GetByUserRole] err=record not found latency=84ms userId=60 roleId=52
-
-2026/09/16 09:13:57 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:30
-[0m[33m[84.945ms] [34;1m[rows:6][0m SELECT * FROM `role_ocean_preset` WHERE user_id = 60 ORDER BY id ASC
-2026/09/16 09:13:57 [rid=69cc7278-fff9-4fc7-9286-bc1df04f5ca3 uid=60] [Repo.RoleOceanPresetRepository.ListByUser] ok latency=84ms userId=60 count=6
-2026/09/16 09:13:57 [rid=69cc7278-fff9-4fc7-9286-bc1df04f5ca3 uid=60] [RoleCore] GetTraits 成功 | roleId=52 count=1 active=companion_default
-2026/09/16 09:13:57 [rid=69cc7278-fff9-4fc7-9286-bc1df04f5ca3 uid=60] [Access] GET /api/role-core/traits status=200 latency=361ms size=2169B ip=::1
-
-2026/09/16 09:13:57 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28 [35;1mrecord not found
-[0m[33m[144.707ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_relationship`.`user_id` LIMIT 1
-2026/09/16 09:13:57 [rid=54e0524e-e272-48c7-b117-4e5198024b2a uid=60] [Repo.RoleRelationshipRepository.GetByUserRole] ok latency=144ms userId=60 roleId=52 not_found
-
-2026/09/16 09:13:58 [32mE:/Go/work-self/workspace/echo-core/repository/role_belief_repository.go:72
-[0m[33m[77.536ms] [34;1m[rows:0][0m SELECT * FROM `role_belief` WHERE (user_id = 60 AND role_id = 52) AND user_confirmed = true ORDER BY created_at DESC
-2026/09/16 09:13:58 [rid=54e0524e-e272-48c7-b117-4e5198024b2a uid=60] [Repo.RoleBeliefRepository.ListByUserRole] ok latency=77ms userId=60 roleId=52 count=0
-2026/09/16 09:13:58 [rid=54e0524e-e272-48c7-b117-4e5198024b2a uid=60] [Access] GET /api/role-core/core status=200 latency=583ms size=512B ip=::1
-2026/09/16 09:14:02 [rid=eed5f62c-ee19-4634-8d24-afb2a914e244 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/persona
-2026/09/16 09:14:02 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m55.3583698s
-2026/09/16 09:14:02 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:02 [rid=eed5f62c-ee19-4634-8d24-afb2a914e244 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:02 [rid=66ce4f15-c8ed-47a6-a96a-24439133926f uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/traits
-2026/09/16 09:14:02 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m59.9985416s
-2026/09/16 09:14:02 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:02 [rid=66ce4f15-c8ed-47a6-a96a-24439133926f uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:02 [rid=3e78d8cc-0d5b-4e3b-b528-9e8584af6316 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/core
-2026/09/16 09:14:02 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=24h0m0s
-2026/09/16 09:14:02 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:02 [rid=3e78d8cc-0d5b-4e3b-b528-9e8584af6316 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-
-2026/09/16 09:14:02 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[81.447ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:02 [rid=eed5f62c-ee19-4634-8d24-afb2a914e244 uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=81ms userId=60 roleId=51
-
-2026/09/16 09:14:02 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[79.989ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 51 ORDER BY preset_type ASC
-2026/09/16 09:14:02 [rid=eed5f62c-ee19-4634-8d24-afb2a914e244 uid=60] [RoleCore] GetPersona 未填写 | roleId=51
-2026/09/16 09:14:02 [rid=66ce4f15-c8ed-47a6-a96a-24439133926f uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=79ms userId=60 roleId=51 count=1.000
-2026/09/16 09:14:02 [rid=eed5f62c-ee19-4634-8d24-afb2a914e244 uid=60] [Access] GET /api/role-core/persona status=200 latency=81ms size=39B ip=::1
-
-2026/09/16 09:14:02 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[86.499ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:02 [rid=3e78d8cc-0d5b-4e3b-b528-9e8584af6316 uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=86ms userId=60 roleId=51
-
-2026/09/16 09:14:02 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[85.743ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:02 [rid=66ce4f15-c8ed-47a6-a96a-24439133926f uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=85ms userId=60 roleId=51 status=not_set
-
-2026/09/16 09:14:02 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[83.393ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 51 ORDER BY preset_type ASC
-2026/09/16 09:14:02 [rid=3e78d8cc-0d5b-4e3b-b528-9e8584af6316 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=83ms userId=60 roleId=51 count=1.000
-
-2026/09/16 09:14:02 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[86.214ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:02 [rid=3e78d8cc-0d5b-4e3b-b528-9e8584af6316 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=86ms userId=60 roleId=51 status=not_set
-
-2026/09/16 09:14:02 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:40
-[0m[33m[90.374ms] [34;1m[rows:1][0m SELECT count(*) FROM `role_ocean_preset` WHERE user_id = 60
-
-2026/09/16 09:14:02 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [35;1mrecord not found
-[0m[33m[182.931ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_mood`.`user_id` LIMIT 1
-2026/09/16 09:14:02 [rid=3e78d8cc-0d5b-4e3b-b528-9e8584af6316 uid=60] [Repo.RoleMoodRepository.GetByUserRole] err=record not found latency=182ms userId=60 roleId=51
-
-2026/09/16 09:14:02 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:30
-[0m[33m[182.931ms] [34;1m[rows:6][0m SELECT * FROM `role_ocean_preset` WHERE user_id = 60 ORDER BY id ASC
-2026/09/16 09:14:02 [rid=66ce4f15-c8ed-47a6-a96a-24439133926f uid=60] [Repo.RoleOceanPresetRepository.ListByUser] ok latency=182ms userId=60 count=6
-2026/09/16 09:14:02 [rid=66ce4f15-c8ed-47a6-a96a-24439133926f uid=60] [RoleCore] GetTraits 成功 | roleId=51 count=1 active=companion_default
-2026/09/16 09:14:02 [rid=66ce4f15-c8ed-47a6-a96a-24439133926f uid=60] [Access] GET /api/role-core/traits status=200 latency=439ms size=2166B ip=::1
-
-2026/09/16 09:14:02 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28 [35;1mrecord not found
-[0m[33m[102.370ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_relationship`.`user_id` LIMIT 1
-2026/09/16 09:14:02 [rid=3e78d8cc-0d5b-4e3b-b528-9e8584af6316 uid=60] [Repo.RoleRelationshipRepository.GetByUserRole] ok latency=102ms userId=60 roleId=51 not_found
-
-2026/09/16 09:14:02 [32mE:/Go/work-self/workspace/echo-core/repository/role_belief_repository.go:72
-[0m[33m[108.107ms] [34;1m[rows:0][0m SELECT * FROM `role_belief` WHERE (user_id = 60 AND role_id = 51) AND user_confirmed = true ORDER BY created_at DESC
-2026/09/16 09:14:02 [rid=3e78d8cc-0d5b-4e3b-b528-9e8584af6316 uid=60] [Repo.RoleBeliefRepository.ListByUserRole] ok latency=108ms userId=60 roleId=51 count=0
-2026/09/16 09:14:02 [rid=3e78d8cc-0d5b-4e3b-b528-9e8584af6316 uid=60] [Access] GET /api/role-core/core status=200 latency=649ms size=509B ip=::1
-2026/09/16 09:14:06 [rid=dcaea1c7-ea09-4a34-864f-7737c04f0f3f uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/persona
-2026/09/16 09:14:06 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m55.3678694s
-2026/09/16 09:14:06 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:06 [rid=dcaea1c7-ea09-4a34-864f-7737c04f0f3f uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:06 [rid=3d2337d6-d9ad-4036-9c12-64683698c1d3 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/traits
-2026/09/16 09:14:06 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m59.9988436s
-2026/09/16 09:14:06 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:06 [rid=3d2337d6-d9ad-4036-9c12-64683698c1d3 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:06 [rid=b27baf58-7380-4a26-8ef7-9ae59f44a16f uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/core
-2026/09/16 09:14:06 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=24h0m0s
-2026/09/16 09:14:06 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:06 [rid=b27baf58-7380-4a26-8ef7-9ae59f44a16f uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-
-2026/09/16 09:14:06 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[74.085ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 52 ORDER BY preset_type ASC
-2026/09/16 09:14:06 [rid=3d2337d6-d9ad-4036-9c12-64683698c1d3 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=74ms userId=60 roleId=52 count=1.000
-
-2026/09/16 09:14:06 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[79.372ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:06 [rid=b27baf58-7380-4a26-8ef7-9ae59f44a16f uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=79ms userId=60 roleId=52
-
-2026/09/16 09:14:06 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[80.529ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:06 [rid=dcaea1c7-ea09-4a34-864f-7737c04f0f3f uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=80ms userId=60 roleId=52
-2026/09/16 09:14:06 [rid=dcaea1c7-ea09-4a34-864f-7737c04f0f3f uid=60] [RoleCore] GetPersona 未填写 | roleId=52
-2026/09/16 09:14:06 [rid=dcaea1c7-ea09-4a34-864f-7737c04f0f3f uid=60] [Access] GET /api/role-core/persona status=200 latency=80ms size=39B ip=::1
-
-2026/09/16 09:14:06 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[65.641ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:06 [rid=3d2337d6-d9ad-4036-9c12-64683698c1d3 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=65ms userId=60 roleId=52 status=not_set
-
-2026/09/16 09:14:06 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[92.164ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 52 ORDER BY preset_type ASC
-2026/09/16 09:14:06 [rid=b27baf58-7380-4a26-8ef7-9ae59f44a16f uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=92ms userId=60 roleId=52 count=1.000
-
-2026/09/16 09:14:06 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:40
-[0m[33m[61.379ms] [34;1m[rows:1][0m SELECT count(*) FROM `role_ocean_preset` WHERE user_id = 60
-
-2026/09/16 09:14:06 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[66.828ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:06 [rid=b27baf58-7380-4a26-8ef7-9ae59f44a16f uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=66ms userId=60 roleId=52 status=not_set
-
-2026/09/16 09:14:06 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:30
-[0m[33m[73.013ms] [34;1m[rows:6][0m SELECT * FROM `role_ocean_preset` WHERE user_id = 60 ORDER BY id ASC
-2026/09/16 09:14:06 [rid=3d2337d6-d9ad-4036-9c12-64683698c1d3 uid=60] [Repo.RoleOceanPresetRepository.ListByUser] ok latency=73ms userId=60 count=6
-2026/09/16 09:14:06 [rid=3d2337d6-d9ad-4036-9c12-64683698c1d3 uid=60] [RoleCore] GetTraits 成功 | roleId=52 count=1 active=companion_default
-2026/09/16 09:14:06 [rid=3d2337d6-d9ad-4036-9c12-64683698c1d3 uid=60] [Access] GET /api/role-core/traits status=200 latency=274ms size=2169B ip=::1
-
-2026/09/16 09:14:06 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [35;1mrecord not found
-[0m[33m[67.226ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_mood`.`user_id` LIMIT 1
-2026/09/16 09:14:06 [rid=b27baf58-7380-4a26-8ef7-9ae59f44a16f uid=60] [Repo.RoleMoodRepository.GetByUserRole] err=record not found latency=67ms userId=60 roleId=52
-
-2026/09/16 09:14:07 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28 [35;1mrecord not found
-[0m[33m[348.409ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_relationship`.`user_id` LIMIT 1
-2026/09/16 09:14:07 [rid=b27baf58-7380-4a26-8ef7-9ae59f44a16f uid=60] [Repo.RoleRelationshipRepository.GetByUserRole] SLOW latency=348ms userId=60 roleId=52 not_found
-
-2026/09/16 09:14:07 [32mE:/Go/work-self/workspace/echo-core/repository/role_belief_repository.go:72
-[0m[33m[101.631ms] [34;1m[rows:0][0m SELECT * FROM `role_belief` WHERE (user_id = 60 AND role_id = 52) AND user_confirmed = true ORDER BY created_at DESC
-2026/09/16 09:14:07 [rid=b27baf58-7380-4a26-8ef7-9ae59f44a16f uid=60] [Repo.RoleBeliefRepository.ListByUserRole] ok latency=101ms userId=60 roleId=52 count=0
-2026/09/16 09:14:07 [rid=b27baf58-7380-4a26-8ef7-9ae59f44a16f uid=60] [Access] GET /api/role-core/core status=200 latency=755ms size=512B ip=::1
-2026/09/16 09:14:10 [rid=f367523b-e1cf-4b9d-9162-307c1e259a23 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/persona
-2026/09/16 09:14:10 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m56.5869887s
-2026/09/16 09:14:10 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:10 [rid=f367523b-e1cf-4b9d-9162-307c1e259a23 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:10 [rid=1e480129-e5fc-4c74-aad6-e7f4cce30427 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/traits
-2026/09/16 09:14:10 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m59.998747s
-2026/09/16 09:14:10 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:10 [rid=1e480129-e5fc-4c74-aad6-e7f4cce30427 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:10 [rid=6fca4400-524b-4b85-ac23-85a24b241e59 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/core
-2026/09/16 09:14:10 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=24h0m0s
-2026/09/16 09:14:10 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:10 [rid=6fca4400-524b-4b85-ac23-85a24b241e59 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-
-2026/09/16 09:14:10 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[425.816ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 51 ORDER BY preset_type ASC
-2026/09/16 09:14:10 [rid=1e480129-e5fc-4c74-aad6-e7f4cce30427 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] SLOW latency=425ms userId=60 roleId=51 count=1.000
-
-2026/09/16 09:14:10 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[425.816ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:10 [rid=6fca4400-524b-4b85-ac23-85a24b241e59 uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=425ms userId=60 roleId=51
-
-2026/09/16 09:14:10 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[427.069ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:10 [rid=f367523b-e1cf-4b9d-9162-307c1e259a23 uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=427ms userId=60 roleId=51
-2026/09/16 09:14:10 [rid=f367523b-e1cf-4b9d-9162-307c1e259a23 uid=60] [RoleCore] GetPersona 未填写 | roleId=51
-2026/09/16 09:14:10 [rid=f367523b-e1cf-4b9d-9162-307c1e259a23 uid=60] [Access] GET /api/role-core/persona status=200 latency=427ms size=39B ip=::1
-
-2026/09/16 09:14:10 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[134.704ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:10 [rid=1e480129-e5fc-4c74-aad6-e7f4cce30427 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=134ms userId=60 roleId=51 status=not_set
-
-2026/09/16 09:14:10 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[134.704ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 51 ORDER BY preset_type ASC
-2026/09/16 09:14:10 [rid=6fca4400-524b-4b85-ac23-85a24b241e59 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=134ms userId=60 roleId=51 count=1.000
-
-2026/09/16 09:14:10 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:40
-[0m[33m[135.225ms] [34;1m[rows:1][0m SELECT count(*) FROM `role_ocean_preset` WHERE user_id = 60
-
-2026/09/16 09:14:10 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[135.225ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:10 [rid=6fca4400-524b-4b85-ac23-85a24b241e59 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=135ms userId=60 roleId=51 status=not_set
-
-2026/09/16 09:14:11 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:30
-[0m[33m[284.526ms] [34;1m[rows:6][0m SELECT * FROM `role_ocean_preset` WHERE user_id = 60 ORDER BY id ASC
-2026/09/16 09:14:11 [rid=1e480129-e5fc-4c74-aad6-e7f4cce30427 uid=60] [Repo.RoleOceanPresetRepository.ListByUser] SLOW latency=284ms userId=60 count=6
-
-2026/09/16 09:14:11 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [35;1mrecord not found
-[0m[33m[284.526ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_mood`.`user_id` LIMIT 1
-2026/09/16 09:14:11 [rid=1e480129-e5fc-4c74-aad6-e7f4cce30427 uid=60] [RoleCore] GetTraits 成功 | roleId=51 count=1 active=companion_default
-2026/09/16 09:14:11 [rid=6fca4400-524b-4b85-ac23-85a24b241e59 uid=60] [Repo.RoleMoodRepository.GetByUserRole] err=record not found latency=284ms userId=60 roleId=51
-2026/09/16 09:14:11 [rid=1e480129-e5fc-4c74-aad6-e7f4cce30427 uid=60] [Access] GET /api/role-core/traits status=200 latency=980ms size=2166B ip=::1
-
-2026/09/16 09:14:11 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28 [35;1mrecord not found
-[0m[33m[160.101ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_relationship`.`user_id` LIMIT 1
-2026/09/16 09:14:11 [rid=6fca4400-524b-4b85-ac23-85a24b241e59 uid=60] [Repo.RoleRelationshipRepository.GetByUserRole] ok latency=160ms userId=60 roleId=51 not_found
-
-2026/09/16 09:14:11 [32mE:/Go/work-self/workspace/echo-core/repository/role_belief_repository.go:72
-[0m[33m[141.942ms] [34;1m[rows:0][0m SELECT * FROM `role_belief` WHERE (user_id = 60 AND role_id = 51) AND user_confirmed = true ORDER BY created_at DESC
-2026/09/16 09:14:11 [rid=6fca4400-524b-4b85-ac23-85a24b241e59 uid=60] [Repo.RoleBeliefRepository.ListByUserRole] ok latency=141ms userId=60 roleId=51 count=0
-2026/09/16 09:14:11 [rid=6fca4400-524b-4b85-ac23-85a24b241e59 uid=60] [Access] GET /api/role-core/core status=200 latency=1282ms size=509B ip=::1
-2026/09/16 09:14:13 [rid=5f6808c9-1765-4261-bc48-1efe4d5e8c33 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/persona
-2026/09/16 09:14:13 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m56.599713s
-2026/09/16 09:14:13 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:13 [rid=5f6808c9-1765-4261-bc48-1efe4d5e8c33 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:13 [rid=aebf433a-7524-4110-a8fe-1639c81eed52 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/traits
-2026/09/16 09:14:13 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m59.9994946s
-2026/09/16 09:14:13 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:13 [rid=aebf433a-7524-4110-a8fe-1639c81eed52 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:13 [rid=4d4a26e8-11df-4fef-b1f7-066f882bdd67 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/core
-2026/09/16 09:14:13 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=24h0m0s
-2026/09/16 09:14:13 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:13 [rid=4d4a26e8-11df-4fef-b1f7-066f882bdd67 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-
-2026/09/16 09:14:13 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[62.531ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:13 [rid=5f6808c9-1765-4261-bc48-1efe4d5e8c33 uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=62ms userId=60 roleId=52
-2026/09/16 09:14:13 [rid=5f6808c9-1765-4261-bc48-1efe4d5e8c33 uid=60] [RoleCore] GetPersona 未填写 | roleId=52
-2026/09/16 09:14:13 [rid=5f6808c9-1765-4261-bc48-1efe4d5e8c33 uid=60] [Access] GET /api/role-core/persona status=200 latency=62ms size=39B ip=::1
-
-2026/09/16 09:14:13 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[96.080ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:13 [rid=4d4a26e8-11df-4fef-b1f7-066f882bdd67 uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=96ms userId=60 roleId=52
-
-2026/09/16 09:14:13 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[96.080ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 52 ORDER BY preset_type ASC
-2026/09/16 09:14:13 [rid=aebf433a-7524-4110-a8fe-1639c81eed52 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=96ms userId=60 roleId=52 count=1.000
-
-2026/09/16 09:14:13 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[228.798ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:13 [rid=aebf433a-7524-4110-a8fe-1639c81eed52 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] SLOW latency=228ms userId=60 roleId=52 status=not_set
-
-2026/09/16 09:14:13 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[228.798ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 52 ORDER BY preset_type ASC
-2026/09/16 09:14:13 [rid=4d4a26e8-11df-4fef-b1f7-066f882bdd67 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] SLOW latency=228ms userId=60 roleId=52 count=1.000
-
-2026/09/16 09:14:13 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:40
-[0m[33m[92.960ms] [34;1m[rows:1][0m SELECT count(*) FROM `role_ocean_preset` WHERE user_id = 60
-
-2026/09/16 09:14:13 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[92.960ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:13 [rid=4d4a26e8-11df-4fef-b1f7-066f882bdd67 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=92ms userId=60 roleId=52 status=not_set
-
-2026/09/16 09:14:14 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:30
-[0m[33m[78.802ms] [34;1m[rows:6][0m SELECT * FROM `role_ocean_preset` WHERE user_id = 60 ORDER BY id ASC
-2026/09/16 09:14:14 [rid=aebf433a-7524-4110-a8fe-1639c81eed52 uid=60] [Repo.RoleOceanPresetRepository.ListByUser] ok latency=78ms userId=60 count=6
-2026/09/16 09:14:14 [rid=aebf433a-7524-4110-a8fe-1639c81eed52 uid=60] [RoleCore] GetTraits 成功 | roleId=52 count=1 active=companion_default
-2026/09/16 09:14:14 [rid=aebf433a-7524-4110-a8fe-1639c81eed52 uid=60] [Access] GET /api/role-core/traits status=200 latency=496ms size=2169B ip=::1
-
-2026/09/16 09:14:14 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [35;1mrecord not found
-[0m[33m[91.941ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_mood`.`user_id` LIMIT 1
-2026/09/16 09:14:14 [rid=4d4a26e8-11df-4fef-b1f7-066f882bdd67 uid=60] [Repo.RoleMoodRepository.GetByUserRole] err=record not found latency=91ms userId=60 roleId=52
-
-2026/09/16 09:14:14 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28 [35;1mrecord not found
-[0m[33m[87.828ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_relationship`.`user_id` LIMIT 1
-2026/09/16 09:14:14 [rid=4d4a26e8-11df-4fef-b1f7-066f882bdd67 uid=60] [Repo.RoleRelationshipRepository.GetByUserRole] ok latency=87ms userId=60 roleId=52 not_found
-
-2026/09/16 09:14:14 [32mE:/Go/work-self/workspace/echo-core/repository/role_belief_repository.go:72
-[0m[33m[105.231ms] [34;1m[rows:0][0m SELECT * FROM `role_belief` WHERE (user_id = 60 AND role_id = 52) AND user_confirmed = true ORDER BY created_at DESC
-2026/09/16 09:14:14 [rid=4d4a26e8-11df-4fef-b1f7-066f882bdd67 uid=60] [Repo.RoleBeliefRepository.ListByUserRole] ok latency=105ms userId=60 roleId=52 count=0
-2026/09/16 09:14:14 [rid=4d4a26e8-11df-4fef-b1f7-066f882bdd67 uid=60] [Access] GET /api/role-core/core status=200 latency=702ms size=512B ip=::1
-2026/09/16 09:14:16 [rid=14c3694c-2b35-4649-a8ca-5ceb3f998618 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/persona
-2026/09/16 09:14:16 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m56.604027s
-2026/09/16 09:14:16 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:16 [rid=14c3694c-2b35-4649-a8ca-5ceb3f998618 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:16 [rid=f5b6e7f6-4a29-4237-a5e1-df031e927f02 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/traits
-2026/09/16 09:14:16 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m59.9994944s
-2026/09/16 09:14:16 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:16 [rid=f5b6e7f6-4a29-4237-a5e1-df031e927f02 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:16 [rid=2a5858ef-7598-463c-9fb7-1b960f40f4cf uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/core
-2026/09/16 09:14:16 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=24h0m0s
-2026/09/16 09:14:16 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:16 [rid=2a5858ef-7598-463c-9fb7-1b960f40f4cf uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-
-2026/09/16 09:14:17 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[116.615ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 51 ORDER BY preset_type ASC
-2026/09/16 09:14:17 [rid=f5b6e7f6-4a29-4237-a5e1-df031e927f02 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=116ms userId=60 roleId=51 count=1.000
-
-2026/09/16 09:14:17 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[118.830ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:17 [rid=2a5858ef-7598-463c-9fb7-1b960f40f4cf uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=118ms userId=60 roleId=51
-
-2026/09/16 09:14:17 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[123.850ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:17 [rid=14c3694c-2b35-4649-a8ca-5ceb3f998618 uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=123ms userId=60 roleId=51
-2026/09/16 09:14:17 [rid=14c3694c-2b35-4649-a8ca-5ceb3f998618 uid=60] [RoleCore] GetPersona 未填写 | roleId=51
-2026/09/16 09:14:17 [rid=14c3694c-2b35-4649-a8ca-5ceb3f998618 uid=60] [Access] GET /api/role-core/persona status=200 latency=123ms size=39B ip=::1
-
-2026/09/16 09:14:17 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[80.976ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 51 ORDER BY preset_type ASC
-2026/09/16 09:14:17 [rid=2a5858ef-7598-463c-9fb7-1b960f40f4cf uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=80ms userId=60 roleId=51 count=1.000
-
-2026/09/16 09:14:17 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[85.402ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:17 [rid=f5b6e7f6-4a29-4237-a5e1-df031e927f02 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=85ms userId=60 roleId=51 status=not_set
-
-2026/09/16 09:14:17 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[92.797ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:17 [rid=2a5858ef-7598-463c-9fb7-1b960f40f4cf uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=92ms userId=60 roleId=51 status=not_set
-
-2026/09/16 09:14:17 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:40
-[0m[33m[97.516ms] [34;1m[rows:1][0m SELECT count(*) FROM `role_ocean_preset` WHERE user_id = 60
-
-2026/09/16 09:14:17 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [35;1mrecord not found
-[0m[33m[288.917ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_mood`.`user_id` LIMIT 1
-2026/09/16 09:14:17 [rid=2a5858ef-7598-463c-9fb7-1b960f40f4cf uid=60] [Repo.RoleMoodRepository.GetByUserRole] err=record not found latency=288ms userId=60 roleId=51
-
-2026/09/16 09:14:17 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:30
-[0m[33m[281.988ms] [34;1m[rows:6][0m SELECT * FROM `role_ocean_preset` WHERE user_id = 60 ORDER BY id ASC
-2026/09/16 09:14:17 [rid=f5b6e7f6-4a29-4237-a5e1-df031e927f02 uid=60] [Repo.RoleOceanPresetRepository.ListByUser] SLOW latency=281ms userId=60 count=6
-2026/09/16 09:14:17 [rid=f5b6e7f6-4a29-4237-a5e1-df031e927f02 uid=60] [RoleCore] GetTraits 成功 | roleId=51 count=1 active=companion_default
-2026/09/16 09:14:17 [rid=f5b6e7f6-4a29-4237-a5e1-df031e927f02 uid=60] [Access] GET /api/role-core/traits status=200 latency=581ms size=2166B ip=::1
-
-2026/09/16 09:14:17 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28 [35;1mrecord not found
-[0m[33m[96.286ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_relationship`.`user_id` LIMIT 1
-2026/09/16 09:14:17 [rid=2a5858ef-7598-463c-9fb7-1b960f40f4cf uid=60] [Repo.RoleRelationshipRepository.GetByUserRole] ok latency=96ms userId=60 roleId=51 not_found
-
-2026/09/16 09:14:17 [32mE:/Go/work-self/workspace/echo-core/repository/role_belief_repository.go:72
-[0m[33m[85.785ms] [34;1m[rows:0][0m SELECT * FROM `role_belief` WHERE (user_id = 60 AND role_id = 51) AND user_confirmed = true ORDER BY created_at DESC
-2026/09/16 09:14:17 [rid=2a5858ef-7598-463c-9fb7-1b960f40f4cf uid=60] [Repo.RoleBeliefRepository.ListByUserRole] ok latency=85ms userId=60 roleId=51 count=0
-2026/09/16 09:14:17 [rid=2a5858ef-7598-463c-9fb7-1b960f40f4cf uid=60] [Access] GET /api/role-core/core status=200 latency=763ms size=509B ip=::1
-2026/09/16 09:14:20 [rid=90f8d4b6-38b3-4d77-8d29-625113b49244 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/persona
-2026/09/16 09:14:20 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m56.5815857s
-2026/09/16 09:14:20 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:20 [rid=90f8d4b6-38b3-4d77-8d29-625113b49244 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:20 [rid=3fd649eb-e8c8-4002-b1a1-0b3c8f98a2f2 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/traits
-2026/09/16 09:14:20 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m59.9986321s
-2026/09/16 09:14:20 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:20 [rid=3fd649eb-e8c8-4002-b1a1-0b3c8f98a2f2 uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-2026/09/16 09:14:20 [rid=e126591e-c019-4c2c-be5c-edd8d5defcbf uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/core
-2026/09/16 09:14:20 [SessionStore.Get] hit | sid=0a4fa735...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=24h0m0s
-2026/09/16 09:14:20 [SessionStore.Touch] ok | sid=0a4fa735...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:20 [rid=e126591e-c019-4c2c-be5c-edd8d5defcbf uid=60] [AuthMiddleware] 鉴权通过 | sid=0a4fa735be410585cd2c6130f32b4257 uid=60
-
-2026/09/16 09:14:20 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[257.016ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:20 [rid=90f8d4b6-38b3-4d77-8d29-625113b49244 uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=257ms userId=60 roleId=52
-2026/09/16 09:14:20 [rid=90f8d4b6-38b3-4d77-8d29-625113b49244 uid=60] [RoleCore] GetPersona 未填写 | roleId=52
-
-2026/09/16 09:14:20 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[255.648ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 52 ORDER BY preset_type ASC
-2026/09/16 09:14:20 [rid=3fd649eb-e8c8-4002-b1a1-0b3c8f98a2f2 uid=60] [Repo.RoleTraitsRepository.ListByUserRole] SLOW latency=255ms userId=60 roleId=52 count=1.000
-
-2026/09/16 09:14:20 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[255.648ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:20 [rid=90f8d4b6-38b3-4d77-8d29-625113b49244 uid=60] [Access] GET /api/role-core/persona status=200 latency=257ms size=39B ip=::1
-2026/09/16 09:14:20 [rid=e126591e-c019-4c2c-be5c-edd8d5defcbf uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=255ms userId=60 roleId=52
-
-2026/09/16 09:14:20 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[95.801ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:20 [rid=3fd649eb-e8c8-4002-b1a1-0b3c8f98a2f2 uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=95ms userId=60 roleId=52 status=not_set
-
-2026/09/16 09:14:20 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[95.801ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 52 ORDER BY preset_type ASC
-2026/09/16 09:14:20 [rid=e126591e-c019-4c2c-be5c-edd8d5defcbf uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=97ms userId=60 roleId=52 count=1.000
-
-2026/09/16 09:14:20 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[78.027ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:20 [rid=e126591e-c019-4c2c-be5c-edd8d5defcbf uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=78ms userId=60 roleId=52 status=not_set
-
-2026/09/16 09:14:20 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:40
-[0m[33m[82.545ms] [34;1m[rows:1][0m SELECT count(*) FROM `role_ocean_preset` WHERE user_id = 60
-
-2026/09/16 09:14:20 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [35;1mrecord not found
-[0m[33m[89.301ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_mood`.`user_id` LIMIT 1
-2026/09/16 09:14:20 [rid=e126591e-c019-4c2c-be5c-edd8d5defcbf uid=60] [Repo.RoleMoodRepository.GetByUserRole] err=record not found latency=89ms userId=60 roleId=52
-
-2026/09/16 09:14:20 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:30
-[0m[33m[84.783ms] [34;1m[rows:6][0m SELECT * FROM `role_ocean_preset` WHERE user_id = 60 ORDER BY id ASC
-2026/09/16 09:14:20 [rid=3fd649eb-e8c8-4002-b1a1-0b3c8f98a2f2 uid=60] [Repo.RoleOceanPresetRepository.ListByUser] ok latency=84ms userId=60 count=6
-2026/09/16 09:14:20 [rid=3fd649eb-e8c8-4002-b1a1-0b3c8f98a2f2 uid=60] [RoleCore] GetTraits 成功 | roleId=52 count=1 active=companion_default
-2026/09/16 09:14:20 [rid=3fd649eb-e8c8-4002-b1a1-0b3c8f98a2f2 uid=60] [Access] GET /api/role-core/traits status=200 latency=520ms size=2169B ip=::1
-
-2026/09/16 09:14:20 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28 [35;1mrecord not found
-[0m[33m[85.073ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 60 AND role_id = 52 ORDER BY `role_relationship`.`user_id` LIMIT 1
-2026/09/16 09:14:20 [rid=e126591e-c019-4c2c-be5c-edd8d5defcbf uid=60] [Repo.RoleRelationshipRepository.GetByUserRole] ok latency=85ms userId=60 roleId=52 not_found
-
-2026/09/16 09:14:21 [32mE:/Go/work-self/workspace/echo-core/repository/role_belief_repository.go:72
-[0m[33m[211.467ms] [34;1m[rows:0][0m SELECT * FROM `role_belief` WHERE (user_id = 60 AND role_id = 52) AND user_confirmed = true ORDER BY created_at DESC
-2026/09/16 09:14:21 [rid=e126591e-c019-4c2c-be5c-edd8d5defcbf uid=60] [Repo.RoleBeliefRepository.ListByUserRole] SLOW latency=211ms userId=60 roleId=52 count=0
-2026/09/16 09:14:21 [rid=e126591e-c019-4c2c-be5c-edd8d5defcbf uid=60] [Access] GET /api/role-core/core status=200 latency=817ms size=512B ip=::1
-2026/09/16 09:14:39 [rid=9a8dd502-14c3-4430-a5ee-9fbf3ed01377 uid=empty] [CORS] 跨域放行 | origin=http://localhost:5175 | POST /api/auth/login
-2026/09/16 09:14:39 [rid=9a8dd502-14c3-4430-a5ee-9fbf3ed01377 uid=empty] [User] Login 入口 | method=POST path=/api/auth/login ip=::1 contentType=application/json
-2026/09/16 09:14:39 [rid=9a8dd502-14c3-4430-a5ee-9fbf3ed01377 uid=empty] [User] Login 入参 | username=echo_e2e_1789454702 passwordLen=12 ip=::1
-2026/09/16 09:14:39 [rid=9a8dd502-14c3-4430-a5ee-9fbf3ed01377 uid=empty] [UserService.Login] 入参 | username=echo_e2e_1789454702 passwordLen=12 ip=::1
-
-2026/09/16 09:14:39 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:54
-[0m[33m[92.797ms] [34;1m[rows:1][0m SELECT * FROM `user` WHERE username = 'echo_e2e_1789454702' ORDER BY `user`.`id` LIMIT 1
-2026/09/16 09:14:39 [rid=9a8dd502-14c3-4430-a5ee-9fbf3ed01377 uid=empty] [Repo.UserRepository.GetByUsername] ok latency=92ms username=echo_e2e_1789454702
-2026/09/16 09:14:39 [SessionStore.Create] ok | userID=60 username=echo_e2e_1789454702 ttl=24h0m0s total=3
-
-2026/09/16 09:14:39 [32mE:/Go/work-self/workspace/echo-core/repository/user_repository.go:90
-[0m[33m[227.065ms] [34;1m[rows:1][0m UPDATE `user` SET `last_login_at`='2026-09-16 09:14:39.275',`last_login_ip`='::1',`updated_at`='2026-09-16 09:14:39.367' WHERE id = 60
-2026/09/16 09:14:39 [rid=9a8dd502-14c3-4430-a5ee-9fbf3ed01377 uid=empty] [Repo.UserRepository.UpdateLastLogin] SLOW latency=227ms id=60 ip=::1
-2026/09/16 09:14:39 [rid=9a8dd502-14c3-4430-a5ee-9fbf3ed01377 uid=empty] [UserService.Login] 登录成功 | id=60 username=echo_e2e_1789454702 sid=0b1a0825... ip=::1
-2026/09/16 09:14:39 [rid=9a8dd502-14c3-4430-a5ee-9fbf3ed01377 uid=empty] [User] Login 成功 | username=echo_e2e_1789454702 sid=0b1a0825...... userId=60 latency=384ms
-2026/09/16 09:14:39 [rid=9a8dd502-14c3-4430-a5ee-9fbf3ed01377 uid=empty] [Access] POST /api/auth/login status=200 latency=384ms size=328B ip=::1
-2026/09/16 09:14:41 [rid=0a3ebe6c-89ac-404b-84ef-cf984a4ad62d uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/core
-2026/09/16 09:14:41 [SessionStore.Get] hit | sid=0b1a0825...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m58.0234899s
-2026/09/16 09:14:41 [SessionStore.Touch] ok | sid=0b1a0825...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:41 [rid=0a3ebe6c-89ac-404b-84ef-cf984a4ad62d uid=60] [AuthMiddleware] 鉴权通过 | sid=0b1a0825f4159580e999ea1a5da38501 uid=60
-2026/09/16 09:14:41 [rid=75ab70cd-9005-43b7-a398-538a2d834bb3 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role
-2026/09/16 09:14:41 [SessionStore.Get] hit | sid=0b1a0825...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=24h0m0s
-2026/09/16 09:14:41 [SessionStore.Touch] ok | sid=0b1a0825...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:41 [rid=75ab70cd-9005-43b7-a398-538a2d834bb3 uid=60] [AuthMiddleware] 鉴权通过 | sid=0b1a0825f4159580e999ea1a5da38501 uid=60
-2026/09/16 09:14:41 [rid=75ab70cd-9005-43b7-a398-538a2d834bb3 uid=60] [Role] List 入口 | method=GET path=/api/role
-2026/09/16 09:14:41 [rid=75ab70cd-9005-43b7-a398-538a2d834bb3 uid=60] [RoleService.List] 入参 | userId=60
-
-2026/09/16 09:14:41 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[149.577ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:41 [rid=0a3ebe6c-89ac-404b-84ef-cf984a4ad62d uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=149ms userId=60 roleId=51
-
-2026/09/16 09:14:41 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
-[0m[33m[149.577ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '60' AND status = 1 ORDER BY created_at ASC
-2026/09/16 09:14:41 [rid=75ab70cd-9005-43b7-a398-538a2d834bb3 uid=60] [Repo.RoleRepository.GetList] ok latency=149ms userId=60 count=2
-2026/09/16 09:14:41 [rid=75ab70cd-9005-43b7-a398-538a2d834bb3 uid=60] [RoleService.List] 完成 | userId=60 count=2
-2026/09/16 09:14:41 [rid=75ab70cd-9005-43b7-a398-538a2d834bb3 uid=60] [Role] List 成功 | userId=60 count=2 latency=149ms
-2026/09/16 09:14:41 [rid=75ab70cd-9005-43b7-a398-538a2d834bb3 uid=60] [Access] GET /api/role status=200 latency=149ms size=364B ip=::1
-2026/09/16 09:14:41 [rid=623df452-2c8b-47ad-9eed-bae87520f1d4 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role
-2026/09/16 09:14:41 [SessionStore.Get] hit | sid=0b1a0825...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m59.8475595s
-2026/09/16 09:14:41 [SessionStore.Touch] ok | sid=0b1a0825...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:41 [rid=623df452-2c8b-47ad-9eed-bae87520f1d4 uid=60] [AuthMiddleware] 鉴权通过 | sid=0b1a0825f4159580e999ea1a5da38501 uid=60
-2026/09/16 09:14:41 [rid=623df452-2c8b-47ad-9eed-bae87520f1d4 uid=60] [Role] List 入口 | method=GET path=/api/role
-2026/09/16 09:14:41 [rid=623df452-2c8b-47ad-9eed-bae87520f1d4 uid=60] [RoleService.List] 入参 | userId=60
-2026/09/16 09:14:41 [rid=4c24c869-a1a7-4434-ac6c-e1fc73d28410 uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/persona
-2026/09/16 09:14:41 [SessionStore.Get] hit | sid=0b1a0825...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=23h59m59.9771764s
-2026/09/16 09:14:41 [SessionStore.Touch] ok | sid=0b1a0825...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:41 [rid=4c24c869-a1a7-4434-ac6c-e1fc73d28410 uid=60] [AuthMiddleware] 鉴权通过 | sid=0b1a0825f4159580e999ea1a5da38501 uid=60
-2026/09/16 09:14:41 [rid=0ece8501-12f6-4b33-a07b-36ad8fa03f8b uid=empty] [CORS] 跨域放行 | origin=* | GET /api/role-core/traits
-2026/09/16 09:14:41 [SessionStore.Get] hit | sid=0b1a0825...(len=32) userID=60 username=echo_e2e_1789454702 expireIn=24h0m0s
-2026/09/16 09:14:41 [SessionStore.Touch] ok | sid=0b1a0825...(len=32) userID=60 newExpireIn=24h0m0s
-2026/09/16 09:14:41 [rid=0ece8501-12f6-4b33-a07b-36ad8fa03f8b uid=60] [AuthMiddleware] 鉴权通过 | sid=0b1a0825f4159580e999ea1a5da38501 uid=60
-
-2026/09/16 09:14:41 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[87.785ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 51 ORDER BY preset_type ASC
-2026/09/16 09:14:41 [rid=0a3ebe6c-89ac-404b-84ef-cf984a4ad62d uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=87ms userId=60 roleId=51 count=1.000
-
-2026/09/16 09:14:41 [32mE:/Go/work-self/workspace/echo-core/repository/role_traits_repository.go:50
-[0m[33m[77.913ms] [34;1m[rows:1][0m SELECT * FROM `role_traits` WHERE user_id = 60 AND role_id = 51 ORDER BY preset_type ASC
-2026/09/16 09:14:41 [rid=0ece8501-12f6-4b33-a07b-36ad8fa03f8b uid=60] [Repo.RoleTraitsRepository.ListByUserRole] ok latency=77ms userId=60 roleId=51 count=1.000
-
-2026/09/16 09:14:41 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_persona_repository.go:28 [35;1mrecord not found
-[0m[33m[77.913ms] [34;1m[rows:0][0m SELECT * FROM `role_persona` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_persona`.`user_id` LIMIT 1
-2026/09/16 09:14:41 [rid=4c24c869-a1a7-4434-ac6c-e1fc73d28410 uid=60] [Repo.RolePersonaRepository.GetByUserRole] err=record not found latency=77ms userId=60 roleId=51
-2026/09/16 09:14:41 [rid=4c24c869-a1a7-4434-ac6c-e1fc73d28410 uid=60] [RoleCore] GetPersona 未填写 | roleId=51
-2026/09/16 09:14:41 [rid=4c24c869-a1a7-4434-ac6c-e1fc73d28410 uid=60] [Access] GET /api/role-core/persona status=200 latency=77ms size=39B ip=::1
-
-2026/09/16 09:14:41 [32mE:/Go/work-self/workspace/echo-core/repository/role_repository.go:98
-[0m[33m[104.245ms] [34;1m[rows:2][0m SELECT * FROM `role` WHERE user_id = '60' AND status = 1 ORDER BY created_at ASC
-2026/09/16 09:14:41 [rid=623df452-2c8b-47ad-9eed-bae87520f1d4 uid=60] [Repo.RoleRepository.GetList] ok latency=104ms userId=60 count=2
-2026/09/16 09:14:41 [rid=623df452-2c8b-47ad-9eed-bae87520f1d4 uid=60] [RoleService.List] 完成 | userId=60 count=2
-2026/09/16 09:14:41 [rid=623df452-2c8b-47ad-9eed-bae87520f1d4 uid=60] [Role] List 成功 | userId=60 count=2 latency=104ms
-2026/09/16 09:14:41 [rid=623df452-2c8b-47ad-9eed-bae87520f1d4 uid=60] [Access] GET /api/role status=200 latency=104ms size=364B ip=::1
-
-2026/09/16 09:14:41 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[80.718ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:41 [rid=0a3ebe6c-89ac-404b-84ef-cf984a4ad62d uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=80ms userId=60 roleId=51 status=not_set
-
-2026/09/16 09:14:41 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_active_preset_repository.go:36 [35;1mrecord not found
-[0m[33m[100.720ms] [34;1m[rows:0][0m SELECT * FROM `role_active_preset` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_active_preset`.`user_id` LIMIT 1
-2026/09/16 09:14:41 [rid=0ece8501-12f6-4b33-a07b-36ad8fa03f8b uid=60] [Repo.RoleActivePresetRepository.GetByUserRole] ok latency=100ms userId=60 roleId=51 status=not_set
-
-2026/09/16 09:14:41 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_mood_repository.go:27 [35;1mrecord not found
-[0m[33m[74.691ms] [34;1m[rows:0][0m SELECT * FROM `role_mood` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_mood`.`user_id` LIMIT 1
-2026/09/16 09:14:41 [rid=0a3ebe6c-89ac-404b-84ef-cf984a4ad62d uid=60] [Repo.RoleMoodRepository.GetByUserRole] err=record not found latency=74ms userId=60 roleId=51
-
-2026/09/16 09:14:41 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:40
-[0m[33m[80.102ms] [34;1m[rows:1][0m SELECT count(*) FROM `role_ocean_preset` WHERE user_id = 60
-
-2026/09/16 09:14:41 [31;1mE:/Go/work-self/workspace/echo-core/repository/role_relationship_repository.go:28 [35;1mrecord not found
-[0m[33m[79.168ms] [34;1m[rows:0][0m SELECT * FROM `role_relationship` WHERE user_id = 60 AND role_id = 51 ORDER BY `role_relationship`.`user_id` LIMIT 1
-2026/09/16 09:14:41 [rid=0a3ebe6c-89ac-404b-84ef-cf984a4ad62d uid=60] [Repo.RoleRelationshipRepository.GetByUserRole] ok latency=79ms userId=60 roleId=51 not_found
-
-2026/09/16 09:14:41 [32mE:/Go/work-self/workspace/echo-core/repository/role_ocean_preset_repository.go:30
-[0m[33m[91.413ms] [34;1m[rows:6][0m SELECT * FROM `role_ocean_preset` WHERE user_id = 60 ORDER BY id ASC
-2026/09/16 09:14:41 [rid=0ece8501-12f6-4b33-a07b-36ad8fa03f8b uid=60] [Repo.RoleOceanPresetRepository.ListByUser] ok latency=91ms userId=60 count=6
-2026/09/16 09:14:41 [rid=0ece8501-12f6-4b33-a07b-36ad8fa03f8b uid=60] [RoleCore] GetTraits 成功 | roleId=51 count=1 active=companion_default
-2026/09/16 09:14:41 [rid=0ece8501-12f6-4b33-a07b-36ad8fa03f8b uid=60] [Access] GET /api/role-core/traits status=200 latency=350ms size=2166B ip=::1
-
-2026/09/16 09:14:41 [32mE:/Go/work-self/workspace/echo-core/repository/role_belief_repository.go:72
-[0m[33m[168.360ms] [34;1m[rows:0][0m SELECT * FROM `role_belief` WHERE (user_id = 60 AND role_id = 51) AND user_confirmed = true ORDER BY created_at DESC
-2026/09/16 09:14:41 [rid=0a3ebe6c-89ac-404b-84ef-cf984a4ad62d uid=60] [Repo.RoleBeliefRepository.ListByUserRole] ok latency=168ms userId=60 roleId=51 count=0
-2026/09/16 09:14:41 [rid=0a3ebe6c-89ac-404b-84ef-cf984a4ad62d uid=60] [Access] GET /api/role-core/core status=200 latency=640ms size=509B ip=::1
+2026/09/25 08:37:03 [rid=43c9bee3-30b3-4ef2-b2b8-0381e3c32304 uid=empty] [CORS] 跨域放行 | origin=* | GET /health
+2026/09/25 08:37:03 [rid=43c9bee3-30b3-4ef2-b2b8-0381e3c32304 uid=empty] [Access] GET /health status=200 latency=0ms size=33B ip=::1
+2026/09/25 12:38:53 [rid=57c13cf9-145f-4fc8-8515-e6de02233046 uid=empty] [CORS] 跨域放行 | origin=* | POST /api/chat/sessions/messages
+2026/09/25 12:38:53 [rid=57c13cf9-145f-4fc8-8515-e6de02233046 uid=empty] [Access] POST /api/chat/sessions/messages status=200 latency=0ms size=0B ip=::1
+2026/09/25 12:38:53 [rid=9714ace0-1bbb-40e3-bf7c-359edd4dc487 uid=empty] [CORS] 跨域放行 | origin=* | POST /api/chat/sessions/messages
+2026/09/25 12:38:53 [rid=9714ace0-1bbb-40e3-bf7c-359edd4dc487 uid=empty] [Access] POST /api/chat/sessions/messages status=200 latency=0ms size=0B ip=::1
